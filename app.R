@@ -78,7 +78,31 @@ ui <- fluidPage(theme = my_theme,
                                                                min = 0, 
                                                                max = 1,
                                                                value = 0.6,
+                                                               ticks = FALSE),
+                                                   
+                                                   sliderInput('rr',
+                                                               label = h4('Select RR'),
+                                                               min = 0, 
+                                                               max = 1,
+                                                               value = 0.6,
+                                                               ticks = FALSE),
+                                                   
+                                                   sliderInput('eta',
+                                                               label = h4('Select eta'),
+                                                               min = 0, 
+                                                               max = 1,
+                                                               value = 0.6,
+                                                               ticks = FALSE),
+                                                   
+                                                   sliderInput('osp',
+                                                               label = h4('osmotic pressure'),
+                                                               min = 0, 
+                                                               max = 1,
+                                                               value = 0.6,
                                                                ticks = FALSE)),
+                                            
+                                      
+  
                                       
                                       mainPanel(textOutput('gwptext'))
                                     )),
@@ -189,9 +213,13 @@ server <- function(input, output, session) {
                })
   
   output$gwptext <- renderText({
-    paste0('The total energy requirement is: ', format(round(e_gwpump(input$vol_rate, 
-                                                               system_losses(input$fitting, input$vol_rate, input$rough, input$length), 
-                                                               input$efficiency), 2), scientific = TRUE), ' MW')
+    
+    energy_reqs <- energy_reqs %>% 
+      filter(name %in% input$energyreqs)
+    
+    paste0('The total energy requirement is: ', format(round(energy_req(
+      energy_reqs, input$vol_rate, input$rr, input$eta, input$osp, input$fitting, 
+      input$rough, input$length, input$efficiency), 2), scientific = TRUE), ' MW')
   })
   
   output$capex <- renderText({

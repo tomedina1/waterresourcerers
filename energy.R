@@ -43,34 +43,34 @@ system_losses <- function(k_f, q, k ,L){
 
 
 # RO Energy Requirement
-ro <- function(RR, eta, pi, x) {
+r_o <- function(RR, eta, osp, x) {
   
   # calculates the RO energy requirements modeled as a semibatch process
   # This is noted in Gu et al. 2021 that Potable Reuse follows SB processes
   
-  sb <- (1 / eta) * (x + pi (1 + RR / (2 * (1 - RR))))
+  sb <- (1 / eta) * (x + osp * (1 + RR / (2 * (1 - RR))))
   return(sb)
   
 }
 
 # Energy Requirement Calculations
-energy_req <- function(a, x, RR, eta, pi, k, E){
+energy_req <- function(a, x, RR, eta, osp, k_f, k, L, E){
   
   e_req <- data.frame()
   
   for (i in 1:length(a$name)){
     if (a$name[i] == 'reverse osmosis'){
-      ro_req <- ro(RR, eta, pi, x)
+      ro_req <- r_o(RR, eta, osp, x)
       e_req <- rbind(e_req, ro_req)
     }
     
     else if (a$name[i] == 'groundwater pumping'){
-      pump_req <- e_gwpump(x, k, E)
-      e_req <- rbind(e_gwpump, k, E)
+      pump_req <- e_gwpump(x, system_losses(k_f, x, k, L), E)
+      e_req <- rbind(e_req, pump_req)
     }
     
     else {
-      o_req <- req[i] * x
+      o_req <- a$req[i] * x / 24
       e_req <- rbind(e_req, o_req)
     }
   }
@@ -84,14 +84,14 @@ gwpump <- data.frame('name' = 'groundwater pumping', 'req' = NA)
 ro <- data.frame('name' = 'reverse osmosis', 'req' = NA)
 coag <- data.frame('name' = 'coagulation', 'req' = mean(0.4, 0.7))
 uv <- data.frame('name' = 'uv oxidation', 'req' = mean(0.01, 0.05))
-o3 <- data.frame('name' = 'ozonation', 'req' = mean(0.03, 0.1))
+o3 <- data.frame('name' = 'ozonation', 'req' = mean(0.03, 0.1) / 24)
 uf <- data.frame('name' = 'ultrafiltration', 'req' = mean(0.07, 0.1, 0.2))
-mf <- data.frame('name' = 'microfiltration', 'req' = 0.18)
+mf <- data.frame('name' = 'microfiltration', 'req' = 0.18 / 24)
 gac <- data.frame('name' = 'granular activated carbon', 'req' = 0.37)
 gmf <- data.frame('name' = 'gmf', 'req' = mean(0.16, 0.32))
 recharge <- data.frame('name' = 'groundwater recharge', 'req' = 0.48)
 desal <- data.frame('name' = 'saltwater desalination', 'req' = mean(3.5, 4.5))
 
 # combine each of the unit processes into a consolidated data frame
-energy_reqs <- rbind(gwpump, coag, uv, o3, uf, mf, gac, gmf, recharge, desal)
+energy_reqs <- rbind(gwpump, ro, coag, uv, o3, uf, mf, gac, gmf, recharge, desal)
 
