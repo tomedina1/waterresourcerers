@@ -29,11 +29,21 @@ ui <- fluidPage(theme = my_theme,
                                     sidebarLayout(
                                       sidebarPanel(width = 3,
                                                    
-                                                   h3('Groundwater Pumping'),
+                                                   h3('Create a tertiary treatment process'),
                                                    
                                                    hr(style = "border-top: 1px solid #000000;"),
                                                    
                                                    tags$div('Assumptions: 6" diameter municipal pipe'),
+                                                   
+                                                   prettyCheckboxGroup('energyreqs',
+                                                                       label = h4('Select unit processes'),
+                                                                       choices = unique(energy_reqs$name),
+                                                                       plain = TRUE,
+                                                                       fill = TRUE,
+                                                                       icon = icon("fas fa-check"),
+                                                                       animation = 'smooth'),
+                                                   
+                                                   actionButton("selectall1", label = "Select / Deselect all"),
                                                    
                                                    sliderInput('vol_rate',
                                                                label = h4('Select a flow rate (m3/d)'),
@@ -124,6 +134,32 @@ ui <- fluidPage(theme = my_theme,
 # Server
 server <- function(input, output, session) {
   
+  observeEvent(input$selectall1,
+               {if (input$selectall1 > 0) {
+                 
+                 if (input$selectall1 %% 2 == 0){
+                   
+                   updatePrettyCheckboxGroup(session = session, 
+                                             inputId = "energyreqs",
+                                             choices = unique(energy_reqs$name),
+                                             selected = c(unique(energy_reqs$name)),
+                                             prettyOptions = list(animation = 'smooth',
+                                                                  plain = TRUE,
+                                                                  fill = TRUE,
+                                                                  icon = icon('fas fa-check')))}
+                 
+                 else {
+                   
+                   updatePrettyCheckboxGroup(session = session, 
+                                             inputId = "energyreqs",
+                                             choices = unique(energy_reqs$name),
+                                             selected = " ",
+                                             prettyOptions = list(animation = 'smooth',
+                                                                  plain = TRUE,
+                                                                  fill = TRUE,
+                                                                  icon = icon('fas fa-check')))}
+               }
+               })
   
   observeEvent(input$selectall,
                {if (input$selectall > 0) {
