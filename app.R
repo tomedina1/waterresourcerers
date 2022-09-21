@@ -4,6 +4,7 @@ library(shiny)
 library(tidyverse)
 library(bslib)
 library(shinyWidgets)
+library(shinyjs)
 
 # Load other R scripts
 source('economics.R')
@@ -15,6 +16,8 @@ my_theme <- bs_theme(bootswatch = "lux", "font-size-base" = "1rem")
 
 # User Interface
 ui <- fluidPage(theme = my_theme,
+                
+                shinyjs::useShinyjs(),
                 
                 navbarPage('TITLE HERE',
                            
@@ -60,42 +63,42 @@ ui <- fluidPage(theme = my_theme,
                                                                ticks = FALSE),
                                                    
                                                    sliderInput('rough',
-                                                               label = h4('Select a pipe roughness factor'),
+                                                               label = h4('Pipe roughness factor'),
                                                                min = 0,
                                                                max = 1,
                                                                value = 0.2,
                                                                ticks = FALSE),
                                                    
                                                    sliderInput('fitting',
-                                                               label  = h4('Select a losses from fittings'),
+                                                               label  = h4('Losses from pipe fittings'),
                                                                min = 0,
                                                                max = 1,
                                                                value = 0.1,
                                                                ticks = FALSE),
                                                    
                                                    sliderInput('efficiency',
-                                                               label = h4('Select a pump efficiency'),
+                                                               label = h4('Pump Efficiency'),
                                                                min = 0, 
                                                                max = 1,
                                                                value = 0.6,
                                                                ticks = FALSE),
                                                    
                                                    sliderInput('rr',
-                                                               label = h4('Select RR'),
+                                                               label = h4('Recovery Ratio'),
                                                                min = 0, 
                                                                max = 1,
                                                                value = 0.6,
                                                                ticks = FALSE),
                                                    
                                                    sliderInput('eta',
-                                                               label = h4('Select eta'),
+                                                               label = h4('System efficiency'),
                                                                min = 0, 
                                                                max = 1,
                                                                value = 0.6,
                                                                ticks = FALSE),
                                                    
                                                    sliderInput('osp',
-                                                               label = h4('osmotic pressure'),
+                                                               label = h4('Osmotic Pressure (Pa)'),
                                                                min = 0, 
                                                                max = 1,
                                                                value = 0.6,
@@ -184,6 +187,58 @@ server <- function(input, output, session) {
                                                                   icon = icon('fas fa-check')))}
                }
                })
+  
+  observeEvent(input$energyreqs, {
+      
+    if (any(input$energyreqs == 'groundwater pumping') & any(input$energyreqs == 'reverse osmosis')){
+      enable('length') 
+      enable('fitting')  
+      enable('rough') 
+      enable('efficiency')
+      enable('rr')
+      enable('eta')
+      enable('osp')
+    }
+    
+    else if (any(input$energyreqs == 'reverse osmosis')){
+        enable('rr')
+        enable('eta')
+        enable('osp')
+        disable('length') 
+        disable('fitting')  
+        disable('rough') 
+        disable('efficiency')
+    }
+    
+    else if (any(input$energyreqs == 'groundwater pumping')){
+      enable('length') 
+      enable('fitting')  
+      enable('rough') 
+      enable('efficiency')
+      disable('rr')
+      disable('eta')
+      disable('osp')
+    }
+      
+      
+    else {
+      disable('length') 
+      disable('fitting')  
+      disable('rough') 
+      disable('efficiency')
+      disable('rr')
+      disable('eta')
+      disable('osp')
+  }
+      
+
+    
+ 
+    }
+    
+
+  
+  )
   
   observeEvent(input$selectall,
                {if (input$selectall > 0) {
