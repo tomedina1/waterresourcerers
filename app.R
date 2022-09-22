@@ -100,7 +100,7 @@ ui <- fluidPage(theme = my_theme,
                                                    sliderInput('osp',
                                                                label = h4('Osmotic Pressure (Pa)'),
                                                                min = 0, 
-                                                               max = 1,
+                                                               max = 1e7,
                                                                value = 0.6,
                                                                ticks = FALSE)),
                                       

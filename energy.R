@@ -11,7 +11,7 @@ e_gwpump <- function(q, k, E){
   # 9.81 is the gravitation constant
   h <- (k * (q / 0.018238673) ^ 2) / (2 * 9.81)
   P <- (q * h * 9.81 * 1000) / E
-  P <- P / 1e6
+  P <- P / 1e3
   return(P)
 
 }
@@ -22,8 +22,8 @@ friction_factor <- function(q, k){
   
   # q is the volumetric flow rate (m3/d) and k is the pipe roughness 
   v <- q / 0.018238673 # convert flow rate to instantaneous velocity 
-  Re <- (v * 0.1524) / 1e-6 # 0.1524 is the diameter of a 6 inch pipe, 1e-6 is the kinematic viscosity of water
-  f <- 0.25 / (log(k / (3.75 * 0.1524)) + 5.74 / (Re ^ 0.9)) ^ 2 # friction factor equation f(k, Re)
+  Re <- (v * 0.1524) / 1.0035e-6 # 0.1524 is the diameter of a 6 inch pipe, 1e-6 is the kinematic viscosity of water
+  f <- 0.25 / ((log10(k / (3.75 * 0.1524)) + 5.74 / (Re ^ 0.9))^ 2) # friction factor equation f(k, Re)
   return(f)
   
 }
@@ -49,7 +49,8 @@ r_o <- function(RR, eta, osp, x) {
   # This is noted in Gu et al. 2021 that Potable Reuse follows SB processes
   
   sb <- (1 / eta) * (x + osp * (1 + RR / (2 * (1 - RR))))
-  return(sb)
+  sb_out <- sb / 24 * x
+  return(sb_out)
   
 }
 
@@ -72,7 +73,7 @@ energy_req <- function(a, x, RR, eta, osp, k_f, k, L, E){
       
     } else {
       
-      o_req <- a$req[i] * x / 24
+      o_req <- a$req[i] * x / 24 * 365
       e_req <- rbind(e_req, o_req)
       
     }}
