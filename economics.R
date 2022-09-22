@@ -12,22 +12,25 @@ williams <- function(a, b, c, x){
   
   costs <- data.frame()
   
-  for (i in 1:length(a)) { # iterates through every input
+  for (i in 1:length(a)) {
+    # iterates through every input
       if (c[i] != 0){
+        
         y <- a[i] * log(x) ^ (b[i]) + c[i] # calculates log(y)
         final_y <- 10 ^ y 
         costs <- rbind(costs, final_y) # binds the output for each iteration to a df
-      }
-    
-    else {
+        
+      } else {
+        
       y_euro <- a[i] * x ^ b[i]
       y_dollar <- 1.1723 * y_euro # euro to dollar conversion from Sep 2020 
       costs <- rbind(costs, y_dollar)
-    }
-  }
+      
+    }}
   
   costs_sum <- sum(costs) # sums the dataframe to get the total cost of the system
   return(costs_sum)
+  
 }
 
 # From Hilbig et. al.

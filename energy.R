@@ -59,24 +59,27 @@ energy_req <- function(a, x, RR, eta, osp, k_f, k, L, E){
   e_req <- data.frame()
   
   for (i in 1:length(a$name)){
+    
     if (a$name[i] == 'reverse osmosis'){
+      
       ro_req <- r_o(RR, eta, osp, x)
       e_req <- rbind(e_req, ro_req)
-    }
-    
-    else if (a$name[i] == 'groundwater pumping'){
+      
+    } else if (a$name[i] == 'groundwater pumping'){
+      
       pump_req <- e_gwpump(x, system_losses(k_f, x, k, L), E)
       e_req <- rbind(e_req, pump_req)
-    }
-    
-    else {
+      
+    } else {
+      
       o_req <- a$req[i] * x / 24
       e_req <- rbind(e_req, o_req)
-    }
-  }
+      
+    }}
   
   tot_energy <- sum(e_req)
   return(tot_energy)
+  
 }
 
 # Individual energy requirements for each unit process

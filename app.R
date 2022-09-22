@@ -17,7 +17,7 @@ my_theme <- bs_theme(bootswatch = "lux", "font-size-base" = "1rem")
 # User Interface
 ui <- fluidPage(theme = my_theme,
                 
-                shinyjs::useShinyjs(),
+                useShinyjs(),
                 
                 navbarPage('TITLE HERE',
                            
@@ -103,12 +103,11 @@ ui <- fluidPage(theme = my_theme,
                                                                max = 1,
                                                                value = 0.6,
                                                                ticks = FALSE)),
-                                            
-                                      
-  
                                       
                                       mainPanel(textOutput('gwptext'))
+                                      
                                     )),
+                           
                            
                            tabPanel('ECONOMICS',
                                     sidebarLayout(
@@ -140,11 +139,13 @@ ui <- fluidPage(theme = my_theme,
                                       
                                     )),
                            
+                           
                            tabPanel('RISK',
                                     sidebarLayout(
                                       sidebarPanel(width = 3),
                                       mainPanel()
                                     )),
+                           
                            
                            tabPanel('ABOUT',
                                     sidebarLayout(
@@ -152,10 +153,7 @@ ui <- fluidPage(theme = my_theme,
                                       mainPanel()
                                     ))
                            
-                           )
-
-    
-)
+                           ))
 
 
 # Server
@@ -173,9 +171,8 @@ server <- function(input, output, session) {
                                              prettyOptions = list(animation = 'smooth',
                                                                   plain = TRUE,
                                                                   fill = TRUE,
-                                                                  icon = icon('fas fa-check')))}
-                 
-                 else {
+                                                                  icon = icon('fas fa-check')))
+                   } else {
                    
                    updatePrettyCheckboxGroup(session = session, 
                                              inputId = "energyreqs",
@@ -185,12 +182,12 @@ server <- function(input, output, session) {
                                                                   plain = TRUE,
                                                                   fill = TRUE,
                                                                   icon = icon('fas fa-check')))}
-               }
-               })
+               }})
   
   observeEvent(input$energyreqs, {
       
     if (any(input$energyreqs == 'groundwater pumping') & any(input$energyreqs == 'reverse osmosis')){
+      
       enable('length') 
       enable('fitting')  
       enable('rough') 
@@ -198,9 +195,9 @@ server <- function(input, output, session) {
       enable('rr')
       enable('eta')
       enable('osp')
-    }
-    
-    else if (any(input$energyreqs == 'reverse osmosis')){
+      
+    } else if (any(input$energyreqs == 'reverse osmosis')){
+      
         enable('rr')
         enable('eta')
         enable('osp')
@@ -208,9 +205,9 @@ server <- function(input, output, session) {
         disable('fitting')  
         disable('rough') 
         disable('efficiency')
-    }
-    
-    else if (any(input$energyreqs == 'groundwater pumping')){
+        
+    } else if (any(input$energyreqs == 'groundwater pumping')){
+      
       enable('length') 
       enable('fitting')  
       enable('rough') 
@@ -218,10 +215,9 @@ server <- function(input, output, session) {
       disable('rr')
       disable('eta')
       disable('osp')
-    }
       
+    } else {
       
-    else {
       disable('length') 
       disable('fitting')  
       disable('rough') 
@@ -229,16 +225,8 @@ server <- function(input, output, session) {
       disable('rr')
       disable('eta')
       disable('osp')
-  }
       
-
-    
- 
-    }
-    
-
-  
-  )
+  }})
   
   observeEvent(input$selectall,
                {if (input$selectall > 0) {
@@ -252,9 +240,9 @@ server <- function(input, output, session) {
                                              prettyOptions = list(animation = 'smooth',
                                                                   plain = TRUE,
                                                                   fill = TRUE,
-                                                                  icon = icon('fas fa-check')))}
-                 
-                 else {
+                                                                  icon = icon('fas fa-check')))
+                   
+                   } else {
                    
                    updatePrettyCheckboxGroup(session = session, 
                                              inputId = "unit_proc",
@@ -264,8 +252,7 @@ server <- function(input, output, session) {
                                                                   plain = TRUE,
                                                                   fill = TRUE,
                                                                   icon = icon('fas fa-check')))}
-               }
-               })
+               }})
   
   output$gwptext <- renderText({
     
@@ -289,9 +276,6 @@ server <- function(input, output, session) {
     paste0('The total O&M cost is: $', round(williams(total$oma, total$omb, total$omc, input$flow_rate), 2))
   })
   
-
-
-   
 }
 
 shinyApp(ui = ui, server = server)
