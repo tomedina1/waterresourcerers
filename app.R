@@ -5,6 +5,7 @@ library(tidyverse)
 library(bslib)
 library(shinyWidgets)
 library(shinyjs)
+library(plotly)
 
 # Load other R scripts
 source('economics.R')
@@ -104,7 +105,8 @@ ui <- fluidPage(theme = my_theme,
                                                                value = 0.6,
                                                                ticks = FALSE)),
                                       
-                                      mainPanel(textOutput('gwptext'))
+                                      mainPanel(textOutput('gwptext'),
+                                                plotlyOutput('eplot'))
                                       
                                     )),
                            
@@ -184,6 +186,7 @@ server <- function(input, output, session) {
                                                                   icon = icon('fas fa-check')))}
                }})
   
+  
   observeEvent(input$energyreqs, {
       
     if (any(input$energyreqs == 'groundwater pumping') & any(input$energyreqs == 'reverse osmosis')){
@@ -262,6 +265,21 @@ server <- function(input, output, session) {
     paste0('The total energy requirement is: ', format(round(energy_req(
       energy_reqs, input$vol_rate, input$rr, input$eta, input$osp, input$fitting, 
       input$rough, input$length, input$efficiency), 2), scientific = TRUE), ' MW')
+  })
+  
+  
+  plot_data <- reactive({
+    
+    energy_plot(energy_reqs %>% filter(name %in% input$energyreqs), 
+                input$vol_rate, input$rr, input$eta, input$osp)
+  })
+  
+  output$eplot <- renderPlotly({
+    ggplotly(
+      ggplot(data = plot_data(),
+             aes(x = process, y = energyreq)) +
+        geom_bar(stat = 'identity')
+    )
   })
   
   output$capex <- renderText({

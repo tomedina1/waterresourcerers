@@ -99,3 +99,37 @@ desal <- data.frame('name' = 'saltwater desalination', 'req' = mean(3.5, 4.5))
 # combine each of the unit processes into a consolidated data frame
 energy_reqs <- rbind(gwpump, ro, coag, uv, o3, uf, mf, gac, gmf, recharge, desal)
 
+
+# plot creation function
+energy_plot <- function(a, x, RR, eta, osp){
+  
+  graph.df <- data.frame()
+  name.df <- data.frame()
+  
+  for (i in 1:length(a$name)) {
+    
+    if (a$name[i] == 'groundwater pumping'){
+      
+      next
+    
+    } else if (a$name[i] == 'reverse osmosis'){
+      
+      ro_req <- r_o(RR, eta, osp, x)
+      graph.df <- rbind(graph.df, ro_req)
+      name.df <- rbind(name.df, a$name[i])
+                     
+    } else {
+    
+      o_req <- a$req[i] * x / 24 * 365
+      graph.df <- rbind(graph.df, o_req)
+      name.df <- rbind(name.df, a$name[i])
+      
+    }}
+  
+  graph.df <- cbind(name.df, graph.df)
+  colnames(graph.df) <- c('process', 'energyreq')
+  return(graph.df)
+  
+  }
+
+test <- energy_plot(energy_reqs, 100, 0.5, 0.6, 1000)
