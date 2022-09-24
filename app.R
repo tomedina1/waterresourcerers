@@ -278,7 +278,8 @@ server <- function(input, output, session) {
     ggplotly(
       ggplot(data = plot_data(),
              aes(x = process, y = energyreq)) +
-        geom_bar(stat = 'identity')
+        geom_bar(stat = 'identity') +
+        theme_minimal()
     )
   })
   
