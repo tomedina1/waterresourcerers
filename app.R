@@ -265,6 +265,7 @@ server <- function(input, output, session) {
     paste0('The total energy requirement is: ', format(round(energy_req(
       energy_reqs, input$vol_rate, input$rr, input$eta, input$osp, input$fitting, 
       input$rough, input$length, input$efficiency), 2), scientific = TRUE), ' MW')
+    
   })
   
   
@@ -272,27 +273,36 @@ server <- function(input, output, session) {
     
     energy_plot(energy_reqs %>% filter(name %in% input$energyreqs), 
                 input$vol_rate, input$rr, input$eta, input$osp)
+    
   })
   
   output$eplot <- renderPlotly({
+    
     ggplotly(
+      
       ggplot(data = plot_data(),
-             aes(x = process, y = energyreq)) +
-        geom_bar(stat = 'identity') +
-        theme_minimal()
-    )
-  })
+             aes(reorder(x = process, -energyreq), y = energyreq)) +
+        geom_bar(stat = 'identity', position = position_dodge2(preserve = 'single'), width = 0.5,
+                 aes(text = paste("process:", process, "\nenergy requirement:", energyreq, 'MW', sep = " "))) +
+        labs(x = 'process',
+             y = 'energy requirement (MW)') +
+        theme_minimal(),
+      tooltip = 'text'
+      
+    )})
   
   output$capex <- renderText({
     total <- total %>% 
       filter(name %in% input$unit_proc)
     paste0('The total capital cost is: $', round(williams(total$a, total$b, total$c, input$flow_rate),2))
+    
   })
   
   output$om <- renderText({
     total <- total %>% 
       filter(name %in% input$unit_proc)
     paste0('The total O&M cost is: $', round(williams(total$oma, total$omb, total$omc, input$flow_rate), 2))
+    
   })
   
 }

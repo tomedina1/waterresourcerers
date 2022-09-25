@@ -61,17 +61,17 @@ energy_req <- function(a, x, RR, eta, osp, k_f, k, L, E){
   
   for (i in 1:length(a$name)){
     
-    if (a$name[i] == 'reverse osmosis'){
+    if (a$name[i] == 'reverse osmosis'){ # runs the semibatch reactor equation
       
       ro_req <- r_o(RR, eta, osp, x)
       e_req <- rbind(e_req, ro_req)
       
-    } else if (a$name[i] == 'groundwater pumping'){
+    } else if (a$name[i] == 'groundwater pumping'){ # runs the pump requirement equation
       
       pump_req <- e_gwpump(x, system_losses(k_f, x, k, L), E)
       e_req <- rbind(e_req, pump_req)
       
-    } else {
+    } else { # runs the scaling energy requirement
       
       o_req <- a$req[i] * x / 24 * 365
       e_req <- rbind(e_req, o_req)
@@ -110,16 +110,18 @@ energy_plot <- function(a, x, RR, eta, osp){
     
     if (a$name[i] == 'groundwater pumping'){
       
-      next
+      next # skip the groundwater pumping since it is extremely energy intensive
     
-    } else if (a$name[i] == 'reverse osmosis'){
+    } else if (a$name[i] == 'reverse osmosis'){ 
       
+      # run the semibatch equation 
       ro_req <- r_o(RR, eta, osp, x)
       graph.df <- rbind(graph.df, ro_req)
       name.df <- rbind(name.df, a$name[i])
                      
     } else {
-    
+      
+      # run the equations for the rest of the processes
       o_req <- a$req[i] * x / 24 * 365
       graph.df <- rbind(graph.df, o_req)
       name.df <- rbind(name.df, a$name[i])
