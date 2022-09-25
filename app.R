@@ -33,12 +33,17 @@ ui <- fluidPage(theme = my_theme,
                                     sidebarLayout(
                                       sidebarPanel(width = 3,
                                                    
-                                                   h3('Create a tertiary treatment process'),
+                                                   tags$style(type = "text/css",
+                                                              ".shiny-output-error { visibility: hidden; }",
+                                                              ".shiny-output-error: before { visibility: hidden; }"),
                                                    
-                                                   hr(style = "border-top: 1px solid #000000;"),
+                                                   h3('Create a tertiary treatment process'), # title
                                                    
-                                                   tags$div('Assumptions: 6" diameter municipal pipe'),
+                                                   hr(style = "border-top: 1px solid #000000;"), # solid line
                                                    
+                                                   tags$div('Assumptions: 6" diameter municipal pipe'), # assumptions
+                                                   
+                                                   # code for the checkbox
                                                    prettyCheckboxGroup('energyreqs',
                                                                        label = h4('Select unit processes'),
                                                                        choices = unique(energy_reqs$name),
@@ -47,8 +52,10 @@ ui <- fluidPage(theme = my_theme,
                                                                        icon = icon("fas fa-check"),
                                                                        animation = 'smooth'),
                                                    
+                                                   # action button 
                                                    actionButton("selectall1", label = "Select / Deselect all"),
                                                    
+                                                   # slider inputs for each parameter
                                                    sliderInput('vol_rate',
                                                                label = h4('Select a flow rate (m3/d)'),
                                                                min = 0,
@@ -114,6 +121,10 @@ ui <- fluidPage(theme = my_theme,
                            tabPanel('ECONOMICS',
                                     sidebarLayout(
                                       sidebarPanel(width = 3,
+                                                   
+                                                   tags$style(type = "text/css",
+                                                              ".shiny-output-error { visibility: hidden; }",
+                                                              ".shiny-output-error: before { visibility: hidden; }"),
                                                    
                                                    h3('Create a tertiary treatment process'),
                                                    
