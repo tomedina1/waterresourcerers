@@ -108,8 +108,8 @@ ui <- fluidPage(theme = my_theme,
                                                    sliderInput('osp',
                                                                label = h4('Osmotic Pressure (Pa)'),
                                                                min = 0, 
-                                                               max = 1e7,
-                                                               value = 0.6,
+                                                               max = 100000,
+                                                               value = 10000,
                                                                ticks = FALSE)),
                                       
                                       mainPanel(textOutput('gwptext'),
@@ -292,7 +292,7 @@ server <- function(input, output, session) {
     ggplotly(
       
       ggplot(data = plot_data(),
-             aes(reorder(x = process, -energyreq), y = energyreq)) +
+             aes(reorder(x = process, -energyreq), y = energyreq, fill = process)) +
         geom_bar(stat = 'identity', position = position_dodge2(preserve = 'single'), width = 0.5,
                  aes(text = paste("process:", process, "\nenergy requirement:", energyreq, 'MW', sep = " "))) +
         labs(x = 'process',
