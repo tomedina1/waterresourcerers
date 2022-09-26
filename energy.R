@@ -96,7 +96,7 @@ recharge <- data.frame('name' = 'groundwater recharge', 'req' = 0.48)
 desal <- data.frame('name' = 'saltwater desalination', 'req' = mean(3.5, 4.5))
 
 # combine each of the unit processes into a consolidated data frame
-energy_reqs <- rbind(gwpump, ro, coag, uv, o3, uf, mf, gac, recharge, desal)
+energy_reqs <- rbind(gwpump, ro, coag, uv, o3, uf, mf, gac,recharge, desal)
 
 
 # plot creation function

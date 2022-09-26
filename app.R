@@ -212,13 +212,13 @@ server <- function(input, output, session) {
       
     } else if (any(input$energyreqs == 'reverse osmosis')){
       
-        enable('rr')
-        enable('eta')
-        enable('osp')
-        disable('length') 
-        disable('fitting')  
-        disable('rough') 
-        disable('efficiency')
+      enable('rr')
+      enable('eta')
+      enable('osp')
+      disable('length') 
+      disable('fitting')  
+      disable('rough') 
+      disable('efficiency')
         
     } else if (any(input$energyreqs == 'groundwater pumping')){
       
