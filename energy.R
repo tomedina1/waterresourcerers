@@ -93,10 +93,9 @@ uf <- data.frame('name' = 'ultrafiltration', 'req' = mean(0.07, 0.1, 0.2))
 mf <- data.frame('name' = 'microfiltration', 'req' = 0.18 / 24)
 gac <- data.frame('name' = 'granular activated carbon', 'req' = 0.37)
 recharge <- data.frame('name' = 'groundwater recharge', 'req' = 0.48)
-desal <- data.frame('name' = 'saltwater desalination', 'req' = mean(3.5, 4.5))
 
 # combine each of the unit processes into a consolidated data frame
-energy_reqs <- rbind(gwpump, ro, coag, uv, o3, uf, mf, gac,recharge, desal)
+energy_reqs <- rbind(gwpump, ro, coag, uv, o3, uf, mf, gac, recharge)
 
 
 # plot creation function
