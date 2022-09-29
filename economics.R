@@ -22,9 +22,12 @@ williams <- function(a, b, c, x){
         
       } else {
         
-      y_euro <- a[i] * x ^ b[i]
-      y_dollar <- 1.1723 * y_euro # euro to dollar conversion from Sep 2020 
-      costs <- rbind(costs, y_dollar)
+        int <- integrate(function(y)
+          {a[i] * y ^ b[i]}, lower = 0, upper = x)
+        
+        y_euro <- int$value
+        y_dollar <- 1.1723 * y_euro # euro to dollar conversion from Sep 2020 
+        costs <- rbind(costs, y_dollar)
       
     }}
   
