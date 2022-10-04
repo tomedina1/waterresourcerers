@@ -58,13 +58,14 @@ omcost <- function(a, b, c, x, name){
         costs <- rbind(costs, final)
         
       } else {
+        
         next
-      }
-    }
-  }
+        
+      }}}
   
   costs_sum <- sum(costs)
   return(costs_sum)
+  
 }
 
 # From Hilbig et. al.
