@@ -55,7 +55,7 @@ r_o <- function(RR, eta, osp, x) {
 }
 
 # Energy Requirement Calculations
-energy_req <- function(a, x, RR, eta, osp, k_f, k, L, E){
+energy_req <- function(a, x , pump, RR, eta, osp, k_f, k, L, E){
   
   e_req <- data.frame()
   
@@ -68,7 +68,7 @@ energy_req <- function(a, x, RR, eta, osp, k_f, k, L, E){
       
     } else if (a$name[i] == 'groundwater pumping'){ # runs the pump requirement equation
       
-      pump_req <- e_gwpump(x, system_losses(k_f, x, k, L), E)
+      pump_req <- e_gwpump(pump, system_losses(k_f, pump, k, L), E)
       e_req <- rbind(e_req, pump_req)
       
     } else { # runs the scaling energy requirement

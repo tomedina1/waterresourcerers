@@ -8,7 +8,7 @@ library(tidyverse)
 # William's Power Logarithmic Rule
 # log(y) = a(log(x))^b + c
 
-williams <- function(a, b, c, x){
+capitalcost <- function(a, b, c, x){
   
   costs <- data.frame()
   
@@ -34,6 +34,37 @@ williams <- function(a, b, c, x){
   costs_sum <- sum(costs) # sums the dataframe to get the total cost of the system
   return(costs_sum)
   
+}
+
+
+omcost <- function(a, b, c, x, name){
+  
+  costs <- data.frame()
+  
+  for (i in 1:length(a)){
+    
+    if (!is.na(a[i])){
+      
+      y <- a[i] * log(x) ^ (b[i]) + c[i] # calculates log(y)
+      final_y <- 10 ^ y 
+      costs <- rbind(costs, final_y)
+      
+    } else {
+      
+      if (name[i] == 'uv disinfection'){
+        
+        avg <- mean(0.4, 5) / 3.785
+        final <- avg * x ^ 2 * 2 # integrate and convert to 2022 dollar
+        costs <- rbind(costs, final)
+        
+      } else {
+        next
+      }
+    }
+  }
+  
+  costs_sum <- sum(costs)
+  return(costs_sum)
 }
 
 # From Hilbig et. al.
@@ -110,7 +141,7 @@ uv <- data.frame('name' = 'uv disinfection',
 total <- rbind(coag, ro, uf, gac, cl, o3, uv)
 
 # tests the function using a flow rate of 10 MGD
-williams_test <- williams(total$a, total$b, total$c, 10)
-
+cctest <- capitalcost(total$a, total$b, total$c, 10)
+omtest <- omcost(total$oma, total$omb, total$omc, 10, total$name)
 
 

@@ -56,11 +56,19 @@ ui <- fluidPage(theme = my_theme,
                                                    actionButton("selectall1", label = "Select / Deselect all"),
                                                    
                                                    # slider inputs for each parameter
+                                                   
                                                    sliderInput('vol_rate',
                                                                label = h4('Select a flow rate (m3/d)'),
                                                                min = 0,
                                                                max = 400000,
                                                                value = 4000,
+                                                               ticks = FALSE),
+                                                   
+                                                   sliderInput('pump_rate',
+                                                               label = h4('Select a pumping rate (m3/s)'),
+                                                               min = 0,
+                                                               max = 2,
+                                                               value = 0.06,
                                                                ticks = FALSE),
                                                    
                                                    sliderInput('length',
@@ -274,7 +282,7 @@ server <- function(input, output, session) {
       filter(name %in% input$energyreqs)
     
     paste0('The total energy requirement is: ', format(round(energy_req(
-      energy_reqs, input$vol_rate, input$rr, input$eta, input$osp, input$fitting, 
+      energy_reqs, input$vol_rate, input$pump_rate, input$rr, input$eta, input$osp, input$fitting, 
       input$rough, input$length, input$efficiency), 2), scientific = TRUE), ' MW')
     
   })
@@ -305,14 +313,14 @@ server <- function(input, output, session) {
   output$capex <- renderText({
     total <- total %>% 
       filter(name %in% input$unit_proc)
-    paste0('The total capital cost is: $', round(williams(total$a, total$b, total$c, input$flow_rate),2))
+    paste0('The total capital cost is: $', round(capitalcost(total$a, total$b, total$c, input$flow_rate),2))
     
   })
   
   output$om <- renderText({
     total <- total %>% 
       filter(name %in% input$unit_proc)
-    paste0('The total O&M cost is: $', round(williams(total$oma, total$omb, total$omc, input$flow_rate), 2))
+    paste0('The total O&M cost is: $', round(omcost(total$oma, total$omb, total$omc, input$flow_rate, total$name), 2))
     
   })
   
