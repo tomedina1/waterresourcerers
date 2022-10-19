@@ -69,8 +69,6 @@ omcost <- function(a, b, c, x, name){
 }
 
 # From Hilbig et. al.
-
-
 # Create a df of necessary economic information (Guo et. al.)
 # CAPITAL COSTS
 
@@ -137,6 +135,11 @@ uv <- data.frame('name' = 'uv disinfection',
                  'omb' = NA,
                  'omc' = NA)
 
+
+# O&M costs for UV disinfection
+uv_om <- data.frame(x = c(1022.06, 41639.53, 794936.48),
+                    y = c(13.83, 133.69, 1774.91))
+plot(uv_om$x, uv_om$y)
 
 # combines the dataframes together
 total <- rbind(coag, ro, uf, gac, cl, o3, uv)

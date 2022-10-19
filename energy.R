@@ -99,7 +99,7 @@ energy_reqs <- rbind(gwpump, ro, coag, uv, o3, uf, mf, gac, recharge)
 
 
 # plot creation function
-energy_plot <- function(a, x, RR, eta, osp){
+energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E){
   
   graph.df <- data.frame()
   name.df <- data.frame()
@@ -108,7 +108,8 @@ energy_plot <- function(a, x, RR, eta, osp){
     
     if (a$name[i] == 'groundwater pumping'){
       
-      next # skip the groundwater pumping since it is extremely energy intensive
+      pump_req <- e_gwpump(pump, system_losses(k_f, pump, k, L), E)
+      graph.df <- rbind(graph.df, pump_req)
     
     } else if (a$name[i] == 'reverse osmosis'){ 
       
