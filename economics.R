@@ -5,6 +5,14 @@
 library(tidyverse)
 
 
+# O&M costs for UV disinfection
+uv_om <- data.frame(x = c(1022.06, 41639.53, 794936.48),
+                    y = c(13.83, 133.69, 1774.91))
+
+# Use log fit based off of how data looks
+uv_lm <- lm(y ~ x, data = uv_om)
+
+
 # William's Power Logarithmic Rule
 # log(y) = a(log(x))^b + c
 
@@ -53,9 +61,8 @@ omcost <- function(a, b, c, x, name){
       
       if (name[i] == 'uv disinfection'){
         
-        avg <- mean(0.4, 5) / 3.785
-        final <- avg * x ^ 2 * 2 # integrate and convert to 2022 dollar
-        costs <- rbind(costs, final)
+        y <- coefficients(uv_lm)[2] * x + coefficients(uv_lm)[1]
+        costs <- rbind(costs, y)
         
       } else {
         
@@ -134,12 +141,6 @@ uv <- data.frame('name' = 'uv disinfection',
                  'oma' = NA,
                  'omb' = NA,
                  'omc' = NA)
-
-
-# O&M costs for UV disinfection
-uv_om <- data.frame(x = c(1022.06, 41639.53, 794936.48),
-                    y = c(13.83, 133.69, 1774.91))
-plot(uv_om$x, uv_om$y)
 
 # combines the dataframes together
 total <- rbind(coag, ro, uf, gac, cl, o3, uv)

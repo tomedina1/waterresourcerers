@@ -133,4 +133,4 @@ energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E){
   
   }
 
-test <- energy_plot(energy_reqs, 100, 0.5, 0.6, 1000)
+# <- energy_plot(energy_reqs, 100, 0.5, 0.6, 1000)
