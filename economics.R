@@ -22,7 +22,7 @@ cost_function <- function(a, b, x){
 
 # Function 2: this function calculates the capital costs and the o&m costs depending on the inputs
 # Do not be intimidated by the for loops - I hope the code is commented clearly enough
-# This function requires vector inputs for a,b, c, and year. 
+# This function requires vector inputs for a, b, c, and year. 
 # a, b, and c are fitted constants unique to each unit process
 # year is needed to account for inflation 
 
@@ -39,6 +39,8 @@ calculate_costs <- function(a, b, c, x, year){
         
         # William's Power Logarithmic Rule
         # log(y) = a * log(x) ^ b + c
+        # y: $
+        # x: volumetric flow rate (m3/d)
         
         y <- a[i] * log(x) ^ (b[i]) + c[i] # calculates log(y)
         final_y <- 10 ^ y 
@@ -48,13 +50,13 @@ calculate_costs <- function(a, b, c, x, year){
         
         # based off of the equation y = a * x ^ b (Plumlee et. al. 2014, Hilbig et. al. 2020)
         
-        if (year[i]== 2014) { # for all of the equations from Plumlee et. al. 2014
+        if (year[i] == 2014) { # for all of the equations from Plumlee et. al. 2014
+          
           y_value <- cost_function(a[i], b[i], x) # calls the integral function
           y_conversion <- 1.25 * y_value # converts from 2014 dollars to current dollar (2022 October)
           costs <- rbind(costs, y_conversion) # binds the output for each iteration to the blank df
-        }
-        
-        else { # for all of the equations from Hilbig et. al. 2020
+          
+        } else { # for all of the equations from Hilbig et. al. 2020
           x <- x * 3785.4 # convert MGD to m3/d
           y_value <- cost_function(a[i], b[i], x)  # calls the integral function
           y_dollar <- 1.1723 * y_value # 2020 Euro to current dollar (2022 October)
