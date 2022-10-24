@@ -5,18 +5,10 @@
 library(tidyverse)
 
 
-# O&M costs for UV disinfection
-uv_om <- data.frame(x = c(1022.06, 41639.53, 794936.48),
-                    y = c(13.83, 133.69, 1774.91))
-
-# Use log fit based off of how data looks
-uv_lm <- lm(y ~ x, data = uv_om)
-
-
 # William's Power Logarithmic Rule
 # log(y) = a(log(x))^b + c
 
-capitalcost <- function(a, b, c, x){
+calculate_costs <- function(a, b, c, x, year, units){
   
   costs <- data.frame()
   
@@ -24,6 +16,7 @@ capitalcost <- function(a, b, c, x){
     # iterates through every input
       if (c[i] != 0){
         
+        x <- x * 3785.4
         y <- a[i] * log(x) ^ (b[i]) + c[i] # calculates log(y)
         final_y <- 10 ^ y 
         costs <- rbind(costs, final_y) # binds the output for each iteration to a df
@@ -33,9 +26,22 @@ capitalcost <- function(a, b, c, x){
         int <- integrate(function(y)
           {a[i] * y ^ b[i]}, lower = 0, upper = x)
         
-        y_euro <- int$value
-        y_dollar <- 1.1723 * y_euro # euro to dollar conversion from Sep 2020 
-        costs <- rbind(costs, y_dollar)
+        y_value <- int$value
+        
+        if (year[i] == 'euro_2014') {
+          y_dollar <- 1.1723 * y_value # 2020 Euro to current dollar (2022 October)
+          costs <- rbind(costs, y_dollar)
+        }
+        
+        else if (year[i] == 2014) {
+          y_conversion <- 1.25 * y_value # converts from 2014 dollars to current dollar (2022 October)
+          costs <- rbind(costs, y_conversion)
+        }
+        
+        else {
+          y_conversion <- 1.15 * y_value # converts from 2020 dollars to current dollar (2022 October)
+          costs <- rbind(costs, y_conversion)
+        }
       
     }}
   
@@ -86,7 +92,9 @@ coag <- data.frame('name' = 'coagulation & flocculation',
                    'c' = 4.605,
                    'oma' = 0.347,
                    'omb' = 1.448,
-                   'omc' = 2.633)
+                   'omc' = 2.633,
+                   'year' = 'euro_2014',
+                   'yearom' = 'euro_2014')
 
 # reverse osmosis
 ro <- data.frame('name' = 'reverse osmosis',
@@ -95,7 +103,9 @@ ro <- data.frame('name' = 'reverse osmosis',
                  'c' = 3.071,
                  'oma' = 0.534,
                  'omb' = 1.253,
-                 'omc' = 2.786)
+                 'omc' = 2.786,
+                 'year' = 'euro_2014',
+                 'yearom' = 'euro_2014')
 
 # ultrafiltration
 uf <- data.frame('name' = 'ultrafiltration',
@@ -104,7 +114,9 @@ uf <- data.frame('name' = 'ultrafiltration',
                  'c' = 3.082,
                  'oma' = 1.828,
                  'omb' = 0.598,
-                 'omc' = 1.876)
+                 'omc' = 1.876,
+                 'year' = 'euro_2014',
+                 'yearom' = 'euro_2014')
 
 # granular activated carbon
 gac <- data.frame('name'= 'granular activated carbon',
@@ -113,40 +125,68 @@ gac <- data.frame('name'= 'granular activated carbon',
                   'c' = 3.443,
                   'oma' = 1.669,
                   'omb' = 0.559,
-                  'omc' = 2.371)
+                  'omc' = 2.371,
+                  'year' = 'euro_2014',
+                  'yearom' = 'euro_2014')
 
-# chlorination
+# chlorination (Capital Cost - Hilbig et. al. (2020))
 cl <- data.frame('name' = 'chlorination',
                  'a' = 3.416,
                  'b' = -0.422,
                  'c' = 0,
                  'oma' = NA,
                  'omb' = NA,
-                 'omc' = NA)
+                 'omc' = NA,
+                 'year' = 2020,
+                 'yearom' = NA)
 
 # ozonation
 o3 <- data.frame('name' = 'ozonation',
                  'a' = 348.02,
                  'b' = -0.069,
                  'c' = 0,
-                 'oma' = NA,
-                 'omb' = NA,
-                 'omc' = NA)
+                 'oma' = 0.0068,
+                 'omb' = -0.051,
+                 'omc' = 0,
+                 'year' = 2020,
+                 'yearom' = 2014)
 
 # uv
-uv <- data.frame('name' = 'uv disinfection',
-                 'a' = 1209.2,
-                 'b' = -0.328,
+uv <- data.frame('name' = 'uv disinfection + ozone',
+                 'a' = 2.26,
+                 'b' = -0.54,
                  'c' = 0,
-                 'oma' = NA,
-                 'omb' = NA,
-                 'omc' = NA)
+                 'oma' = 0.016,
+                 'omb' = -0.02,
+                 'omc' = NA,
+                 'year' = 2014,
+                 'yearom' = 2014)
+
+uvh2o2 <- data.frame('name' = 'uv disinfection + h2o2',
+                 'a' = 0.474,
+                 'b' = -0.056,
+                 'c' = 0,
+                 'oma' = 0.038,
+                 'omb' = -0.052,
+                 'omc' = NA,
+                 'year' = 2014,
+                 'yearom' = 2014)
+
+mf <- data.frame('name' = 'microfiltration',
+                 'a' = 3.57,
+                 'b' = -0.22,
+                 'c' = 0,
+                 'oma' = 0.3,
+                 'omb' = -0.22,
+                 'omc' = NA,
+                 'year' = 2014,
+                 'yearom' = 2014)
 
 # combines the dataframes together
-total <- rbind(coag, ro, uf, gac, cl, o3, uv)
+total <- rbind(coag, ro, uf, gac, cl, o3, uv, uvh2o2, mf)
 
 # tests the function using a flow rate of 10 MGD
-cctest <- capitalcost(total$a, total$b, total$c, 10)
+cctest <- calculate_costs(total$a, total$b, total$c, 10, )
 omtest <- omcost(total$oma, total$omb, total$omc, 10, total$name)
 
 
