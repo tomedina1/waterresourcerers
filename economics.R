@@ -73,7 +73,7 @@ calculate_costs <- function(a, b, c, x, year){
 # SECTION 2: DATA INPUT AND DATAFRAME GENERATION
 # ------------------------------------------------------------------------------------------------------------------------
 
-# coagulation and flocculation
+# Coagulation and Flocculation (Guo et al. 2014)
 coag <- data.frame('name' = 'coagulation & flocculation',
                    'a' = 0.569,
                    'b' = 1.135,
@@ -84,7 +84,7 @@ coag <- data.frame('name' = 'coagulation & flocculation',
                    'year' = NA,
                    'yearom' = NA)
 
-# reverse osmosis
+# Reverse Osmosis (Guo et. al. 2014)
 ro <- data.frame('name' = 'reverse osmosis',
                  'a' = 0.222,
                  'b' = 1.516,
@@ -95,7 +95,7 @@ ro <- data.frame('name' = 'reverse osmosis',
                  'year' = NA,
                  'yearom' = NA)
 
-# ultrafiltration
+# Membrane Ultrafiltration (Guo et. al. 2014)
 uf <- data.frame('name' = 'ultrafiltration',
                  'a' = 0.966,
                  'b' = 0.929,
@@ -106,7 +106,7 @@ uf <- data.frame('name' = 'ultrafiltration',
                  'year' = NA,
                  'yearom' = NA)
 
-# granular activated carbon
+# Granular Activated Carbon (Guo et. al. 2014)
 gac <- data.frame('name'= 'granular activated carbon',
                   'a' = 0.722,
                   'b' = 1.023,
@@ -117,7 +117,9 @@ gac <- data.frame('name'= 'granular activated carbon',
                   'year' = NA,
                   'yearom' = NA)
 
-# chlorination (Capital Cost - Hilbig et. al. (2020))
+# Chlorination 
+# Capital Cost (Hilbig et. al. 2020)
+# O&M -- NO DATA YET
 cl <- data.frame('name' = 'chlorination',
                  'a' = 3.416,
                  'b' = -0.422,
@@ -129,6 +131,8 @@ cl <- data.frame('name' = 'chlorination',
                  'yearom' = 2014)
 
 # ozonation
+# Capital Cost (Hilbig et. al. 2020)
+# O&M (Plumlee et. al. 2014)
 o3 <- data.frame('name' = 'ozonation',
                  'a' = 348.02,
                  'b' = -0.069,
@@ -139,7 +143,9 @@ o3 <- data.frame('name' = 'ozonation',
                  'year' = 2020,
                  'yearom' = 2014)
 
-# uv
+# UV Disinfection + Ozonation
+# Capital Cost (Plumlee et. al. 2014)
+# O&M (Plumlee et. al. 2014)
 uv <- data.frame('name' = 'uv disinfection + ozone',
                  'a' = 2.26,
                  'b' = -0.54,
@@ -150,6 +156,9 @@ uv <- data.frame('name' = 'uv disinfection + ozone',
                  'year' = 2014,
                  'yearom' = 2014)
 
+# UV Disinfection + Hydrogen Peroxide
+# Capital Cost (Plumlee et. al. 2014)
+# O&M (Plumlee et. al. 2014)
 uvh2o2 <- data.frame('name' = 'uv disinfection + h2o2',
                  'a' = 0.474,
                  'b' = -0.056,
@@ -160,6 +169,9 @@ uvh2o2 <- data.frame('name' = 'uv disinfection + h2o2',
                  'year' = 2014,
                  'yearom' = 2014)
 
+# Membrane Microfiltration
+# Capital Cost (Plumlee et. al. 2014)
+# O&M (Plumlee et. al. 2014)
 mf <- data.frame('name' = 'microfiltration',
                  'a' = 3.57,
                  'b' = -0.22,

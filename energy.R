@@ -31,7 +31,7 @@ friction_factor <- function(q, k){
 
 # Calculating system losses
 system_losses <- function(k_f, q, k ,L){
-  
+
   # calculates the system losses given L (length of a pipe in m)
   # also needs k_f (fittings losses), volumetric flow rate (m3/s), and pipe roughness
   f <- friction_factor(q, k) # calculates the friction factor
@@ -56,6 +56,8 @@ r_o <- function(RR, eta, osp, x) {
 
 # Energy Requirement Calculations
 energy_req <- function(a, x , pump, RR, eta, osp, k_f, k, L, E){
+  
+  x <- x * 3785.4
   
   e_req <- data.frame()
   
@@ -100,6 +102,8 @@ energy_reqs <- rbind(gwpump, ro, coag, uv, o3, uf, mf, gac, recharge)
 
 # plot creation function
 energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E){
+  
+  x <- x * 3785.4
   
   graph.df <- data.frame()
   name.df <- data.frame()

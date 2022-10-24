@@ -58,10 +58,10 @@ ui <- fluidPage(theme = my_theme,
                                                    # slider inputs for each parameter
                                                    
                                                    sliderInput('vol_rate',
-                                                               label = h4('Select a flow rate (m3/d)'),
+                                                               label = h4('Select a flow rate (MGD)'),
                                                                min = 0,
-                                                               max = 400000,
-                                                               value = 4000,
+                                                               max = 400,
+                                                               value = 10,
                                                                ticks = FALSE),
                                                    
                                                    sliderInput('pump_rate',
@@ -149,10 +149,10 @@ ui <- fluidPage(theme = my_theme,
                                                    actionButton("selectall", label = "Select / Deselect all"),
                                                    
                                                    sliderInput('flow_rate',
-                                                               label = h4('Select a flow rate (m3/d)'),
+                                                               label = h4('Select a flow rate (MGD)'),
                                                                min = 0,
-                                                               max = 400000,
-                                                               value = 4000,
+                                                               max = 400,
+                                                               value = 10,
                                                                ticks = FALSE)),
                                       
                                       mainPanel(textOutput('capex'),
@@ -313,14 +313,14 @@ server <- function(input, output, session) {
   output$capex <- renderText({
     total <- total %>% 
       filter(name %in% input$unit_proc)
-    paste0('The total capital cost is: $', round(capitalcost(total$a, total$b, total$c, input$flow_rate),2))
+    paste0('The total capital cost is: $', round(calculate_costs(total$a, total$b, total$c, input$flow_rate, total$year),2))
     
   })
   
   output$om <- renderText({
     total <- total %>% 
       filter(name %in% input$unit_proc)
-    paste0('The total O&M cost is: $', round(omcost(total$oma, total$omb, total$omc, input$flow_rate, total$name), 2))
+    paste0('The total O&M cost is: $', round(calculate_costs(total$oma, total$omb, total$omc, input$flow_rate, total$yearom), 2))
     
   })
   
