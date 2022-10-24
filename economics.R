@@ -7,20 +7,7 @@ library(tidyverse)
 # SECTION 1: ECONOMIC EQUATIONS AND FUNCTIONS
 # ------------------------------------------------------------------------------------------------------------------------
 
-# Function 1: integrate(y = a*x^b) from 0 to x
-# This is a general function format where a and b are constants and x is the flow rate
-# y: $/flow rate (depending on the paper could be in units of m3/d or MGD)
-# The function is integrated to get the total cost
-
-cost_function <- function(a, b, x){
-  
-  int <- integrate(function(y)
-    {a * y ^ b}, lower = 0, upper = x)
-  return(int$value)
-  
-}
-
-# Function 2: this function calculates the capital costs and the o&m costs depending on the inputs
+# Function 1: this function calculates the capital costs and the o&m costs depending on the inputs
 # Do not be intimidated by the for loops - I hope the code is commented clearly enough
 # This function requires vector inputs for a, b, c, and year. 
 # a, b, and c are fitted constants unique to each unit process
@@ -49,16 +36,18 @@ calculate_costs <- function(a, b, c, x, year){
       } else { # the rest of the equations do not have a value for c
         
         # based off of the equation y = a * x ^ b (Plumlee et. al. 2014, Hilbig et. al. 2020)
+        # y: $M/MGD
+        # multiply y by 1e6 and by x to get costs
         
         if (year[i] == 2014) { # for all of the equations from Plumlee et. al. 2014
           
-          y_value <- cost_function(a[i], b[i], x) # calls the integral function
+          y_value <- a[i] * x ^ (b[i]) * 1e6 * x 
           y_conversion <- 1.25 * y_value # converts from 2014 dollars to current dollar (2022 October)
           costs <- rbind(costs, y_conversion) # binds the output for each iteration to the blank df
           
         } else { # for all of the equations from Hilbig et. al. 2020
           x <- x * 3785.4 # convert MGD to m3/d
-          y_value <- cost_function(a[i], b[i], x)  # calls the integral function
+          y_value <- a[i] * x ^ (b[i]) * 1e6 * x # calls the integral function
           y_dollar <- 1.1723 * y_value # 2020 Euro to current dollar (2022 October)
           costs <- rbind(costs, y_dollar) # binds the output for each iteration to the blank df
         }
@@ -132,17 +121,15 @@ cl <- data.frame('name' = 'chlorination',
                  'year' = 2020,
                  'yearom' = 2014)
 
-# ozonation
-# Capital Cost (Hilbig et. al. 2020)
-# O&M (Plumlee et. al. 2014)
+# ozonation (Plumlee et. al. 2014)
 o3 <- data.frame('name' = 'ozonation',
-                 'a' = 348.02,
-                 'b' = -0.069,
+                 'a' = 2.26,
+                 'b' = -0.54,
                  'c' = 0,
                  'oma' = 0.0068,
                  'omb' = -0.051,
                  'omc' = 0,
-                 'year' = 2020,
+                 'year' = 2014,
                  'yearom' = 2014)
 
 # UV Disinfection + Ozonation
