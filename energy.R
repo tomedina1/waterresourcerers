@@ -57,7 +57,7 @@ r_o <- function(RR, eta, osp, x) {
 # Energy Requirement Calculations
 energy_req <- function(a, x , pump, RR, eta, osp, k_f, k, L, E){
   
-  x <- x * 3785.4
+  x <- x * 3785.4 # convert from MGD to m3/d
   
   e_req <- data.frame()
   
@@ -103,7 +103,7 @@ energy_reqs <- rbind(gwpump, ro, coag, uv, o3, uf, mf, gac, recharge)
 # plot creation function
 energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E){
   
-  x <- x * 3785.4
+  x <- x * 3785.4 # MGD to m3/d
   
   graph.df <- data.frame()
   name.df <- data.frame()
@@ -137,4 +137,3 @@ energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E){
   
   }
 
-# <- energy_plot(energy_reqs, 100, 0.5, 0.6, 1000)
