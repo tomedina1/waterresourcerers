@@ -2,12 +2,11 @@
 # ECONOMICS 
 # Taylor Medina
 
-library(tidyverse)
 
 # SECTION 1: ECONOMIC EQUATIONS AND FUNCTIONS
 # ------------------------------------------------------------------------------------------------------------------------
 
-# Function 1: this function calculates the capital costs and the o&m costs depending on the inputs
+# this function calculates the capital costs and the o&m costs depending on the inputs
 # Do not be intimidated by the for loops - I hope the code is commented clearly enough
 # This function requires vector inputs for a, b, c, and year. 
 # a, b, and c are fitted constants unique to each unit process
@@ -29,8 +28,9 @@ calculate_costs <- function(a, b, c, x, year){
         # y: $
         # x: volumetric flow rate (m3/d)
         
-        y <- a[i] * log(x) ^ (b[i]) + c[i] # calculates log(y)
-        final_y <- 10 ^ y 
+        y <- a[i] * log10(x) ^ (b[i]) + c[i] # calculates log(y)
+        unlog_y <- 10 ^ y 
+        final_y <- 1.25 * unlog_y # 2014 dollar to 2022 dollar (October)
         costs <- rbind(costs, final_y) # binds the output for each iteration to the blank df
         
       } else { # the rest of the equations do not have a value for c
@@ -108,19 +108,6 @@ gac <- data.frame('name'= 'granular activated carbon',
                   'year' = NA,
                   'yearom' = NA)
 
-# Chlorination 
-# Capital Cost (Hilbig et. al. 2020)
-# O&M -- NO DATA YET
-cl <- data.frame('name' = 'chlorination',
-                 'a' = 3.416,
-                 'b' = -0.422,
-                 'c' = 0,
-                 'oma' = 0,
-                 'omb' = 0,
-                 'omc' = 0,
-                 'year' = 2020,
-                 'yearom' = 2014)
-
 # ozonation (Plumlee et. al. 2014)
 o3 <- data.frame('name' = 'ozonation',
                  'a' = 2.26,
@@ -173,7 +160,7 @@ mf <- data.frame('name' = 'microfiltration',
 
 
 # combines the dataframes together
-total <- rbind(coag, ro, uf, gac, cl, o3, uv, uvh2o2, mf)
+total <- rbind(coag, ro, uf, gac, o3, uv, uvh2o2, mf)
 
 # tests the function using a flow rate of 10 MGD
 cctest <- calculate_costs(total$a, total$b, total$c, 10, total$year)
