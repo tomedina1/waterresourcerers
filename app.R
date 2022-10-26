@@ -296,6 +296,7 @@ ui <- fluidPage(
         # MAIN PANEL SECTION
         # ----------------------------------------------------------------------
         mainPanel()
+        
         ))
     
   ))
@@ -339,8 +340,6 @@ server <- function(input, output, session) {
         }}
       
     })
-            
-           
   
   
   observeEvent(
@@ -425,69 +424,76 @@ server <- function(input, output, session) {
       })
   
   output$gwptext <- renderText({
-    
     energy_reqs <- energy_reqs %>% 
       filter(name %in% input$energyreqs)
     
-    paste0('The total energy requirement is: ', format(round(energy_req(
-      energy_reqs, input$vol_rate, input$pump_rate, input$rr, input$eta, input$osp, input$fitting, 
-      input$rough, input$length, input$efficiency), 2), scientific = TRUE), ' MW')})
-  
+    paste0('The total energy requirement is: ', 
+           format(round(
+             energy_req(energy_reqs, input$vol_rate, input$pump_rate, input$rr, 
+                        input$eta, input$osp, input$fitting, input$rough, 
+                        input$length, input$efficiency), 2), 
+             scientific = TRUE), ' MW')})
   
   plot_data <- reactive({
-    
     energy_plot(energy_reqs %>% filter(name %in% input$energyreqs), 
                 input$vol_rate, input$rr, input$eta, input$osp)})
   
-  
   output$eplot <- renderPlotly({
-    
     ggplotly(
       ggplot(data = plot_data(),
-             aes(reorder(x = process, -energyreq), y = energyreq, fill = process)) +
+             aes(reorder(x = process, -energyreq), 
+               y = energyreq, fill = process)) +
+        
         geom_bar(stat = 'identity', position = position_dodge2(preserve = 'single'), 
-                 width = 0.5, aes(text = paste("process:", process, "\nenergy requirement:", 
-                                               energyreq, 'MW', sep = " "))) +
+                 width = 0.5, 
+                 aes(text = paste(
+                   "process:", process, "\nenergy requirement:", 
+                   energyreq, 'MW', sep = " "))) +
+        
         labs(x = 'process',
              y = 'energy requirement (MW)') +
         theme_minimal(),
+      
       tooltip = 'text')})
   
   
   output$capex <- renderText({
     total <- total %>% 
       filter(name %in% input$unit_proc)
+    
     paste0('The total capital cost is: $', 
-           round(calculate_costs(total$a, total$b, total$c, input$flow_rate, total$year),2))})
+           round(
+             calculate_costs(total$a, total$b, total$c, input$flow_rate, total$year),2))})
 
   output$om <- renderText({  
     total <- total %>% 
       filter(name %in% input$unit_proc)
+    
     paste0('The total O&M cost is: $', 
-           round(calculate_costs(total$oma, total$omb, total$omc, input$flow_rate, total$yearom), 2))})
+           round(
+             calculate_costs(total$oma, total$omb, total$omc, input$flow_rate, total$yearom), 2))})
   
   econ_plotdata <- reactive({
-    
     total <- total %>% 
       filter(name %in% input$unit_proc)
-    economics_plot(total$a, total$b, total$c, input$flow_rate, total$oma, total$omb, total$omc, total$name)
     
-  })
+    economics_plot(total$a, total$b, total$c, input$flow_rate, total$oma, total$omb, total$omc, total$name)})
   
   output$capexplot <- renderPlotly({
-    
     ggplotly(
       ggplot(data = econ_plotdata(),
-             aes(reorder(x = process, -capex), y = capex, fill = process)) +
+             aes(reorder(x = process, -capex), 
+                 y = capex, fill = process)) +
+        
         geom_bar(stat = 'identity', position = position_dodge2(preserve = 'single'),
-                 width = 0.5, aes(text = paste('process:', process, "\nCAPEX ($):",
-                                               round(capex, 2), sep = " "))) +
+                 width = 0.5, 
+                 aes(text = paste('process:', process, "\nCAPEX ($):", round(capex, 2), sep = " "))) +
+        
         labs(x = 'Process',
              y = 'Capital Cost ($)') +
         theme_minimal(),
-      tooltip = 'text'
-    )
-  })
+      
+      tooltip = 'text')})
   
   output$omexplot <- renderPlotly({
     
