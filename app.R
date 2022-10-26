@@ -309,7 +309,6 @@ server <- function(input, output, session) {
   # ENERGY REQS TAB
   # ----------------------------------------------------------------------------
   # This is the code that allows the select all button to interact with the pretty checkbox group
-  # Honestly a miracle that this runs -- I still barely understand it
   observeEvent(
     input$selectall1, {
       
@@ -465,6 +464,8 @@ server <- function(input, output, session) {
             inputId = "unit_proc",
             choices = unique(total$name),
             selected = c(unique(total$name)),
+            
+            # Aesthetics
             prettyOptions = list(
               animation = 'smooth',
               plain = TRUE,
@@ -479,6 +480,8 @@ server <- function(input, output, session) {
             inputId = "unit_proc",
             choices = unique(total$name),
             selected = " ",
+            
+            # Aesthetics
             prettyOptions = list(
               animation = 'smooth',
               plain = TRUE,
@@ -488,7 +491,8 @@ server <- function(input, output, session) {
         }}
       
     })
-                   
+   
+                  
   output$capex <- renderText({
     total <- total %>% 
       filter(name %in% input$unit_proc)
