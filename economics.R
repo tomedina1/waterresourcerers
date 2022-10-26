@@ -2,10 +2,12 @@
 # ECONOMICS 
 # Taylor Medina
 
+library(tidyverse)
 
 # SECTION 1: ECONOMIC EQUATIONS AND FUNCTIONS
 # ------------------------------------------------------------------------------------------------------------------------
 
+# FUNCTION 1: CAPEX AND O&M COST CALCULATIONS
 # this function calculates the capital costs and the o&m costs depending on the inputs
 # Do not be intimidated by the for loops - I hope the code is commented clearly enough
 # This function requires vector inputs for a, b, c, and year. 
@@ -32,6 +34,8 @@ calculate_costs <- function(a, b, c, x, year){
         unlog_y <- 10 ^ y 
         final_y <- 1.25 * unlog_y # 2014 dollar to 2022 dollar (October)
         costs <- rbind(costs, final_y) # binds the output for each iteration to the blank df
+        
+        x <- x / 3785.4 # convert back to MGD
         
       } else { # the rest of the equations do not have a value for c
         
@@ -60,6 +64,77 @@ calculate_costs <- function(a, b, c, x, year){
 }
 
 
+# FUNCTION 2: PLOT FOR CAPEX AND O&M
+# this function calculates the CAPEX and O&M and puts them in a df to be plotted
+# The equations are the same as in FUNCTION 1
+
+economics_plot <- function(a, b, c, x, oma, omb, omc, name){
+  
+  process.df <- data.frame() # generate a blank df for the names of the processes
+  capex.df <- data.frame() # generate a blank df for the capex values
+  om.df <- data.frame() # generate a blank df for the o&m values
+  
+  for (i in 1:length(name)) {
+    
+    if (c[i] != 0) {
+      
+      x <- x * 3785.4 # converts from MGD to m3/d
+      
+      # William's Power Log Rule
+      # CAPEX Calculation
+      y <- a[i] * log10(x) ^ (b[i]) + c[i] # calculates log(y)
+      unlog_y <- 10 ^ y 
+      final_y <- 1.25 * unlog_y # 2014 dollar to 2022 dollar (October)
+      
+      # O&M Calculation
+      omy <- oma[i] * log10(x) ^ (omb[i]) + omc[i] # calculates log(y)
+      unlog_omy <- 10 ^ omy 
+      final_omy <- 1.25 * unlog_omy # 2014 dollar to 2022 dollar (October)
+      
+      process.df <- rbind(process.df, name[i]) # binds process name to df
+      capex.df <- rbind(capex.df, final_y) # binds capex cost to df
+      om.df <- rbind(om.df, final_omy) # binds o&m cost to df
+      
+      x <- x / 3785.4 # convert back to MGD
+      
+    } else {
+      
+      # Using equation from Plumlee et. al. (2014)
+      # CAPEX calculation
+      y_value <- a[i] * x ^ (b[i]) * 1e6 * x 
+      y_conversion <- 1.25 * y_value # converts from 2014 dollars to current dollar (2022 October)
+      
+      # O&M calculation
+      omy_value <- oma[i] * x ^ (omb[i]) * 1e6 * x
+      omy_conversion <- 1.25 * omy_value # converts from 2014 dollars to current dollar (2022 October)
+      
+      process.df <- rbind(process.df, name[i]) # binds process name to df
+      capex.df <- rbind(capex.df, y_conversion) # binds capex cost to df
+      om.df <- rbind(om.df, omy_conversion) # binds o&m cost to df 
+      
+    }}
+  
+  # create column names for the dataframe
+  colnames(process.df) <- 'process'
+  colnames(capex.df) <- 'capex'
+  colnames(om.df) <- 'omex'
+  
+  # add uncertainty values to CAPEX and O&M
+  # the uncertainty is (Keller et. al. 2021, Plumlee et. al. 2021) -30/+50%
+  capex.df <- capex.df %>% 
+    mutate(lower = 0.3 * capex,
+           upper = 0.5 * capex)
+  om.df <- om.df %>% 
+    mutate(lowerom = 0.3 * omex,
+           upperom = 0.5 * omex)
+  
+  # combine data frames together to make the plot data frame
+  graph.df <- cbind(process.df, capex.df) %>% 
+    cbind(om.df)
+  
+  return(graph.df)
+  
+}
 
 # SECTION 2: DATA INPUT AND DATAFRAME GENERATION
 # ------------------------------------------------------------------------------------------------------------------------
@@ -165,5 +240,6 @@ total <- rbind(coag, ro, uf, gac, o3, uv, uvh2o2, mf)
 # tests the function using a flow rate of 10 MGD
 cctest <- calculate_costs(total$a, total$b, total$c, 10, total$year)
 omtest <- calculate_costs(total$oma, total$omb, total$omc, 10, total$yearom)
+graphtest <- economics_plot(total$a, total$b, total$c, 10, total$oma, total$omb, total$omc, total$name)
 
 
