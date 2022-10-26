@@ -160,7 +160,9 @@ ui <- fluidPage(theme = my_theme,
                                                                ticks = FALSE)),
                                       
                                       mainPanel(textOutput('capex'),
-                                                textOutput('om'))
+                                                textOutput('om'),
+                                                plotlyOutput('capexplot'),
+                                                plotlyOutput('omexplot'))
                                       
                                     )),
                            
@@ -299,7 +301,6 @@ server <- function(input, output, session) {
   output$eplot <- renderPlotly({
     
     ggplotly(
-      
       ggplot(data = plot_data(),
              aes(reorder(x = process, -energyreq), y = energyreq, fill = process)) +
         geom_bar(stat = 'identity', position = position_dodge2(preserve = 'single'), 
@@ -316,12 +317,51 @@ server <- function(input, output, session) {
       filter(name %in% input$unit_proc)
     paste0('The total capital cost is: $', 
            round(calculate_costs(total$a, total$b, total$c, input$flow_rate, total$year),2))})
-  
-  output$om <- renderText({
+
+  output$om <- renderText({  
     total <- total %>% 
       filter(name %in% input$unit_proc)
     paste0('The total O&M cost is: $', 
            round(calculate_costs(total$oma, total$omb, total$omc, input$flow_rate, total$yearom), 2))})
+  
+  econ_plotdata <- reactive({
+    
+    total <- total %>% 
+      filter(name %in% input$unit_proc)
+    economics_plot(total$a, total$b, total$c, input$flow_rate, total$oma, total$omb, total$omc, total$name)
+    
+  })
+  
+  output$capexplot <- renderPlotly({
+    
+    ggplotly(
+      ggplot(data = econ_plotdata(),
+             aes(reorder(x = process, -capex), y = capex, fill = process)) +
+        geom_bar(stat = 'identity', position = position_dodge2(preserve = 'single'),
+                 width = 0.5, aes(text = paste('process:', process, "\nCAPEX ($):",
+                                               round(capex, 2), sep = " "))) +
+        labs(x = 'Process',
+             y = 'Capital Cost ($)') +
+        theme_minimal(),
+      tooltip = 'text'
+    )
+  })
+  
+  output$omexplot <- renderPlotly({
+    
+    ggplotly(
+      ggplot(data = econ_plotdata(),
+             aes(reorder(x = process, -omex), y = omex, fill = process)) +
+        geom_bar(stat = 'identity', position = position_dodge2(preserve = 'single'),
+                 width = 0.5, aes(text = paste('process:', process, "\nO&M ($):",
+                                               round(omex, 2), sep = " "))) +
+        labs(x = 'Process',
+             y = 'O&M Costs ($)') +
+        theme_minimal(),
+      tooltip = 'text'
+    )
+  })
+  
   
 }
 

@@ -114,6 +114,7 @@ energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E){
       
       pump_req <- e_gwpump(pump, system_losses(k_f, pump, k, L), E)
       graph.df <- rbind(graph.df, pump_req)
+      name.df <- rbind(name.df, a$name[i])
     
     } else if (a$name[i] == 'reverse osmosis'){ 
       

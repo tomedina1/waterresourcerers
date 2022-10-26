@@ -237,7 +237,7 @@ mf <- data.frame('name' = 'microfiltration',
 # combines the dataframes together
 total <- rbind(coag, ro, uf, gac, o3, uv, uvh2o2, mf)
 
-# tests the function using a flow rate of 10 MGD
+# tests the functions using a flow rate of 10 MGD
 cctest <- calculate_costs(total$a, total$b, total$c, 10, total$year)
 omtest <- calculate_costs(total$oma, total$omb, total$omc, 10, total$yearom)
 graphtest <- economics_plot(total$a, total$b, total$c, 10, total$oma, total$omb, total$omc, total$name)
