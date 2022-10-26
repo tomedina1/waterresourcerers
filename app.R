@@ -1,8 +1,12 @@
 
 # --- TO BE NAMED ---
 # WATER RESOURCERERS 
+# Authors: Taylor Medina,
 
+# I WILL ADD SHORT DESCRIPTION HERE
 
+# SHINY APP SETUP
+# ------------------------------------------------------------------------------------------------------------------------
 # PACKAGES
 library(shiny)
 library(tidyverse)
@@ -16,118 +20,159 @@ source('economics.R')
 source('energy.R')
 
 # Initialize the theme
+# Call the .css theme here when the script is written
 my_theme <- bs_theme(bootswatch = "lux", "font-size-base" = "1rem")
 
 
-# User Interface
-ui <- fluidPage(theme = my_theme,
+# SHINY APP CODE
+# User Interface (UI)
+# ------------------------------------------------------------------------------------------------------------------------
+
+ui <- fluidPage(
+  
+  # UI set up section
+  theme = my_theme, # calls the theme here
+  useShinyjs(), # some of the shiny app components require this function to be called
+  
+  # Definitions for Shiny App Layout
+  # navbarPage(): displays the tabs and app title at the top of the app
+  # sidebarLayout(): the layout of the tab (has a sidebar and a main panel) -- there are many different options
+  # sidebarPanel(): everything in the side bar must be inside this function
+  # mainPanel(): everything in the main panel must be inside this function
+  
+  navbarPage(
+    
+    # put the shiny app title here
+    'TITLE HERE',
+    
+    
+    # TAB 1: BACKGROUND (this section will be filled in when the rest of the app is finished)
+    tabPanel(
+      # Tab title here
+      'BACKGROUND',
+      # Tab Layout
+      sidebarLayout( 
+        
+        # Side bar panel code here
+        sidebarPanel(
+          width = 3 # sets the width of the sidebar panel (1-12)
+          ), 
+        
+        # Main panel code here
+        mainPanel()
+        
+             )),
+    
+    
+    # TAB 2: ENERGY REQUIREMENTS
+    tabPanel(
+      # tab title here
+      'ENERGY REQUIREMENTS',
+      # tab layout here
+      sidebarLayout(
+        
+        # side bar panel code here
+        sidebarPanel(
+          width = 3, # sidebar panel width
+          
+          # hides warning and error messages on the shiny app
+          tags$style(
+            type = "text/css",
+            ".shiny-output-error { visibility: hidden; }",
+            ".shiny-output-error: before { visibility: hidden; }"),
+          
+          # Title of side bar panel (h3 is the heading size)
+          h3('Create a tertiary treatment process'),
+          hr(style = "border-top: 1px solid #000000;"), # solid line
+          
+          # Probably will move this to a hover option (once I figure that out)
+          tags$div('Assumptions: 6" diameter municipal pipe'), # assumptions
+                            
+                            # code for the checkbox
+                            prettyCheckboxGroup('energyreqs',
+                                                label = h4('Select unit processes'),
+                                                choices = unique(energy_reqs$name),
+                                                plain = TRUE,
+                                                fill = TRUE,
+                                                icon = icon("fas fa-check"),
+                                                animation = 'smooth'),
+                            
+                            # action button 
+                            actionButton("selectall1", label = "Select / Deselect all"),
+                            
+                            # slider inputs for each parameter
+                            
+                            sliderInput('vol_rate',
+                                        label = h4('Select a flow rate (MGD)'),
+                                        min = 0,
+                                        max = 400,
+                                        value = 10,
+                                        ticks = FALSE),
+                            
+                            sliderInput('pump_rate',
+                                        label = h4('Select a pumping rate (m3/s)'),
+                                        min = 0,
+                                        max = 2,
+                                        value = 0.06,
+                                        ticks = FALSE),
+                            
+                            sliderInput('length',
+                                        label = h4('Select a pipe depth (m)'),
+                                        min = 0,
+                                        max = 100,
+                                        value = 20,
+                                        ticks = FALSE),
+                            
+                            sliderInput('rough',
+                                        label = h4('Pipe roughness factor'),
+                                        min = 0,
+                                        max = 1,
+                                        value = 0.2,
+                                        ticks = FALSE),
+                            
+                            sliderInput('fitting',
+                                        label  = h4('Losses from pipe fittings'),
+                                        min = 0,
+                                        max = 1,
+                                        value = 0.1,
+                                        ticks = FALSE),
+                            
+                            sliderInput('efficiency',
+                                        label = h4('Pump Efficiency'),
+                                        min = 0, 
+                                        max = 1,
+                                        value = 0.6,
+                                        ticks = FALSE),
+                            
+                            sliderInput('rr',
+                                        label = h4('Recovery Ratio'),
+                                        min = 0, 
+                                        max = 1,
+                                        value = 0.6,
+                                        ticks = FALSE),
+                            
+                            sliderInput('eta',
+                                        label = h4('System efficiency'),
+                                        min = 0, 
+                                        max = 1,
+                                        value = 0.6,
+                                        ticks = FALSE),
+                            
+                            sliderInput('osp',
+                                        label = h4('Osmotic Pressure (Pa)'),
+                                        min = 0, 
+                                        max = 100000,
+                                        value = 10000,
+                                        ticks = FALSE)),
+               
+               mainPanel(textOutput('gwptext'),
+                         plotlyOutput('eplot'))
+               
+             )),
+
+            
                 
-                useShinyjs(),
-                
-                navbarPage('TITLE HERE',
-                           
-                           tabPanel('BACKGROUND',
-                                    sidebarLayout(
-                                      sidebarPanel(width = 3),
-                                      mainPanel()
-                                    )),
-                           
-                           
-                           tabPanel('ENERGY REQUIREMENTS',
-                                    sidebarLayout(
-                                      sidebarPanel(width = 3,
-                                                   
-                                                   tags$style(type = "text/css",
-                                                              ".shiny-output-error { visibility: hidden; }",
-                                                              ".shiny-output-error: before { visibility: hidden; }"),
-                                                   
-                                                   h3('Create a tertiary treatment process'), # title
-                                                   
-                                                   hr(style = "border-top: 1px solid #000000;"), # solid line
-                                                   
-                                                   tags$div('Assumptions: 6" diameter municipal pipe'), # assumptions
-                                                   
-                                                   # code for the checkbox
-                                                   prettyCheckboxGroup('energyreqs',
-                                                                       label = h4('Select unit processes'),
-                                                                       choices = unique(energy_reqs$name),
-                                                                       plain = TRUE,
-                                                                       fill = TRUE,
-                                                                       icon = icon("fas fa-check"),
-                                                                       animation = 'smooth'),
-                                                   
-                                                   # action button 
-                                                   actionButton("selectall1", label = "Select / Deselect all"),
-                                                   
-                                                   # slider inputs for each parameter
-                                                   
-                                                   sliderInput('vol_rate',
-                                                               label = h4('Select a flow rate (MGD)'),
-                                                               min = 0,
-                                                               max = 400,
-                                                               value = 10,
-                                                               ticks = FALSE),
-                                                   
-                                                   sliderInput('pump_rate',
-                                                               label = h4('Select a pumping rate (m3/s)'),
-                                                               min = 0,
-                                                               max = 2,
-                                                               value = 0.06,
-                                                               ticks = FALSE),
-                                                   
-                                                   sliderInput('length',
-                                                               label = h4('Select a pipe depth (m)'),
-                                                               min = 0,
-                                                               max = 100,
-                                                               value = 20,
-                                                               ticks = FALSE),
-                                                   
-                                                   sliderInput('rough',
-                                                               label = h4('Pipe roughness factor'),
-                                                               min = 0,
-                                                               max = 1,
-                                                               value = 0.2,
-                                                               ticks = FALSE),
-                                                   
-                                                   sliderInput('fitting',
-                                                               label  = h4('Losses from pipe fittings'),
-                                                               min = 0,
-                                                               max = 1,
-                                                               value = 0.1,
-                                                               ticks = FALSE),
-                                                   
-                                                   sliderInput('efficiency',
-                                                               label = h4('Pump Efficiency'),
-                                                               min = 0, 
-                                                               max = 1,
-                                                               value = 0.6,
-                                                               ticks = FALSE),
-                                                   
-                                                   sliderInput('rr',
-                                                               label = h4('Recovery Ratio'),
-                                                               min = 0, 
-                                                               max = 1,
-                                                               value = 0.6,
-                                                               ticks = FALSE),
-                                                   
-                                                   sliderInput('eta',
-                                                               label = h4('System efficiency'),
-                                                               min = 0, 
-                                                               max = 1,
-                                                               value = 0.6,
-                                                               ticks = FALSE),
-                                                   
-                                                   sliderInput('osp',
-                                                               label = h4('Osmotic Pressure (Pa)'),
-                                                               min = 0, 
-                                                               max = 100000,
-                                                               value = 10000,
-                                                               ticks = FALSE)),
-                                      
-                                      mainPanel(textOutput('gwptext'),
-                                                plotlyOutput('eplot'))
-                                      
-                                    )),
+              
                            
                            
                            tabPanel('ECONOMICS',
