@@ -27,7 +27,6 @@ my_theme <- bs_theme(bootswatch = "lux", "font-size-base" = "1rem")
 # SHINY APP CODE
 # User Interface (UI)
 # ------------------------------------------------------------------------------------------------------------------------
-
 ui <- fluidPage(
   
   # UI set up section
@@ -300,118 +299,130 @@ ui <- fluidPage(
         ))
     
   ))
-                      
-      
-                            
-               
 
 
-            
-                
-              
-                           
-                          
-                           
-                       
-
-# Server
+# SERVER
+# ------------------------------------------------------------------------------------------------------------------------
 server <- function(input, output, session) {
   
-  observeEvent(input$selectall1,
-               {if (input$selectall1 > 0) {
-                 
-                 if (input$selectall1 %% 2 == 0){
-                   
-                   updatePrettyCheckboxGroup(session = session, 
-                                             inputId = "energyreqs",
-                                             choices = unique(energy_reqs$name),
-                                             selected = c(unique(energy_reqs$name)),
-                                             prettyOptions = list(animation = 'smooth',
-                                                                  plain = TRUE,
-                                                                  fill = TRUE,
-                                                                  icon = icon('fas fa-check')))
-                   } else {
-                   
-                   updatePrettyCheckboxGroup(session = session, 
-                                             inputId = "energyreqs",
-                                             choices = unique(energy_reqs$name),
-                                             selected = " ",
-                                             prettyOptions = list(animation = 'smooth',
-                                                                  plain = TRUE,
-                                                                  fill = TRUE,
-                                                                  icon = icon('fas fa-check')))}
-               }})
-  
-  
-  observeEvent(input$energyreqs, {
+  observeEvent(
+    input$selectall1, {
       
-    if (any(input$energyreqs == 'groundwater pumping') & any(input$energyreqs == 'reverse osmosis')){
-      
-      enable('length') 
-      enable('fitting')  
-      enable('rough') 
-      enable('efficiency')
-      enable('rr')
-      enable('eta')
-      enable('osp')
-      
-    } else if (any(input$energyreqs == 'reverse osmosis')){
-      
-      enable('rr')
-      enable('eta')
-      enable('osp')
-      disable('length') 
-      disable('fitting')  
-      disable('rough') 
-      disable('efficiency')
+      if (input$selectall1 > 0) {
         
-    } else if (any(input$energyreqs == 'groundwater pumping')){
+        if (input$selectall1 %% 2 == 0) {
+          
+          updatePrettyCheckboxGroup(
+            session = session, 
+            inputId = "energyreqs",
+            choices = unique(energy_reqs$name),
+            selected = c(unique(energy_reqs$name)),
+            prettyOptions = list(
+              animation = 'smooth',
+              plain = TRUE,
+              fill = TRUE,
+              icon = icon('fas fa-check')))
+          
+          } else {
+          
+          updatePrettyCheckboxGroup(
+            session = session, 
+            inputId = "energyreqs",
+            choices = unique(energy_reqs$name),
+            selected = " ",
+            prettyOptions = list(
+              animation = 'smooth',
+              plain = TRUE,
+              fill = TRUE,
+              icon = icon('fas fa-check')))
+          
+        }}
       
-      enable('length') 
-      enable('fitting')  
-      enable('rough') 
-      enable('efficiency')
-      disable('rr')
-      disable('eta')
-      disable('osp')
-      
-    } else {
-      
-      disable('length') 
-      disable('fitting')  
-      disable('rough') 
-      disable('efficiency')
-      disable('rr')
-      disable('eta')
-      disable('osp')
-      
-  }})
+    })
+            
+           
   
-  observeEvent(input$selectall,
-               {if (input$selectall > 0) {
+  
+  observeEvent(
+    input$energyreqs, {
+      
+      if (any(input$energyreqs == 'groundwater pumping') & any(input$energyreqs == 'reverse osmosis')) {
+        
+        enable('length') 
+        enable('fitting')
+        enable('rough') 
+        enable('efficiency')
+        enable('rr')
+        enable('eta')
+        enable('osp')
+        
+        } else if (any(input$energyreqs == 'reverse osmosis')) {
+        
+        enable('rr')
+        enable('eta')
+        enable('osp')
+        disable('length') 
+        disable('fitting')  
+        disable('rough') 
+        disable('efficiency')
+        
+        } else if (any(input$energyreqs == 'groundwater pumping')) {
+        
+        enable('length') 
+        enable('fitting')  
+        enable('rough') 
+        enable('efficiency')
+        disable('rr')
+        disable('eta')
+        disable('osp')
+        
+        } else {
+        
+        disable('length') 
+        disable('fitting')  
+        disable('rough') 
+        disable('efficiency')
+        disable('rr')
+        disable('eta')
+        disable('osp')
+        
+        }}
+    )
+  
+  observeEvent(
+    input$selectall, {
+      
+      if (input$selectall > 0) {
                  
-                 if (input$selectall %% 2 == 0){
+                 if (input$selectall %% 2 == 0) {
                    
-                   updatePrettyCheckboxGroup(session = session, 
-                                             inputId = "unit_proc",
-                                             choices = unique(total$name),
-                                             selected = c(unique(total$name)),
-                                             prettyOptions = list(animation = 'smooth',
-                                                                  plain = TRUE,
-                                                                  fill = TRUE,
-                                                                  icon = icon('fas fa-check')))
+                   updatePrettyCheckboxGroup(
+                     session = session, 
+                     inputId = "unit_proc",
+                     choices = unique(total$name),
+                     selected = c(unique(total$name)),
+                     prettyOptions = list(
+                       animation = 'smooth',
+                       plain = TRUE,
+                       fill = TRUE,
+                       icon = icon('fas fa-check')))
                    
                    } else {
-                   
-                   updatePrettyCheckboxGroup(session = session, 
-                                             inputId = "unit_proc",
-                                             choices = unique(total$name),
-                                             selected = " ",
-                                             prettyOptions = list(animation = 'smooth',
-                                                                  plain = TRUE,
-                                                                  fill = TRUE,
-                                                                  icon = icon('fas fa-check')))}
-                 }})
+                     
+                    updatePrettyCheckboxGroup(
+                      session = session, 
+                      inputId = "unit_proc",
+                      choices = unique(total$name),
+                      selected = " ",
+                      prettyOptions = list(
+                        animation = 'smooth',
+                        plain = TRUE,
+                        fill = TRUE,
+                        icon = icon('fas fa-check')))
+                     
+                   }}
+      
+      })
   
   output$gwptext <- renderText({
     
