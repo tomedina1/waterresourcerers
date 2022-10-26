@@ -404,31 +404,38 @@ server <- function(input, output, session) {
         }}
     )
   
+  # TEXT OUTPUT FOR ENERGY REQUIREMENT
   output$gwptext <- renderText({
+    # data wrangling -- filters data for only selected processes
     energy_reqs <- energy_reqs %>% 
       filter(name %in% input$energyreqs)
     
     paste0('The total energy requirement is: ', 
-           format(round(
+           format(round( 
+             # this calls the function from 'energy.R'
              energy_req(energy_reqs, input$vol_rate, input$pump_rate, input$rr, 
                         input$eta, input$osp, input$fitting, input$rough, 
-                        input$length, input$efficiency), 2), 
-             scientific = TRUE), ' MW')
+                        input$length, input$efficiency), 2),# rounds to 2 decimal places
+             scientific = TRUE), ' MW') # puts the output in scientific notation
   })
   
+  # This calls the plot function from 'energy.R' to create the df for the plot
   plot_data <- reactive({
     energy_plot(energy_reqs %>% filter(name %in% input$energyreqs), 
                 input$vol_rate, input$rr, input$eta, input$osp)
   })
   
+  # This the plot output that compares the energy requirements for each process
   output$eplot <- renderPlotly({
     ggplotly(
+      # standard ggplot()
       ggplot(data = plot_data(),
              aes(reorder(x = process, -energyreq), 
                  y = energyreq, fill = process)) +
         
         geom_bar(stat = 'identity', position = position_dodge2(preserve = 'single'), 
                  width = 0.5, 
+                 # this is where you edit the text when you hover over the plot
                  aes(text = paste(
                    "process:", process, "\nenergy requirement:", 
                    energyreq, 'MW', sep = " "))) +
@@ -437,12 +444,13 @@ server <- function(input, output, session) {
              y = 'energy requirement (MW)') +
         theme_minimal(),
       
-      tooltip = 'text')
+      # this lets you see the text on ggplotly
+      tooltip = 'text') 
   })
  
   # ECONOMICS TAB
   # ---------------------------------------------------------------------------- 
-  # interaction between 
+  # interaction between select all button and checkbox 
   observeEvent(
     input$selectall, {
       
