@@ -306,6 +306,8 @@ ui <- fluidPage(
 # ------------------------------------------------------------------------------------------------------------------------
 server <- function(input, output, session) {
   
+  # ENERGY REQS TAB
+  # ----------------------------------------------------------------------------
   # This is the code that allows the select all button to interact with the pretty checkbox group
   # Honestly a miracle that this runs -- I still barely understand it
   observeEvent(
@@ -351,9 +353,11 @@ server <- function(input, output, session) {
     })
   
   
+  # this section activates or deactivates the sliders depending on the chosen process
   observeEvent(
     input$energyreqs, {
       
+      # if both reverse osmosis and groundwater pumping are selected
       if (any(input$energyreqs == 'groundwater pumping') & any(input$energyreqs == 'reverse osmosis')) {
         
         enable('length') 
@@ -364,6 +368,7 @@ server <- function(input, output, session) {
         enable('eta')
         enable('osp')
         
+        # if ro is selected but not gw pumping
         } else if (any(input$energyreqs == 'reverse osmosis')) {
         
         enable('rr')
@@ -374,6 +379,7 @@ server <- function(input, output, session) {
         disable('rough') 
         disable('efficiency')
         
+        # if gw pumping is selected but not ro
         } else if (any(input$energyreqs == 'groundwater pumping')) {
         
         enable('length') 
@@ -384,6 +390,7 @@ server <- function(input, output, session) {
         disable('eta')
         disable('osp')
         
+        # if both ro and gw pumping are not selected
         } else {
         
         disable('length') 
@@ -397,12 +404,52 @@ server <- function(input, output, session) {
         }}
     )
   
+  output$gwptext <- renderText({
+    energy_reqs <- energy_reqs %>% 
+      filter(name %in% input$energyreqs)
+    
+    paste0('The total energy requirement is: ', 
+           format(round(
+             energy_req(energy_reqs, input$vol_rate, input$pump_rate, input$rr, 
+                        input$eta, input$osp, input$fitting, input$rough, 
+                        input$length, input$efficiency), 2), 
+             scientific = TRUE), ' MW')
+  })
+  
+  plot_data <- reactive({
+    energy_plot(energy_reqs %>% filter(name %in% input$energyreqs), 
+                input$vol_rate, input$rr, input$eta, input$osp)
+  })
+  
+  output$eplot <- renderPlotly({
+    ggplotly(
+      ggplot(data = plot_data(),
+             aes(reorder(x = process, -energyreq), 
+                 y = energyreq, fill = process)) +
+        
+        geom_bar(stat = 'identity', position = position_dodge2(preserve = 'single'), 
+                 width = 0.5, 
+                 aes(text = paste(
+                   "process:", process, "\nenergy requirement:", 
+                   energyreq, 'MW', sep = " "))) +
+        
+        labs(x = 'process',
+             y = 'energy requirement (MW)') +
+        theme_minimal(),
+      
+      tooltip = 'text')
+  })
+ 
+  # ECONOMICS TAB
+  # ---------------------------------------------------------------------------- 
+  # interaction between 
   observeEvent(
     input$selectall, {
       
       # only works if there is a selection
       if (input$selectall > 0) {
         
+        # this is the select all portion
         if (input$selectall %% 2 == 0) {
           
           updatePrettyCheckboxGroup(
@@ -416,6 +463,7 @@ server <- function(input, output, session) {
               fill = TRUE,
               icon = icon('fas fa-check')))
           
+          # this is the deselect all portion
         } else {
           
           updatePrettyCheckboxGroup(
@@ -433,45 +481,6 @@ server <- function(input, output, session) {
       
     })
                    
-                  
-  
-  output$gwptext <- renderText({
-    energy_reqs <- energy_reqs %>% 
-      filter(name %in% input$energyreqs)
-    
-    paste0('The total energy requirement is: ', 
-           format(round(
-             energy_req(energy_reqs, input$vol_rate, input$pump_rate, input$rr, 
-                        input$eta, input$osp, input$fitting, input$rough, 
-                        input$length, input$efficiency), 2), 
-             scientific = TRUE), ' MW')
-    })
-  
-  plot_data <- reactive({
-    energy_plot(energy_reqs %>% filter(name %in% input$energyreqs), 
-                input$vol_rate, input$rr, input$eta, input$osp)
-    })
-  
-  output$eplot <- renderPlotly({
-    ggplotly(
-      ggplot(data = plot_data(),
-             aes(reorder(x = process, -energyreq), 
-               y = energyreq, fill = process)) +
-        
-        geom_bar(stat = 'identity', position = position_dodge2(preserve = 'single'), 
-                 width = 0.5, 
-                 aes(text = paste(
-                   "process:", process, "\nenergy requirement:", 
-                   energyreq, 'MW', sep = " "))) +
-        
-        labs(x = 'process',
-             y = 'energy requirement (MW)') +
-        theme_minimal(),
-      
-      tooltip = 'text')
-    })
-  
-  
   output$capex <- renderText({
     total <- total %>% 
       filter(name %in% input$unit_proc)
