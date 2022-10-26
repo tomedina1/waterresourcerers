@@ -47,31 +47,38 @@ ui <- fluidPage(
     
     
     # TAB 1: BACKGROUND (this section will be filled in when the rest of the app is finished)
+    # --------------------------------------------------------------------------
     tabPanel(
       # Tab title here
       'BACKGROUND',
       # Tab Layout
       sidebarLayout( 
         
-        # Side bar panel code here
+        # SIDE BAR SECTION
+        # ----------------------------------------------------------------------
         sidebarPanel(
+          
           width = 3 # sets the width of the sidebar panel (1-12)
+          
           ), 
         
-        # Main panel code here
+        # MAIN PANEL SECTION
+        # ----------------------------------------------------------------------
         mainPanel()
         
              )),
     
     
     # TAB 2: ENERGY REQUIREMENTS
+    # --------------------------------------------------------------------------
     tabPanel(
       # tab title here
       'ENERGY REQUIREMENTS',
       # tab layout here
       sidebarLayout(
         
-        # side bar panel code here
+        # SIDE BAR SECTION
+        # ----------------------------------------------------------------------
         sidebarPanel(
           width = 3, # sidebar panel width
           
@@ -87,146 +94,225 @@ ui <- fluidPage(
           
           # Probably will move this to a hover option (once I figure that out)
           tags$div('Assumptions: 6" diameter municipal pipe'), # assumptions
-                            
-                            # code for the checkbox
-                            prettyCheckboxGroup('energyreqs',
-                                                label = h4('Select unit processes'),
-                                                choices = unique(energy_reqs$name),
-                                                plain = TRUE,
-                                                fill = TRUE,
-                                                icon = icon("fas fa-check"),
-                                                animation = 'smooth'),
-                            
-                            # action button 
-                            actionButton("selectall1", label = "Select / Deselect all"),
-                            
-                            # slider inputs for each parameter
-                            
-                            sliderInput('vol_rate',
-                                        label = h4('Select a flow rate (MGD)'),
-                                        min = 0,
-                                        max = 400,
-                                        value = 10,
-                                        ticks = FALSE),
-                            
-                            sliderInput('pump_rate',
-                                        label = h4('Select a pumping rate (m3/s)'),
-                                        min = 0,
-                                        max = 2,
-                                        value = 0.06,
-                                        ticks = FALSE),
-                            
-                            sliderInput('length',
-                                        label = h4('Select a pipe depth (m)'),
-                                        min = 0,
-                                        max = 100,
-                                        value = 20,
-                                        ticks = FALSE),
-                            
-                            sliderInput('rough',
-                                        label = h4('Pipe roughness factor'),
-                                        min = 0,
-                                        max = 1,
-                                        value = 0.2,
-                                        ticks = FALSE),
-                            
-                            sliderInput('fitting',
-                                        label  = h4('Losses from pipe fittings'),
-                                        min = 0,
-                                        max = 1,
-                                        value = 0.1,
-                                        ticks = FALSE),
-                            
-                            sliderInput('efficiency',
-                                        label = h4('Pump Efficiency'),
-                                        min = 0, 
-                                        max = 1,
-                                        value = 0.6,
-                                        ticks = FALSE),
-                            
-                            sliderInput('rr',
-                                        label = h4('Recovery Ratio'),
-                                        min = 0, 
-                                        max = 1,
-                                        value = 0.6,
-                                        ticks = FALSE),
-                            
-                            sliderInput('eta',
-                                        label = h4('System efficiency'),
-                                        min = 0, 
-                                        max = 1,
-                                        value = 0.6,
-                                        ticks = FALSE),
-                            
-                            sliderInput('osp',
-                                        label = h4('Osmotic Pressure (Pa)'),
-                                        min = 0, 
-                                        max = 100000,
-                                        value = 10000,
-                                        ticks = FALSE)),
-               
-               mainPanel(textOutput('gwptext'),
-                         plotlyOutput('eplot'))
-               
+          
+          # code for the checkbox (that selects which unit processes to use)
+          prettyCheckboxGroup(
+            'energyreqs', # server/ui name for the checkbox 
+            label = h4('Select unit processes'), # title of the checkbox
+            choices = unique(energy_reqs$name), # shows choices for the checkbox 
+            
+            # aesthetics of the checkbox group
+            plain = TRUE, 
+            fill = TRUE,
+            icon = icon("fas fa-check"),
+            animation = 'smooth'),
+          
+          # UI code for the Select/Deselect All Button
+          actionButton("selectall1", label = "Select / Deselect all"),
+          
+          # SLIDERS SECTION
+          # key for sliderInput()
+          # 1st input is the UI/server code, label is the slider title
+          # min and max is the slider range
+          # value is the default value the slider is on
+          # ticks are purely aesthetic
+         
+           # Volumetric Flow Rate (MGD)
+          sliderInput(
+            'vol_rate',
+            label = h4('Select a flow rate (MGD)'),
+            min = 0,
+            max = 400,
+            value = 10,
+            ticks = FALSE),
+          
+          # Groundwater Pumping Rate (m3/s) *I will change the units of this eventually
+          sliderInput(
+            'pump_rate',
+            label = h4('Select a pumping rate (m3/s)'),
+            min = 0,
+            max = 2,
+            value = 0.06,
+            ticks = FALSE),
+          
+          # Groundwater Pumping Depth (m) *This is for the groundwater depth values
+          # I will change the units to feet eventually as well 
+          sliderInput(
+            'length',
+            label = h4('Select a pipe depth (m)'),
+            min = 0,
+            max = 100,
+            value = 20,
+            ticks = FALSE),
+          
+          # Pipe Roughness Slider (unitless) -- a friction factor
+          sliderInput(
+            'rough',
+            label = h4('Pipe roughness factor'),
+            min = 0,
+            max = 1,
+            value = 0.2,
+            ticks = FALSE),
+          
+          # Fittings Friction Factor (losses from pipe fittings) -- also a friction factor
+          sliderInput(
+            'fitting',
+            label  = h4('Losses from pipe fittings'),
+            min = 0,
+            max = 1,
+            value = 0.1,
+            ticks = FALSE),
+          
+          # Pump Efficiency Slider
+          sliderInput(
+            'efficiency',
+            label = h4('Pump Efficiency'),
+            min = 0, 
+            max = 1,
+            value = 0.6,
+            ticks = FALSE),
+          
+          # Recovery Ratio -- this is for Reverse Osmosis 
+          sliderInput(
+            'rr',
+            label = h4('Recovery Ratio'),
+            min = 0, 
+            max = 1,
+            value = 0.6,
+            ticks = FALSE),
+          
+          # Reverse Osmosis System Efficiency 
+          sliderInput(
+            'eta',
+            label = h4('System efficiency'),
+            min = 0, 
+            max = 1,
+            value = 0.6,
+            ticks = FALSE),
+          
+          # Osmotic Pressure (Pa) of RO
+          sliderInput(
+            'osp',
+            label = h4('Osmotic Pressure (Pa)'),
+            min = 0, 
+            max = 100000,
+            value = 10000,
+            ticks = FALSE)),
+        
+        # MAIN PANEL SECTION
+        # ----------------------------------------------------------------------
+        mainPanel(
+          textOutput('gwptext'), # outputs the energy requirement
+          plotlyOutput('eplot')) # outputs the energy plot
              )),
+    
+    
+    # TAB 3:ECONOMICS
+    # --------------------------------------------------------------------------
+    tabPanel(
+      # Tab Title Here
+      'ECONOMICS',
+      # Tab Layout Here
+      sidebarLayout(
+        
+        # SIDE BAR SECTION
+        # ----------------------------------------------------------------------
+        sidebarPanel(
+          
+          width = 3, # side bar panel width
+          
+          # hides warning and error messages on the shiny app
+          tags$style(
+            type = "text/css",
+            ".shiny-output-error { visibility: hidden; }",
+            ".shiny-output-error: before { visibility: hidden; }"),
+          
+          # Side bar panel title
+          h3('Create a tertiary treatment process'),
+          hr(style = "border-top: 1px solid #000000;"), # horizontal line
+          
+          # code for the checkbox
+          prettyCheckboxGroup(
+            'unit_proc',
+            label = h4('Select unit processes'), # checkbox title
+            choices = unique(total$name),
+            
+            # checkbox aesthetics
+            plain = TRUE,
+            fill = TRUE,
+            icon = icon("fas fa-check"),
+            animation = 'smooth'),
+                              
+          # UI code for the Select/Deselect All Button
+          actionButton("selectall", label = "Select / Deselect all"),
+          
+          # Slider Input for the volumetric flow rate (MGD)
+          sliderInput(
+            'flow_rate',
+            label = h4('Select a flow rate (MGD)'),
+            min = 0,
+            max = 400,
+            value = 10,
+            ticks = FALSE)),
+        
+        
+        # MAIN PANEL SECTION
+        # ----------------------------------------------------------------------
+        mainPanel(
+          textOutput('capex'), # outputs the capital cost
+          textOutput('om'), # outputs the O&M costs
+          plotlyOutput('capexplot'), # outputs the CAPEX plot
+          plotlyOutput('omexplot')) # Outputs the OMEX plot
+        )),
+    
+    # TAB 4: RISK
+    # --------------------------------------------------------------------------
+    tabPanel(
+      'RISK',
+      sidebarLayout(
+        
+        # SIDE BAR SECTION
+        # ----------------------------------------------------------------------
+        sidebarPanel(
+          width = 3
+          ),
+        
+        # MAIN PANEL SECTION
+        # ----------------------------------------------------------------------
+        mainPanel()
+             )),
+    
+    # TAB 5: ABOUT
+    # --------------------------------------------------------------------------
+    tabPanel(
+      'ABOUT',
+      sidebarLayout(
+        
+        # SIDE BAR SECTION
+        # ----------------------------------------------------------------------
+        sidebarPanel(
+          width = 3
+          ),
+        
+        # MAIN PANEL SECTION
+        # ----------------------------------------------------------------------
+        mainPanel()
+        ))
+    
+  ))
+                      
+      
+                            
+               
+
 
             
                 
               
                            
+                          
                            
-                           tabPanel('ECONOMICS',
-                                    sidebarLayout(
-                                      sidebarPanel(width = 3,
-                                                   
-                                                   tags$style(type = "text/css",
-                                                              ".shiny-output-error { visibility: hidden; }",
-                                                              ".shiny-output-error: before { visibility: hidden; }"),
-                                                   
-                                                   h3('Create a tertiary treatment process'),
-                                                   
-                                                   hr(style = "border-top: 1px solid #000000;"),
-                                                   
-                                                   prettyCheckboxGroup('unit_proc',
-                                                                       label = h4('Select unit processes'),
-                                                                       choices = unique(total$name),
-                                                                       plain = TRUE,
-                                                                       fill = TRUE,
-                                                                       icon = icon("fas fa-check"),
-                                                                       animation = 'smooth'),
-                                                   
-                                                   actionButton("selectall", label = "Select / Deselect all"),
-                                                   
-                                                   sliderInput('flow_rate',
-                                                               label = h4('Select a flow rate (MGD)'),
-                                                               min = 0,
-                                                               max = 400,
-                                                               value = 10,
-                                                               ticks = FALSE)),
-                                      
-                                      mainPanel(textOutput('capex'),
-                                                textOutput('om'),
-                                                plotlyOutput('capexplot'),
-                                                plotlyOutput('omexplot'))
-                                      
-                                    )),
-                           
-                           
-                           tabPanel('RISK',
-                                    sidebarLayout(
-                                      sidebarPanel(width = 3),
-                                      mainPanel()
-                                    )),
-                           
-                           
-                           tabPanel('ABOUT',
-                                    sidebarLayout(
-                                      sidebarPanel(width = 3),
-                                      mainPanel()
-                                    ))
-                           
-                           ))
-
+                       
 
 # Server
 server <- function(input, output, session) {
