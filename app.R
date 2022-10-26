@@ -306,11 +306,15 @@ ui <- fluidPage(
 # ------------------------------------------------------------------------------------------------------------------------
 server <- function(input, output, session) {
   
+  # This is the code that allows the select all button to interact with the pretty checkbox group
+  # Honestly a miracle that this runs -- I still barely understand it
   observeEvent(
     input$selectall1, {
       
+      # only works if there is a selection
       if (input$selectall1 > 0) {
         
+        # this is the select all portion
         if (input$selectall1 %% 2 == 0) {
           
           updatePrettyCheckboxGroup(
@@ -318,12 +322,15 @@ server <- function(input, output, session) {
             inputId = "energyreqs",
             choices = unique(energy_reqs$name),
             selected = c(unique(energy_reqs$name)),
+            
+            # Aesthetics
             prettyOptions = list(
               animation = 'smooth',
               plain = TRUE,
               fill = TRUE,
               icon = icon('fas fa-check')))
           
+          # this is the deselect all portion
           } else {
           
           updatePrettyCheckboxGroup(
@@ -331,6 +338,8 @@ server <- function(input, output, session) {
             inputId = "energyreqs",
             choices = unique(energy_reqs$name),
             selected = " ",
+            
+            # Aesthetics
             prettyOptions = list(
               animation = 'smooth',
               plain = TRUE,
@@ -391,37 +400,40 @@ server <- function(input, output, session) {
   observeEvent(
     input$selectall, {
       
+      # only works if there is a selection
       if (input$selectall > 0) {
-                 
-                 if (input$selectall %% 2 == 0) {
-                   
-                   updatePrettyCheckboxGroup(
-                     session = session, 
-                     inputId = "unit_proc",
-                     choices = unique(total$name),
-                     selected = c(unique(total$name)),
-                     prettyOptions = list(
-                       animation = 'smooth',
-                       plain = TRUE,
-                       fill = TRUE,
-                       icon = icon('fas fa-check')))
-                   
-                   } else {
-                     
-                    updatePrettyCheckboxGroup(
-                      session = session, 
-                      inputId = "unit_proc",
-                      choices = unique(total$name),
-                      selected = " ",
-                      prettyOptions = list(
-                        animation = 'smooth',
-                        plain = TRUE,
-                        fill = TRUE,
-                        icon = icon('fas fa-check')))
-                     
-                   }}
+        
+        if (input$selectall %% 2 == 0) {
+          
+          updatePrettyCheckboxGroup(
+            session = session, 
+            inputId = "unit_proc",
+            choices = unique(total$name),
+            selected = c(unique(total$name)),
+            prettyOptions = list(
+              animation = 'smooth',
+              plain = TRUE,
+              fill = TRUE,
+              icon = icon('fas fa-check')))
+          
+        } else {
+          
+          updatePrettyCheckboxGroup(
+            session = session, 
+            inputId = "unit_proc",
+            choices = unique(total$name),
+            selected = " ",
+            prettyOptions = list(
+              animation = 'smooth',
+              plain = TRUE,
+              fill = TRUE,
+              icon = icon('fas fa-check')))
+          
+        }}
       
-      })
+    })
+                   
+                  
   
   output$gwptext <- renderText({
     energy_reqs <- energy_reqs %>% 
@@ -432,11 +444,13 @@ server <- function(input, output, session) {
              energy_req(energy_reqs, input$vol_rate, input$pump_rate, input$rr, 
                         input$eta, input$osp, input$fitting, input$rough, 
                         input$length, input$efficiency), 2), 
-             scientific = TRUE), ' MW')})
+             scientific = TRUE), ' MW')
+    })
   
   plot_data <- reactive({
     energy_plot(energy_reqs %>% filter(name %in% input$energyreqs), 
-                input$vol_rate, input$rr, input$eta, input$osp)})
+                input$vol_rate, input$rr, input$eta, input$osp)
+    })
   
   output$eplot <- renderPlotly({
     ggplotly(
@@ -454,7 +468,8 @@ server <- function(input, output, session) {
              y = 'energy requirement (MW)') +
         theme_minimal(),
       
-      tooltip = 'text')})
+      tooltip = 'text')
+    })
   
   
   output$capex <- renderText({
@@ -463,7 +478,8 @@ server <- function(input, output, session) {
     
     paste0('The total capital cost is: $', 
            round(
-             calculate_costs(total$a, total$b, total$c, input$flow_rate, total$year),2))})
+             calculate_costs(total$a, total$b, total$c, input$flow_rate, total$year),2))
+    })
 
   output$om <- renderText({  
     total <- total %>% 
@@ -471,13 +487,15 @@ server <- function(input, output, session) {
     
     paste0('The total O&M cost is: $', 
            round(
-             calculate_costs(total$oma, total$omb, total$omc, input$flow_rate, total$yearom), 2))})
+             calculate_costs(total$oma, total$omb, total$omc, input$flow_rate, total$yearom), 2))
+    })
   
   econ_plotdata <- reactive({
     total <- total %>% 
       filter(name %in% input$unit_proc)
     
-    economics_plot(total$a, total$b, total$c, input$flow_rate, total$oma, total$omb, total$omc, total$name)})
+    economics_plot(total$a, total$b, total$c, input$flow_rate, total$oma, total$omb, total$omc, total$name)
+    })
   
   output$capexplot <- renderPlotly({
     ggplotly(
@@ -493,21 +511,24 @@ server <- function(input, output, session) {
              y = 'Capital Cost ($)') +
         theme_minimal(),
       
-      tooltip = 'text')})
+      tooltip = 'text')
+    })
   
   output$omexplot <- renderPlotly({
-    
     ggplotly(
       ggplot(data = econ_plotdata(),
-             aes(reorder(x = process, -omex), y = omex, fill = process)) +
+             aes(reorder(x = process, -omex), 
+                 y = omex, fill = process)) +
+        
         geom_bar(stat = 'identity', position = position_dodge2(preserve = 'single'),
-                 width = 0.5, aes(text = paste('process:', process, "\nO&M ($):",
-                                               round(omex, 2), sep = " "))) +
+                 width = 0.5, 
+                 aes(text = paste('process:', process, "\nO&M ($):", round(omex, 2), sep = " "))) +
+        
         labs(x = 'Process',
              y = 'O&M Costs ($)') +
         theme_minimal(),
-      tooltip = 'text'
-    )
+      
+      tooltip = 'text')
   })
   
   
