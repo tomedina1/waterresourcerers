@@ -472,7 +472,7 @@ server <- function(input, output, session) {
               fill = TRUE,
               icon = icon('fas fa-check')))
           
-          # this is the deselect all portion
+        # this is the deselect all portion
         } else {
           
           updatePrettyCheckboxGroup(
@@ -492,16 +492,17 @@ server <- function(input, output, session) {
       
     })
    
-                  
+  # Output for the capital cost 
   output$capex <- renderText({
     total <- total %>% 
-      filter(name %in% input$unit_proc)
+      filter(name %in% input$unit_proc) # filters df to selected values
     
     paste0('The total capital cost is: $', 
            round(
              calculate_costs(total$a, total$b, total$c, input$flow_rate, total$year),2))
     })
-
+  
+  # Output for the O&M cost
   output$om <- renderText({  
     total <- total %>% 
       filter(name %in% input$unit_proc)
@@ -511,6 +512,7 @@ server <- function(input, output, session) {
              calculate_costs(total$oma, total$omb, total$omc, input$flow_rate, total$yearom), 2))
     })
   
+  # Generates the dataframe for the capex and omex plots
   econ_plotdata <- reactive({
     total <- total %>% 
       filter(name %in% input$unit_proc)
@@ -518,6 +520,7 @@ server <- function(input, output, session) {
     economics_plot(total$a, total$b, total$c, input$flow_rate, total$oma, total$omb, total$omc, total$name)
     })
   
+  # capital cost plot
   output$capexplot <- renderPlotly({
     ggplotly(
       ggplot(data = econ_plotdata(),
@@ -526,7 +529,9 @@ server <- function(input, output, session) {
         
         geom_bar(stat = 'identity', position = position_dodge2(preserve = 'single'),
                  width = 0.5, 
-                 aes(text = paste('process:', process, "\nCAPEX ($):", round(capex, 2), sep = " "))) +
+                 aes(text = paste('process:', process, "\nCAPEX ($):", round(capex, 2), sep = " "))) + 
+        
+        geom_errorbar(aes(ymin = capex - lower, ymax = capex + upper), width = 0.1) +
         
         labs(x = 'Process',
              y = 'Capital Cost ($)') +
@@ -535,6 +540,7 @@ server <- function(input, output, session) {
       tooltip = 'text')
     })
   
+  # O&M plot
   output$omexplot <- renderPlotly({
     ggplotly(
       ggplot(data = econ_plotdata(),
@@ -545,6 +551,8 @@ server <- function(input, output, session) {
                  width = 0.5, 
                  aes(text = paste('process:', process, "\nO&M ($):", round(omex, 2), sep = " "))) +
         
+        geom_errorbar(aes(ymin = omex - lowerom, ymax = omex + upperom), width = 0.1) +
+         
         labs(x = 'Process',
              y = 'O&M Costs ($)') +
         theme_minimal(),
@@ -555,4 +563,6 @@ server <- function(input, output, session) {
   
 }
 
+# ------------------------------------------------------------------------------
+# RUN SHINY APP
 shinyApp(ui = ui, server = server)
