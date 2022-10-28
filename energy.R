@@ -112,6 +112,7 @@ energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E) {
     
     if (a$name[i] == 'groundwater pumping') {
       
+      # groundwater pumping functions
       pump_req <- e_gwpump(pump, system_losses(k_f, pump, k, L), E)
       graph.df <- rbind(graph.df, pump_req)
       name.df <- rbind(name.df, a$name[i])
