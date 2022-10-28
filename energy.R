@@ -4,7 +4,7 @@
 
 
 # Pumping Energy Requirement
-e_gwpump <- function(q, k, E){
+e_gwpump <- function(q, k, E) {
   
   # q is the volumetric flow rate (m3/d), k is the total system losses and E is the pump efficiency
   # 0.018238673 is the area of a 6" pipe
@@ -18,7 +18,7 @@ e_gwpump <- function(q, k, E){
 
 
 # Additional Information for the friction factor of a pipe - this will affect the total system losses
-friction_factor <- function(q, k){
+friction_factor <- function(q, k) {
   
   # q is the volumetric flow rate (m3/d) and k is the pipe roughness 
   v <- q / 0.018238673 # convert flow rate to instantaneous velocity 
@@ -30,7 +30,7 @@ friction_factor <- function(q, k){
 
 
 # Calculating system losses
-system_losses <- function(k_f, q, k ,L){
+system_losses <- function(k_f, q, k, L) {
 
   # calculates the system losses given L (length of a pipe in m)
   # also needs k_f (fittings losses), volumetric flow rate (m3/s), and pipe roughness
@@ -61,14 +61,14 @@ energy_req <- function(a, x , pump, RR, eta, osp, k_f, k, L, E){
   
   e_req <- data.frame()
   
-  for (i in 1:length(a$name)){
+  for (i in 1:length(a$name)) {
     
-    if (a$name[i] == 'reverse osmosis'){ # runs the semibatch reactor equation
+    if (a$name[i] == 'reverse osmosis') { # runs the semibatch reactor equation
       
       ro_req <- r_o(RR, eta, osp, x)
       e_req <- rbind(e_req, ro_req)
       
-    } else if (a$name[i] == 'groundwater pumping'){ # runs the pump requirement equation
+    } else if (a$name[i] == 'groundwater pumping') { # runs the pump requirement equation
       
       pump_req <- e_gwpump(pump, system_losses(k_f, pump, k, L), E)
       e_req <- rbind(e_req, pump_req)
@@ -101,7 +101,7 @@ energy_reqs <- rbind(gwpump, ro, coag, uv, o3, uf, mf, gac, recharge)
 
 
 # plot creation function
-energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E){
+energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E) {
   
   x <- x * 3785.4 # MGD to m3/d
   
@@ -110,13 +110,13 @@ energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E){
   
   for (i in 1:length(a$name)) {
     
-    if (a$name[i] == 'groundwater pumping'){
+    if (a$name[i] == 'groundwater pumping') {
       
       pump_req <- e_gwpump(pump, system_losses(k_f, pump, k, L), E)
       graph.df <- rbind(graph.df, pump_req)
       name.df <- rbind(name.df, a$name[i])
     
-    } else if (a$name[i] == 'reverse osmosis'){ 
+    } else if (a$name[i] == 'reverse osmosis') { 
       
       # run the semibatch equation 
       ro_req <- r_o(RR, eta, osp, x)

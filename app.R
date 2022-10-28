@@ -410,7 +410,7 @@ server <- function(input, output, session) {
       filter(name %in% input$energyreqs)
     
     paste0('The total energy requirement is: ', 
-           format(round( 
+           format(round(
              # this calls the function from 'energy.R'
              energy_req(energy_reqs, input$vol_rate, input$pump_rate, input$rr, 
                         input$eta, input$osp, input$fitting, input$rough, 
@@ -420,8 +420,10 @@ server <- function(input, output, session) {
   
   # This calls the plot function from 'energy.R' to create the df for the plot
   plot_data <- reactive({
+  
     energy_plot(energy_reqs %>% filter(name %in% input$energyreqs), 
-                input$vol_rate, input$rr, input$eta, input$osp)
+                input$vol_rate, input$rr, input$eta, input$osp, input$fitting,
+                input$pump_rate, input$rough, input$length, input$efficiency)
   })
   
   # This the plot output that compares the energy requirements for each process
