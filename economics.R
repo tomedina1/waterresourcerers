@@ -43,18 +43,9 @@ calculate_costs <- function(a, b, c, x, year){
         # y: $M/MGD
         # multiply y by 1e6 and by x to get costs
         
-        if (year[i] == 2014) { # for all of the equations from Plumlee et. al. 2014
-          
-          y_value <- a[i] * x ^ (b[i]) * 1e6 * x 
-          y_conversion <- 1.25 * y_value # converts from 2014 dollars to current dollar (2022 October)
-          costs <- rbind(costs, y_conversion) # binds the output for each iteration to the blank df
-          
-        } else { # for all of the equations from Hilbig et. al. 2020
-          x <- x * 3785.4 # convert MGD to m3/d
-          y_value <- a[i] * x ^ (b[i]) * 1e6 * x # calls the integral function
-          y_dollar <- 1.1723 * y_value # 2020 Euro to current dollar (2022 October)
-          costs <- rbind(costs, y_dollar) # binds the output for each iteration to the blank df
-        }
+        y_value <- a[i] * x ^ (b[i]) * 1e6 * x 
+        y_conversion <- 1.25 * y_value # converts from 2014 dollars to current dollar (2022 October)
+        costs <- rbind(costs, y_conversion) # binds the output for each iteration to the blank df
       
     }}
   
