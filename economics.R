@@ -21,7 +21,7 @@ calculate_costs <- function(a, b, c, x, year){
   
   for (i in 1:length(a)) { # iterates through every input in the vector (a, b, c, and year should be the same length***)
 
-      if (c[i] != 0){ # c is only a constant in the Williams Power Logarithmic Rule Equation (Guo et. al. 2014)
+      if (c[i] != 0) { # c is only a constant in the Williams Power Logarithmic Rule Equation (Guo et. al. 2014)
         
         x <- x * 3785.4 # convert MGD to m3/d (the equation only works in m3/d)
         
@@ -59,7 +59,7 @@ calculate_costs <- function(a, b, c, x, year){
 # this function calculates the CAPEX and O&M and puts them in a df to be plotted
 # The equations are the same as in FUNCTION 1
 
-economics_plot <- function(a, b, c, x, oma, omb, omc, name){
+economics_plot <- function(a, b, c, x, oma, omb, omc, name) {
   
   process.df <- data.frame() # generate a blank df for the names of the processes
   capex.df <- data.frame() # generate a blank df for the capex values
