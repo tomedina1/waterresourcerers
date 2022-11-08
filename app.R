@@ -338,6 +338,7 @@ server <- function(input, output, session) {
           selected = c('microfiltration', 'reverse osmosis',
                        'uv oxidation'),
           
+          # Aesthetics
           prettyOptions = list(
             animation = 'smooth',
             plain = TRUE,
@@ -352,6 +353,7 @@ server <- function(input, output, session) {
           choices = unique(energy_reqs$name),
           selected = c('groundwater pumping', 'reverse osmosis'),
           
+          # Aesthetics
           prettyOptions = list(
             animation = 'smooth',
             plain = TRUE,
@@ -366,13 +368,12 @@ server <- function(input, output, session) {
           choices = unique(energy_reqs$name),
           selected = c('reverse osmosis'),
           
+          # Aesthetics
           prettyOptions = list(
             animation = 'smooth',
             plain = TRUE,
             fill = TRUE,
             icon = icon('fas fa-check')))
-        
-      
         
       } else if (input$technology == 'Direct Potable Reuse') {
         
@@ -382,6 +383,7 @@ server <- function(input, output, session) {
           choices = unique(energy_reqs$name),
           selected = c('reverse osmosis'),
           
+          # Aesthetics
           prettyOptions = list(
             animation = 'smooth',
             plain = TRUE,
