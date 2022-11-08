@@ -87,8 +87,25 @@ ui <- fluidPage(
             ".shiny-output-error { visibility: hidden; }",
             ".shiny-output-error: before { visibility: hidden; }"),
           
+          # Title of sidebar panel
+          h3('TITLE HERE'),
+          hr(style = "border-top: 1px solid #000000;"), 
+          
+          # Code for checkbox that lets you select a technology
+          prettyCheckboxGroup(
+            'technology',
+            label = h4('Select a technology'),
+            choices = c('Direct Potable Reuse', 'Indirect Potable Reuse', 
+                        'Groundwater Desalination', 'Ocean Desalination'),
+            
+            # Aesthetics
+            plain = TRUE,
+            fill = TRUE,
+            icon = icon("fas fa-check"),
+            animation = 'smooth'),
+          
           # Title of side bar panel (h3 is the heading size)
-          h3('Create a tertiary treatment process'),
+          h4('Select unit processes'),
           hr(style = "border-top: 1px solid #000000;"), # solid line
           
           # Probably will move this to a hover option (once I figure that out)
@@ -264,10 +281,10 @@ ui <- fluidPage(
           plotlyOutput('omexplot')) # Outputs the OMEX plot
         )),
     
-    # TAB 4: RISK
+    # TAB 4: INFORMATION
     # --------------------------------------------------------------------------
     tabPanel(
-      'RISK',
+      'INFORMATION',
       sidebarLayout(
         
         # SIDE BAR SECTION
@@ -308,6 +325,55 @@ server <- function(input, output, session) {
   
   # ENERGY REQS TAB
   # ----------------------------------------------------------------------------
+  
+  observeEvent(
+    input$technology, {
+      
+      if (input$technology == 'Indirect Potable Reuse') {
+        
+        updatePrettyCheckboxGroup(
+          session = session,
+          inputId = 'energyreqs',
+          choices = unique(energy_reqs$name),
+          selected = c('microfiltration', 'reverse osmosis',
+                       'uv oxidation'),
+          
+          prettyOptions = list(
+            animation = 'smooth',
+            plain = TRUE,
+            fill = TRUE,
+            icon = icon('fas fa-check')))
+        
+      } else if (input$technology == 'Groundwater Desalination') {
+        
+        updatePrettyCheckboxGroup(
+          session = session,
+          inputId = 'energyreqs',
+          choices = unique(energy_reqs$name),
+          selected = c('groundwater pumping', 'reverse osmosis'),
+          
+          prettyOptons = list(
+            animation = 'smooth',
+            plain = TRUE,
+            fill = TRUE,
+            icon = icon('fas fa-check')))
+        
+      } else if (input$technology == 'Ocean Desalination') {
+        
+      
+        
+      } else if (input$technology == 'Direct Potable Reuse') {
+        
+        next
+        
+      } else {
+        
+        next
+        
+      }
+      
+      }
+    )
   # This is the code that allows the select all button to interact with the pretty checkbox group
   observeEvent(
     input$selectall1, {
