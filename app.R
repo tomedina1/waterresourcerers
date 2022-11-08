@@ -352,7 +352,7 @@ server <- function(input, output, session) {
           choices = unique(energy_reqs$name),
           selected = c('groundwater pumping', 'reverse osmosis'),
           
-          prettyOptons = list(
+          prettyOptions = list(
             animation = 'smooth',
             plain = TRUE,
             fill = TRUE,
@@ -360,15 +360,48 @@ server <- function(input, output, session) {
         
       } else if (input$technology == 'Ocean Desalination') {
         
+        updatePrettyCheckboxGroup(
+          session = session,
+          inputId = 'energyreqs',
+          choices = unique(energy_reqs$name),
+          selected = c('reverse osmosis'),
+          
+          prettyOptions = list(
+            animation = 'smooth',
+            plain = TRUE,
+            fill = TRUE,
+            icon = icon('fas fa-check')))
+        
       
         
       } else if (input$technology == 'Direct Potable Reuse') {
         
-        next
+        updatePrettyCheckboxGroup(
+          session = session,
+          inputId = 'energyreqs',
+          choices = unique(energy_reqs$name),
+          selected = c('reverse osmosis'),
+          
+          prettyOptions = list(
+            animation = 'smooth',
+            plain = TRUE,
+            fill = TRUE,
+            icon = icon('fas fa-check')))
         
       } else {
         
-        next
+        updatePrettyCheckboxGroup(
+          session = session, 
+          inputId = "energyreqs",
+          choices = unique(energy_reqs$name),
+          selected = " ",
+          
+          # Aesthetics
+          prettyOptions = list(
+            animation = 'smooth',
+            plain = TRUE,
+            fill = TRUE,
+            icon = icon('fas fa-check')))
         
       }
       
