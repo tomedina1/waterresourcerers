@@ -142,6 +142,8 @@ energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E) {
 # a test for the energy_plot function
 test <- energy_plot(energy_reqs, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4)
 
+
+
 # load names for each technology into a character vector
 tech <- c('Direct Potable Reuse', 'Indirect Potable Reuse', 'Groundwater Desalination',
           'Ocean Desalination')
@@ -196,9 +198,8 @@ process_plot <- function(tech, process, x, RR, eta, osp, k_f, pump, k, L, E) {
   
  # bind all of the data frames generated to one dataframe
   tech_plot <- rbind(dpr, ipr, gwdesal, desal)
-  
-  
   return(tech_plot)
+  
 }
 
 # tests the function
