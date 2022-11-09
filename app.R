@@ -329,7 +329,7 @@ server <- function(input, output, session) {
   observeEvent(
     input$technology, {
       
-      if (input$technology == 'Indirect Potable Reuse') {
+      if (any(input$technology == 'Indirect Potable Reuse')) {
         
         updatePrettyCheckboxGroup(
           session = session,
@@ -345,7 +345,7 @@ server <- function(input, output, session) {
             fill = TRUE,
             icon = icon('fas fa-check')))
         
-      } else if (input$technology == 'Groundwater Desalination') {
+      } else if (any(input$technology == 'Groundwater Desalination')) {
         
         updatePrettyCheckboxGroup(
           session = session,
@@ -360,7 +360,7 @@ server <- function(input, output, session) {
             fill = TRUE,
             icon = icon('fas fa-check')))
         
-      } else if (input$technology == 'Ocean Desalination') {
+      } else if (any(input$technology == 'Ocean Desalination')) {
         
         updatePrettyCheckboxGroup(
           session = session,
@@ -375,7 +375,7 @@ server <- function(input, output, session) {
             fill = TRUE,
             icon = icon('fas fa-check')))
         
-      } else if (input$technology == 'Direct Potable Reuse') {
+      } else if (any(input$technology == 'Direct Potable Reuse')) {
         
         updatePrettyCheckboxGroup(
           session = session,
@@ -407,8 +407,8 @@ server <- function(input, output, session) {
         
       }
       
-      }
-    )
+      })
+  
   # This is the code that allows the select all button to interact with the pretty checkbox group
   observeEvent(
     input$selectall1, {

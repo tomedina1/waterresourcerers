@@ -137,5 +137,66 @@ energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E) {
   colnames(graph.df) <- c('process', 'energyreq')
   return(graph.df)
   
-  }
+}
+
+# a test for the energy_plot function
+test <- energy_plot(energy_reqs, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4)
+
+tech <- c('Direct Potable Reuse', 'Indirect Potable Reuse', 'Groundwater Desalination',
+          'Ocean Desalination')
+
+# updated plot function which plots energy requirements by process
+process_plot <- function(tech, process, x, RR, eta, osp, k_f, pump, k, L, E) {
+  
+  plot.data <- energy_plot(process, x, RR, eta, osp, k_f, pump, k, L, E)
+
+  dpr <- data.frame()
+  ipr <- data.frame()
+  desal <- data.frame()
+  gwdesal <- data.frame()
+  
+  for (i in 1:length(tech)) {
+    
+    if (tech[i] == 'Direct Potable Reuse') {
+      
+      dpr.data <- plot.data %>% 
+        filter(process %in% c('microfiltration', 'reverse osmosis', 'uv oxidation')) %>% 
+        mutate(technology = tech[i])
+      
+      dpr <- rbind(dpr, dpr.data)
+      
+    } else if (tech[i] == 'Indirect Potable Reuse') {
+      
+      ipr.data <- plot.data %>% 
+        filter(process %in% c('microfiltration', 'reverse osmosis', 'uv oxidation')) %>% 
+        mutate(technology = tech[i])
+      
+      ipr <- rbind(ipr, ipr.data)
+      
+    } else if (tech[i] == 'Groundwater Desalination') {
+      
+      gwdesal.data <- plot.data %>% 
+        filter(process %in% c('groundwater pumping', 'reverse osmosis')) %>% 
+        mutate(technology = tech[i])
+      
+      gwdesal <- rbind(gwdesal, gwdesal.data)
+      
+    } else {
+      
+      desal.data <- plot.data %>% 
+        filter(process %in% c('reverse osmosis')) %>% 
+        mutate(technology = tech[i])
+      
+      desal <- rbind(desal, desal.data)
+          
+        }}
+  
+ 
+  tech_plot <- rbind(dpr, ipr, gwdesal, desal)
+  
+  
+  return(tech_plot)
+}
+
+testprocess <- process_plot(tech, energy_reqs, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4)
 
