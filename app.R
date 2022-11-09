@@ -95,8 +95,7 @@ ui <- fluidPage(
           prettyCheckboxGroup(
             'technology',
             label = h4('Select a technology'),
-            choices = c('Direct Potable Reuse', 'Indirect Potable Reuse', 
-                        'Groundwater Desalination', 'Ocean Desalination'),
+            choices = unique(tech),
             
             # Aesthetics
             plain = TRUE,
