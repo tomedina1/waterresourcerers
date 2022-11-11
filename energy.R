@@ -101,7 +101,8 @@ recharge <- data.frame('name' = 'groundwater recharge', 'req' = 0.48)
 energy_reqs <- rbind(gwpump, ro, coag, uv, o3, uf, mf, gac, recharge)
 
 
-# plot creation function
+# FUNCTION 
+# ---------------------------------------------------------------------------------
 energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E) {
   
   x <- x * 3785.4 # MGD to m3/d
@@ -150,29 +151,36 @@ tech <- c('Direct Potable Reuse', 'Indirect Potable Reuse', 'Groundwater Desalin
           'Ocean Desalination')
 
 
-# function that outputs the plot
-technology_plot <- function(a, b, c, d, process, tech, x, RR, eta, osp, k_f, pump, k, L, E) {
+# 
+# --------------------------------------------------------------------------------------
+technology_plot <- function(a, b, c, d, process, tech, x, RR, 
+                            eta, osp, k_f, pump, k, L, E) {
   
+  # generates the energy requirement data frame based off of the selected inputs
   plot.data <- energy_plot(process, x, RR, eta, osp, k_f, pump, k, L, E)
+  
+  # condenses the 4 technology drop down menu inputs into a list
   input.vector <- c(a, b, c, d)
   inputs <- list(input.vector)
   
+  # generate a blank list and data frame
   tech.list <- list()
   tech.df <- data.frame()
   
+  # loops through the elements in the input list
   for (i in 1:length(inputs[[1]])) {
     
     data <- plot.data %>% 
-      filter(process %in% inputs[[1]][i]) %>% 
-      mutate(technology = tech[i])
+      filter(process %in% inputs[[1]][i]) %>% # filters the unit processes selected
+      mutate(technology = tech[i]) # binds the technology
     
-    tech.list[[i]] <- data
+    tech.list[[i]] <- data # appends the filtered data frame to a new element of the list
     
   }
   
   for (j in 1:length(tech.list)) {
     
-    tech.df <- rbind(tech.df, tech.list[[j]])
+    tech.df <- rbind(tech.df, tech.list[[j]]) # unzips the list into a data frame
     
   }
   
