@@ -158,6 +158,13 @@ ui <- fluidPage(
           # UI code for the Select/Deselect All Button
           actionButton("selectall1", label = "Select / Deselect all"),
           
+          # Volumetric Flow Rate (MGD)
+          textInput(
+            'vol_rate',
+            label = 'Select a flow rate (MGD)',
+            value = 10
+          ),
+          
           # SLIDERS SECTION
           # key for sliderInput()
           # 1st input is the UI/server code, label is the slider title
@@ -165,15 +172,6 @@ ui <- fluidPage(
           # value is the default value the slider is on
           # ticks are purely aesthetic
          
-           # Volumetric Flow Rate (MGD)
-          sliderInput(
-            'vol_rate',
-            label = h4('Select a flow rate (MGD)'),
-            min = 0,
-            max = 400,
-            value = 10,
-            ticks = FALSE),
-          
           # Groundwater Pumping Rate (m3/s) *I will change the units of this eventually
           sliderInput(
             'pump_rate',

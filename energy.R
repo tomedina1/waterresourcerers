@@ -85,6 +85,7 @@ energy_req <- function(a, x , pump, RR, eta, osp, k_f, k, L, E){
   
 }
 
+
 # Individual energy requirements for each unit process
 gwpump <- data.frame('name' = 'groundwater pumping', 'req' = NA)
 ro <- data.frame('name' = 'reverse osmosis', 'req' = NA)
@@ -139,69 +140,50 @@ energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E) {
   
 }
 
+
 # a test for the energy_plot function
 test <- energy_plot(energy_reqs, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4)
-
 
 
 # load names for each technology into a character vector
 tech <- c('Direct Potable Reuse', 'Indirect Potable Reuse', 'Groundwater Desalination',
           'Ocean Desalination')
 
-# updated plot function which plots energy requirements by process
-process_plot <- function(tech, process, x, RR, eta, osp, k_f, pump, k, L, E) {
-  
-  # call the plot data function
-  plot.data <- energy_plot(process, x, RR, eta, osp, k_f, pump, k, L, E)
 
-  # generate blank data frames for each technology
-  dpr <- data.frame()
-  ipr <- data.frame()
-  desal <- data.frame()
-  gwdesal <- data.frame()
+# function that outputs the plot
+technology_plot <- function(a, b, c, d, process, tech, x, RR, eta, osp, k_f, pump, k, L, E) {
   
-  for (i in 1:length(tech)) {
+  plot.data <- energy_plot(process, x, RR, eta, osp, k_f, pump, k, L, E)
+  input.vector <- c(a, b, c, d)
+  inputs <- list(input.vector)
+  
+  tech.list <- list()
+  tech.df <- data.frame()
+  
+  for (i in 1:length(inputs[[1]])) {
     
-    if (tech[i] == 'Direct Potable Reuse') {
-      
-      dpr.data <- plot.data %>% 
-        filter(process %in% c('microfiltration', 'reverse osmosis', 'uv oxidation')) %>% # select DPR processes
-        mutate(technology = tech[i]) # add name column
-      
-      dpr <- rbind(dpr, dpr.data) # bind to blank df
-      
-    } else if (tech[i] == 'Indirect Potable Reuse') {
-      
-      ipr.data <- plot.data %>% 
-        filter(process %in% c('microfiltration', 'reverse osmosis', 'uv oxidation')) %>%  # select IPR processes
-        mutate(technology = tech[i]) # add name column
-      
-      ipr <- rbind(ipr, ipr.data) # bind to blank df
-      
-    } else if (tech[i] == 'Groundwater Desalination') {
-      
-      gwdesal.data <- plot.data %>% 
-        filter(process %in% c('groundwater pumping', 'reverse osmosis')) %>%  # select gw desal processes
-        mutate(technology = tech[i]) # add name column
-      
-      gwdesal <- rbind(gwdesal, gwdesal.data) # bind to blank df
-      
-    } else {
-      
-      desal.data <- plot.data %>% 
-        filter(process %in% c('reverse osmosis')) %>% # select desal processes
-        mutate(technology = tech[i]) # add name column
-      
-      desal <- rbind(desal, desal.data) # bind to blank df
-          
-        }}
+    data <- plot.data %>% 
+      filter(process %in% inputs[[1]][i]) %>% 
+      mutate(technology = tech[i])
+    
+    tech.list[[i]] <- data
+    
+  }
   
- # bind all of the data frames generated to one dataframe
-  tech_plot <- rbind(dpr, ipr, gwdesal, desal)
-  return(tech_plot)
+  for (j in 1:length(tech.list)) {
+    
+    tech.df <- rbind(tech.df, tech.list[[j]])
+    
+  }
+  
+  return(tech.df)
   
 }
 
-# tests the function
-testprocess <- process_plot(tech, energy_reqs, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4)
+# test
+#a <- c('reverse osmosis')
+#b <- c('uv oxidation')
+#c <- c('microfiltration')
+#d <- c('groundwater pumping')
+#listtest <- technology_plot(a, b, c, d, energy_reqs, tech, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4)
 
