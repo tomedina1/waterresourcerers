@@ -107,6 +107,39 @@ ui <- fluidPage(
           h4('Select unit processes'),
           hr(style = "border-top: 1px solid #000000;"), # solid line
           
+          # Select Input Section 
+          selectInput(
+            'dpr',
+            label = 'Direct Potable Reuse',
+            choices = unique(energy_reqs$name),
+            selected = c('microfiltration', 'reverse osmosis', 'uv oxidation'),
+            multiple = TRUE
+          ),
+          
+          selectInput(
+            'ipr',
+            label = 'Indirect Potable Reuse',
+            choices = unique(energy_reqs$name),
+            selected = c('microfiltration', 'reverse osmosis', 'uv oxidation'),
+            multiple = TRUE
+          ),
+          
+          selectInput(
+            'gwdesal',
+            label = 'Groundwater Desalination',
+            choices = unique(energy_reqs$name),
+            selected = c('groundwater pumping', 'reverse osmosis'),
+            multiple = TRUE
+          ),
+          
+          selectInput(
+            'desal',
+            label = 'Ocean Desalination',
+            choices = unique(energy_reqs$name),
+            selected = c('reverse osmosis'),
+            multiple = TRUE
+          ),
+          
           # Probably will move this to a hover option (once I figure that out)
           tags$div('Assumptions: 6" diameter municipal pipe'), # assumptions
           
@@ -661,7 +694,6 @@ server <- function(input, output, session) {
       
       tooltip = 'text')
   })
-  
   
 }
 
