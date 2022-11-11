@@ -651,6 +651,7 @@ server <- function(input, output, session) {
       filter(name %in% input$unit_proc)
     
     economics_plot(total$a, total$b, total$c, input$flow_rate, total$oma, total$omb, total$omc, total$name)
+    
     })
   
   # capital cost plot
@@ -671,6 +672,7 @@ server <- function(input, output, session) {
         theme_minimal(),
       
       tooltip = 'text')
+    
     })
   
   # O&M plot

@@ -3,6 +3,8 @@
 # Taylor Medina
 
 
+# SECTION 1: Energy Calculating Functions
+# ---------------------------------------------------------------------------------------------------------
 # Pumping Energy Requirement
 e_gwpump <- function(q, k, E) {
   
@@ -54,7 +56,9 @@ r_o <- function(RR, eta, osp, x) {
   
 }
 
-# Energy Requirement Calculations
+
+# SECTION 2: Energy Calculation Functions
+# -------------------------------------------------------------------------------------
 energy_req <- function(a, x , pump, RR, eta, osp, k_f, k, L, E){
   
   x <- x * 3785.4 # convert from MGD to m3/d
@@ -86,6 +90,7 @@ energy_req <- function(a, x , pump, RR, eta, osp, k_f, k, L, E){
 }
 
 
+# ---------------------------------------------------------------------------------
 # Individual energy requirements for each unit process
 gwpump <- data.frame('name' = 'groundwater pumping', 'req' = NA)
 ro <- data.frame('name' = 'reverse osmosis', 'req' = NA)
@@ -141,7 +146,7 @@ energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E) {
   
 }
 
-
+# ---------------------------------------------------------------------------------------
 # a test for the energy_plot function
 test <- energy_plot(energy_reqs, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4)
 
@@ -151,7 +156,7 @@ tech <- c('Direct Potable Reuse', 'Indirect Potable Reuse', 'Groundwater Desalin
           'Ocean Desalination')
 
 
-# 
+# FUNCTION
 # --------------------------------------------------------------------------------------
 technology_plot <- function(a, b, c, d, process, tech, x, RR, 
                             eta, osp, k_f, pump, k, L, E) {
