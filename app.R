@@ -165,22 +165,19 @@ ui <- fluidPage(
             value = 10
           ),
           
+          # Groundwater Pumping Rate (m3/s)
+          textInput(
+            'pump_rate',
+            label = 'Select a groundwater pumping rate (m^3/s)',
+            value = 0.06),
+          
           # SLIDERS SECTION
           # key for sliderInput()
           # 1st input is the UI/server code, label is the slider title
           # min and max is the slider range
           # value is the default value the slider is on
           # ticks are purely aesthetic
-         
-          # Groundwater Pumping Rate (m3/s) *I will change the units of this eventually
-          sliderInput(
-            'pump_rate',
-            label = h4('Select a pumping rate (m3/s)'),
-            min = 0,
-            max = 2,
-            value = 0.06,
-            ticks = FALSE),
-          
+
           # Groundwater Pumping Depth (m) *This is for the groundwater depth values
           # I will change the units to feet eventually as well 
           sliderInput(

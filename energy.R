@@ -164,39 +164,64 @@ technology_plot <- function(a, b, c, d, process, tech, x, RR,
   # generates the energy requirement data frame based off of the selected inputs
   plot.data <- energy_plot(process, x, RR, eta, osp, k_f, pump, k, L, E)
   
-  # condenses the 4 technology drop down menu inputs into a list
+  # condenses the 4 technology drop down menu inputs into a vector
   input.vector <- c(a, b, c, d)
-  inputs <- list(input.vector)
   
-  # generate a blank list and data frame
-  tech.list <- list()
+  # generate a blank data frame
   tech.df <- data.frame()
   
-  # loops through the elements in the input list
-  for (i in 1:length(inputs[[1]])) {
+  # loops through the input vector and filters the plot.data to match 
+  # then attaches the associated technology to it
+  for (i in 1:length(input.vector)) {
     
-    data <- plot.data %>% 
-      filter(process %in% inputs[[1]][i]) %>% # filters the unit processes selected
-      mutate(technology = tech[i]) # binds the technology
-    
-    tech.list[[i]] <- data # appends the filtered data frame to a new element of the list
+    if (i <= length(a)) {
+      
+      # data wrangling to filter the dataset
+      data <- plot.data %>% 
+        filter(process == input.vector[i]) %>% 
+        mutate(technology = tech[1])
+      
+      tech.df <- rbind(tech.df, data) # add to the blank data frame
+      
+    } else if (i > length(a) & i <= length(a) + length(b)) {
+      
+      # data wrangling to filter the dataset
+      data <- plot.data %>% 
+        filter(process == input.vector[i]) %>% 
+        mutate(technology = tech[2])
+      
+      tech.df <- rbind(tech.df, data) # add to the blank data frame
+      
+    } else if (i > length(a) + length(b) & i <= length(input.vector) - length(d)) {
+      
+      # data wrangling to filter the dataset
+      data <- plot.data %>% 
+        filter(process == input.vector[i]) %>% 
+        mutate(technology = tech[3])
+      
+      tech.df <- rbind(tech.df, data) # add to the blank data frame
+      
+    } else {
+      
+      # data wrangling to filter the dataset
+      data <- plot.data %>% 
+        filter(process == input.vector[i]) %>% 
+        mutate(technology = tech[4])
+      
+      tech.df <- rbind(tech.df, data) # add to the blank data frame
+    }
     
   }
   
-  for (j in 1:length(tech.list)) {
-    
-    tech.df <- rbind(tech.df, tech.list[[j]]) # unzips the list into a data frame
-    
-  }
-  
+
   return(tech.df)
   
 }
 
 # test
-#a <- c('reverse osmosis')
-#b <- c('uv oxidation')
-#c <- c('microfiltration')
-#d <- c('groundwater pumping')
-#listtest <- technology_plot(a, b, c, d, energy_reqs, tech, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4)
+a <- c('reverse osmosis', 'uv oxidation')
+b <- c('uv oxidation', 'ozonation')
+c <- c('microfiltration')
+d <- c('groundwater pumping')
+listtest <- technology_plot(a, b, c, d, energy_reqs, tech, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4)
 
