@@ -143,32 +143,17 @@ ui <- fluidPage(
           # Probably will move this to a hover option (once I figure that out)
           tags$div('Assumptions: 6" diameter municipal pipe'), # assumptions
           
-          # code for the checkbox (that selects which unit processes to use)
-          prettyCheckboxGroup(
-            'energyreqs', # server/ui name for the checkbox 
-            label = h4('Select unit processes'), # title of the checkbox
-            choices = unique(energy_reqs$name), # shows choices for the checkbox 
-            
-            # aesthetics of the checkbox group
-            plain = TRUE, 
-            fill = TRUE,
-            icon = icon("fas fa-check"),
-            animation = 'smooth'),
-          
-          # UI code for the Select/Deselect All Button
-          actionButton("selectall1", label = "Select / Deselect all"),
-          
           # Volumetric Flow Rate (MGD)
-          textInput(
+          numericInput(
             'vol_rate',
             label = 'Select a flow rate (MGD)',
             value = 10
           ),
           
           # Groundwater Pumping Rate (m3/s)
-          textInput(
+          numericInput(
             'pump_rate',
-            label = 'Select a groundwater pumping rate (m^3/s)',
+            label = 'Select a groundwater pumping rate (m^ 3/s)',
             value = 0.06),
           
           # SLIDERS SECTION
@@ -353,133 +338,7 @@ server <- function(input, output, session) {
   # ENERGY REQS TAB
   # ----------------------------------------------------------------------------
   
-  observeEvent(
-    input$technology, {
-      
-      if (any(input$technology == 'Indirect Potable Reuse')) {
-        
-        updatePrettyCheckboxGroup(
-          session = session,
-          inputId = 'energyreqs',
-          choices = unique(energy_reqs$name),
-          selected = c('microfiltration', 'reverse osmosis',
-                       'uv oxidation'),
-          
-          # Aesthetics
-          prettyOptions = list(
-            animation = 'smooth',
-            plain = TRUE,
-            fill = TRUE,
-            icon = icon('fas fa-check')))
-        
-      } else if (any(input$technology == 'Groundwater Desalination')) {
-        
-        updatePrettyCheckboxGroup(
-          session = session,
-          inputId = 'energyreqs',
-          choices = unique(energy_reqs$name),
-          selected = c('groundwater pumping', 'reverse osmosis'),
-          
-          # Aesthetics
-          prettyOptions = list(
-            animation = 'smooth',
-            plain = TRUE,
-            fill = TRUE,
-            icon = icon('fas fa-check')))
-        
-      } else if (any(input$technology == 'Ocean Desalination')) {
-        
-        updatePrettyCheckboxGroup(
-          session = session,
-          inputId = 'energyreqs',
-          choices = unique(energy_reqs$name),
-          selected = c('reverse osmosis'),
-          
-          # Aesthetics
-          prettyOptions = list(
-            animation = 'smooth',
-            plain = TRUE,
-            fill = TRUE,
-            icon = icon('fas fa-check')))
-        
-      } else if (any(input$technology == 'Direct Potable Reuse')) {
-        
-        updatePrettyCheckboxGroup(
-          session = session,
-          inputId = 'energyreqs',
-          choices = unique(energy_reqs$name),
-          selected = c('reverse osmosis'),
-          
-          # Aesthetics
-          prettyOptions = list(
-            animation = 'smooth',
-            plain = TRUE,
-            fill = TRUE,
-            icon = icon('fas fa-check')))
-        
-      } else {
-        
-        updatePrettyCheckboxGroup(
-          session = session, 
-          inputId = "energyreqs",
-          choices = unique(energy_reqs$name),
-          selected = " ",
-          
-          # Aesthetics
-          prettyOptions = list(
-            animation = 'smooth',
-            plain = TRUE,
-            fill = TRUE,
-            icon = icon('fas fa-check')))
-        
-      }
-      
-      })
-  
-  # This is the code that allows the select all button to interact with the pretty checkbox group
-  observeEvent(
-    input$selectall1, {
-      
-      # only works if there is a selection
-      if (input$selectall1 > 0) {
-        
-        # this is the select all portion
-        if (input$selectall1 %% 2 == 0) {
-          
-          updatePrettyCheckboxGroup(
-            session = session, 
-            inputId = "energyreqs",
-            choices = unique(energy_reqs$name),
-            selected = c(unique(energy_reqs$name)),
-            
-            # Aesthetics
-            prettyOptions = list(
-              animation = 'smooth',
-              plain = TRUE,
-              fill = TRUE,
-              icon = icon('fas fa-check')))
-          
-          # this is the deselect all portion
-          } else {
-          
-          updatePrettyCheckboxGroup(
-            session = session, 
-            inputId = "energyreqs",
-            choices = unique(energy_reqs$name),
-            selected = " ",
-            
-            # Aesthetics
-            prettyOptions = list(
-              animation = 'smooth',
-              plain = TRUE,
-              fill = TRUE,
-              icon = icon('fas fa-check')))
-          
-        }}
-      
-    })
-  
-  
+
   # this section activates or deactivates the sliders depending on the chosen process
   observeEvent(
     input$energyreqs, {
@@ -548,10 +407,13 @@ server <- function(input, output, session) {
   
   # This calls the plot function from 'energy.R' to create the df for the plot
   plot_data <- reactive({
-  
-    energy_plot(energy_reqs %>% filter(name %in% input$energyreqs), 
-                input$vol_rate, input$rr, input$eta, input$osp, input$fitting,
-                input$pump_rate, input$rough, input$length, input$efficiency)
+    
+    plot_data <- technology_plot(input$dpr, input$ipr, input$gwdesal, input$desal,
+                    energy_reqs, tech, input$vol_rate, 
+                    input$rr, input$eta, input$osp, input$fitting, input$pump_rate, 
+                    input$rough, 
+                    input$length, input$efficiency)
+
   })
   
   # This the plot output that compares the energy requirements for each process
@@ -559,17 +421,17 @@ server <- function(input, output, session) {
     ggplotly(
       # standard ggplot()
       ggplot(data = plot_data(),
-             aes(reorder(x = process, -energyreq), 
+             aes(reorder(x = technology, -energyreq), 
                  y = energyreq, fill = process)) +
         
         geom_bar(stat = 'identity', position = position_dodge2(preserve = 'single'), 
                  width = 0.5, 
                  # this is where you edit the text when you hover over the plot
                  aes(text = paste(
-                   "process:", process, "\nenergy requirement:", 
+                   "technology:", technology, "\nenergy requirement:", 
                    energyreq, 'MW', sep = " "))) +
         
-        labs(x = 'process',
+        labs(x = 'technology',
              y = 'energy requirement (MW)') +
         theme_minimal(),
       

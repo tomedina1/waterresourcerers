@@ -219,9 +219,9 @@ technology_plot <- function(a, b, c, d, process, tech, x, RR,
 }
 
 # test
-a <- c('reverse osmosis', 'uv oxidation')
-b <- c('uv oxidation', 'ozonation')
-c <- c('microfiltration')
-d <- c('groundwater pumping')
+a <- c('microfiltration', 'reverse osmosis', 'uv oxidation')
+b <- c('microfiltration', 'reverse osmosis', 'uv oxidation')
+c <- c('groundwater pumping', 'reverse osmosis')
+d <- c('reverse osmosis')
 listtest <- technology_plot(a, b, c, d, energy_reqs, tech, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4)
 
