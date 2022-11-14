@@ -404,15 +404,15 @@ server <- function(input, output, session) {
     ggplotly(
       # standard ggplot()
       ggplot(data = plot_data(),
-             aes(reorder(x = technology, -energyreq), 
-                 y = energyreq, fill = process)) +
+             aes(x = technology, 
+                 y = energyreq)) +
         
-        geom_bar(stat = 'identity', position = position_dodge2(preserve = 'single'), 
+        geom_bar(stat = 'identity',
                  width = 0.5, 
                  # this is where you edit the text when you hover over the plot
                  aes(text = paste(
                    "technology:", technology, "\nenergy requirement:", 
-                   energyreq, 'MW', sep = " "))) +
+                   energyreq, 'MW', sep = " "), fill = process)) +
         
         labs(x = 'technology',
              y = 'energy requirement (MW)') +
