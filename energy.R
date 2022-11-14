@@ -90,6 +90,7 @@ energy_req <- function(a, x , pump, RR, eta, osp, k_f, k, L, E){
 }
 
 
+# SECTION 3: Adding energy requirements from the literature into a df
 # ---------------------------------------------------------------------------------
 # Individual energy requirements for each unit process
 gwpump <- data.frame('name' = 'groundwater pumping', 'req' = NA)
@@ -106,7 +107,7 @@ recharge <- data.frame('name' = 'groundwater recharge', 'req' = 0.48)
 energy_reqs <- rbind(gwpump, ro, coag, uv, o3, uf, mf, gac, recharge)
 
 
-# FUNCTION 
+# Generating the functions for the plot
 # ---------------------------------------------------------------------------------
 energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E) {
   
@@ -146,7 +147,6 @@ energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E) {
   
 }
 
-# ---------------------------------------------------------------------------------------
 # a test for the energy_plot function
 test <- energy_plot(energy_reqs, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4)
 
@@ -155,9 +155,7 @@ test <- energy_plot(energy_reqs, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4)
 tech <- c('Direct Potable Reuse', 'Indirect Potable Reuse', 'Groundwater Desalination',
           'Ocean Desalination')
 
-
-# FUNCTION
-# --------------------------------------------------------------------------------------
+# This is the function that generates the plot on the shiny app
 technology_plot <- function(a, b, c, d, process, tech, x, RR, 
                             eta, osp, k_f, pump, k, L, E, tech_input) {
   
@@ -209,23 +207,20 @@ technology_plot <- function(a, b, c, d, process, tech, x, RR,
         mutate(technology = tech[4])
       
       tech.df <- rbind(tech.df, data) # add to the blank data frame
-    }
-    
-  }
+      
+    }}
   
-  
+  # filters the dataframe for the technologies selected on the shiny app
   tech.df <- tech.df %>% 
     filter(technology %in% tech_input)
-  
-
   return(tech.df)
   
 }
 
 # test
-#a <- c('microfiltration', 'reverse osmosis', 'uv oxidation')
-#b <- c('microfiltration', 'reverse osmosis', 'uv oxidation')
-# <- c('groundwater pumping', 'reverse osmosis')
-#d <- c('reverse osmosis')
-#listtest <- technology_plot(a, b, c, d, energy_reqs, tech, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4)
+a <- c('microfiltration', 'reverse osmosis', 'uv oxidation')
+b <- c('microfiltration', 'reverse osmosis', 'uv oxidation')
+c <- c('groundwater pumping', 'reverse osmosis')
+d <- c('reverse osmosis')
+listtest <- technology_plot(a, b, c, d, energy_reqs, tech, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4, 'Indirect Potable Reuse')
 

@@ -141,9 +141,6 @@ ui <- fluidPage(
             multiple = TRUE
           ),
           
-          # Probably will move this to a hover option (once I figure that out)
-          tags$div('Assumptions: 6" diameter municipal pipe'), # assumptions
-          
           # Volumetric Flow Rate (MGD)
           numericInput(
             'vol_rate',
