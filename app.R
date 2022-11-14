@@ -96,6 +96,7 @@ ui <- fluidPage(
             'technology',
             label = h4('Select a technology'),
             choices = unique(tech),
+            selected = unique(tech),
             
             # Aesthetics
             plain = TRUE,
@@ -337,7 +338,57 @@ server <- function(input, output, session) {
   
   # ENERGY REQS TAB
   # ----------------------------------------------------------------------------
+  observeEvent(
+    input$technology, {
+      
+      if (any(input$technology == 'Direct Potable Reuse')) {
+        
+        enable('dpr')
+        
+      } else {
+        
+        disable('dpr')
+      
+        }})
   
+  observeEvent(
+    input$technology, {
+      
+      if (any(input$technology == 'Indirect Potable Reuse')) {
+        
+        enable('ipr')
+        
+      } else {
+        
+        disable('ipr')
+        
+      }})
+  
+  observeEvent(
+    input$technology, {
+      
+      if (any(input$technology == 'Groundwater Desalination')) {
+        
+        enable('gwdesal')
+        
+      } else {
+        
+        disable('gwdesal')
+        
+      }})
+  
+  observeEvent(
+    input$technology, {
+      
+      if (any(input$technology == 'Ocean Desalination')) {
+        
+        enable('desal')
+        
+      } else {
+        
+        disable('desal')
+        
+      }})
 
   # this section activates or deactivates the sliders depending on the chosen process
   observeEvent(
