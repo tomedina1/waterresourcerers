@@ -334,45 +334,36 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   # ENERGY REQS TAB
-  # ----------------------------------------------------------------------------
+  # ----------------------------------------------------------------------------------------
+  
+  # This section of the code deactivates the unit processes boxes based on what is selected
   observeEvent(
     input$technology, {
       
-      if (any(input$technology == 'Direct Potable Reuse')) {
-        
-        enable('dpr')
-        
-      } else {
-        
-        disable('dpr')
+      if (any(input$technology == 'Direct Potable Reuse')) enable('dpr') else disable('dpr')
       
-        }})
+      })
   
   observeEvent(
     input$technology, {
       
-      if (any(input$technology == 'Indirect Potable Reuse')) {
-        
-        enable('ipr')
-        
-      } else {
-        
-        disable('ipr')
-        
-      }})
+      if (any(input$technology == 'Indirect Potable Reuse')) enable('ipr') else disable('ipr')  
+      
+      })
   
   observeEvent(
     input$technology, {
       
-      if (any(input$technology == 'Groundwater Desalination')) {
-        
-        enable('gwdesal')
-        
-      } else {
-        
-        disable('gwdesal')
-        
-      }})
+      if (any(input$technology == 'Groundwater Desalination')) enable('gwdesal') else disable('gwdesal')
+      
+      })
+  
+  observeEvent(
+    input$technology, {
+      
+      if(any(input$technology == 'Ocean Desalination')) enable('desal') else disable('desal')
+      
+    })
   
   # TEXT OUTPUT FOR ENERGY REQUIREMENT
   output$gwptext <- renderText({
