@@ -377,70 +377,6 @@ server <- function(input, output, session) {
         
       }})
   
-  observeEvent(
-    input$technology, {
-      
-      if (any(input$technology == 'Ocean Desalination')) {
-        
-        enable('desal')
-        
-      } else {
-        
-        disable('desal')
-        
-      }})
-
-  # this section activates or deactivates the sliders depending on the chosen process
-  observeEvent(
-    input$energyreqs, {
-      
-      # if both reverse osmosis and groundwater pumping are selected
-      if (any(input$energyreqs == 'groundwater pumping') & any(input$energyreqs == 'reverse osmosis')) {
-        
-        enable('length') 
-        enable('fitting')
-        enable('rough') 
-        enable('efficiency')
-        enable('rr')
-        enable('eta')
-        enable('osp')
-        
-        # if ro is selected but not gw pumping
-        } else if (any(input$energyreqs == 'reverse osmosis')) {
-        
-        enable('rr')
-        enable('eta')
-        enable('osp')
-        disable('length') 
-        disable('fitting')  
-        disable('rough') 
-        disable('efficiency')
-        
-        # if gw pumping is selected but not ro
-        } else if (any(input$energyreqs == 'groundwater pumping')) {
-        
-        enable('length') 
-        enable('fitting')  
-        enable('rough') 
-        enable('efficiency')
-        disable('rr')
-        disable('eta')
-        disable('osp')
-        
-        # if both ro and gw pumping are not selected
-        } else {
-        
-        disable('length') 
-        disable('fitting')  
-        disable('rough') 
-        disable('efficiency')
-        disable('rr')
-        disable('eta')
-        disable('osp')
-        
-        }}
-    )
-  
   # TEXT OUTPUT FOR ENERGY REQUIREMENT
   output$gwptext <- renderText({
     # data wrangling -- filters data for only selected processes
@@ -460,10 +396,9 @@ server <- function(input, output, session) {
   plot_data <- reactive({
     
     plot_data <- technology_plot(input$dpr, input$ipr, input$gwdesal, input$desal,
-                    energy_reqs, tech, input$vol_rate, 
-                    input$rr, input$eta, input$osp, input$fitting, input$pump_rate, 
-                    input$rough, 
-                    input$length, input$efficiency)
+                    energy_reqs, tech, input$vol_rate, input$rr, input$eta, 
+                    input$osp, input$fitting, input$pump_rate, input$rough, 
+                    input$length, input$efficiency, input$technology)
 
   })
   

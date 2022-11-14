@@ -159,7 +159,7 @@ tech <- c('Direct Potable Reuse', 'Indirect Potable Reuse', 'Groundwater Desalin
 # FUNCTION
 # --------------------------------------------------------------------------------------
 technology_plot <- function(a, b, c, d, process, tech, x, RR, 
-                            eta, osp, k_f, pump, k, L, E) {
+                            eta, osp, k_f, pump, k, L, E, tech_input) {
   
   # generates the energy requirement data frame based off of the selected inputs
   plot.data <- energy_plot(process, x, RR, eta, osp, k_f, pump, k, L, E)
@@ -213,15 +213,19 @@ technology_plot <- function(a, b, c, d, process, tech, x, RR,
     
   }
   
+  
+  tech.df <- tech.df %>% 
+    filter(technology %in% tech_input)
+  
 
   return(tech.df)
   
 }
 
 # test
-a <- c('microfiltration', 'reverse osmosis', 'uv oxidation')
-b <- c('microfiltration', 'reverse osmosis', 'uv oxidation')
-c <- c('groundwater pumping', 'reverse osmosis')
-d <- c('reverse osmosis')
-listtest <- technology_plot(a, b, c, d, energy_reqs, tech, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4)
+#a <- c('microfiltration', 'reverse osmosis', 'uv oxidation')
+#b <- c('microfiltration', 'reverse osmosis', 'uv oxidation')
+# <- c('groundwater pumping', 'reverse osmosis')
+#d <- c('reverse osmosis')
+#listtest <- technology_plot(a, b, c, d, energy_reqs, tech, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4)
 
