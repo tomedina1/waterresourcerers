@@ -2,6 +2,7 @@
 # Energy
 # Taylor Medina
 
+library(tidyverse)
 
 # SECTION 1: Energy Calculating Functions
 # ---------------------------------------------------------------------------------------------------------
@@ -25,7 +26,7 @@ friction_factor <- function(q, k) {
   # q is the volumetric flow rate (m3/d) and k is the pipe roughness 
   v <- q / 0.018238673 # convert flow rate to instantaneous velocity 
   Re <- (v * 0.1524) / 1.0035e-6 # 0.1524 is the diameter of a 6 inch pipe, 1e-6 is the kinematic viscosity of water
-  f <- 0.25 / ((log10(k / (3.75 * 0.1524)) + 5.74 / (Re ^ 0.9))^ 2) # friction factor equation f(k, Re)
+  f <- 0.25 / ((log10(k / (3.75 * 0.1524)) + 5.74 / (Re ^ 0.9)) ^ 2) # friction factor equation f(k, Re)
   return(f)
   
 }
@@ -43,12 +44,49 @@ system_losses <- function(k_f, q, k, L) {
   
 }
 
+ro_calc <- function(x, RR, N, pi) {
+  
+  # calculate the velocity (m/s) (from the volumetric flow rate)
+  J <- x / 1 # area here (change from 1)
+  
+  # w is the output in kWh / m3
+  # w is the energy requirement equation for RO modeled as a continuous process
+  w <- 1 / (0.75 * RR) * (pi * (N / ((1 - RR) ^ (1 / N)) + 1 - N) + (J / 8.3e-12))
+  return(w)
+  
+}
+
+ro_type <- function(x, tech) {
+  
+  for (i in 1:length(tech)) {
+    
+    if (str_detect(tech[i], 'Reuse')) {
+      
+      ro_calc(x, 0.8, 1, 1) # edit the pressure value
+      
+    } else if (str_detect(tech[i], 'Ground')) {
+      
+      ro_calc(x, 0.8, 1, 1) # edit the conditions 
+      
+    } else if (str_detect(tech[i], 'Ocean'))  {
+      
+      ro_calc(x, 0.8, 2, 1) # edit the conditions
+      
+    } else {
+      
+      next
+      
+      }
+    
+    }}
 
 # RO Energy Requirement
 r_o <- function(RR, eta, osp, x) {
   
   # calculates the RO energy requirements modeled as a semibatch process
   # This is noted in Gu et al. 2021 that Potable Reuse follows SB processes
+  
+  
   
   sb <- (1 / eta) * (x + osp * (1 + RR / (2 * (1 - RR))))
   sb_out <- sb / 24 * x
@@ -79,7 +117,7 @@ energy_req <- function(a, x , pump, RR, eta, osp, k_f, k, L, E){
       
     } else { # runs the scaling energy requirement
       
-      o_req <- a$req[i] * x / 24 * 365
+      o_req <- a$req[i] 
       e_req <- rbind(e_req, o_req)
       
     }}
