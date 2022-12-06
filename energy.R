@@ -9,7 +9,7 @@ library(tidyverse)
 # Pumping Energy Requirement
 e_gwpump <- function(q, k, E) {
   
-  # q is the volumetric flow rate (m3/d), k is the total system losses and E is the pump efficiency
+  # q is the volumetric flow rate (m3/s), k is the total system losses and E is the pump efficiency
   # 0.018238673 is the area of a 6" pipe
   # 9.81 is the gravitation constant
   h <- (k * (q / 0.018238673) ^ 2) / (2 * 9.81)
@@ -56,30 +56,6 @@ ro_calc <- function(x, RR, N, pi) {
   
 }
 
-ro_type <- function(x, tech) {
-  
-  for (i in 1:length(tech)) {
-    
-    if (str_detect(tech[i], 'Reuse')) {
-      
-      ro_calc(x, 0.8, 1, 1) # edit the pressure value
-      
-    } else if (str_detect(tech[i], 'Ground')) {
-      
-      ro_calc(x, 0.8, 1, 1) # edit the conditions 
-      
-    } else if (str_detect(tech[i], 'Ocean'))  {
-      
-      ro_calc(x, 0.8, 2, 1) # edit the conditions
-      
-    } else {
-      
-      next
-      
-      }
-    
-    }}
-
 # RO Energy Requirement
 r_o <- function(RR, eta, osp, x) {
   
@@ -105,12 +81,13 @@ energy_req <- function(a, x , pump, RR, eta, osp, k_f, k, L, E){
   
   for (i in 1:length(a$name)) {
     
-    if (a$name[i] == 'reverse osmosis') { # runs the semibatch reactor equation
+    #if (a$name[i] == 'reverse osmosis') { # runs the semibatch reactor equation
       
-      ro_req <- r_o(RR, eta, osp, x)
-      e_req <- rbind(e_req, ro_req)
+     # ro_req <- r_o(RR, eta, osp, x)
+     # e_req <- rbind(e_req, ro_req)
       
-    } else if (a$name[i] == 'groundwater pumping') { # runs the pump requirement equation
+    #} else
+    if (a$name[i] == 'groundwater pumping') { # runs the pump requirement equation
       
       pump_req <- e_gwpump(pump, system_losses(k_f, pump, k, L), E)
       e_req <- rbind(e_req, pump_req)
@@ -132,7 +109,7 @@ energy_req <- function(a, x , pump, RR, eta, osp, k_f, k, L, E){
 # ---------------------------------------------------------------------------------
 # Individual energy requirements for each unit process
 gwpump <- data.frame('name' = 'groundwater pumping', 'req' = NA)
-ro <- data.frame('name' = 'reverse osmosis', 'req' = NA)
+ro <- data.frame('name' = 'reverse osmosis', 'req' = mean(3.3, 8.5))
 coag <- data.frame('name' = 'coagulation', 'req' = mean(0.4, 0.7))
 uv <- data.frame('name' = 'uv oxidation', 'req' = mean(0.01, 0.05))
 o3 <- data.frame('name' = 'ozonation', 'req' = mean(0.05 * 3.79, 0.12 * 3.79) / 24)
@@ -163,17 +140,20 @@ energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E) {
       graph.df <- rbind(graph.df, pump_req)
       name.df <- rbind(name.df, a$name[i])
     
-    } else if (a$name[i] == 'reverse osmosis') { 
+    } 
+    
+    #else if (a$name[i] == 'reverse osmosis') { 
       
       # run the semibatch equation 
-      ro_req <- r_o(RR, eta, osp, x)
-      graph.df <- rbind(graph.df, ro_req)
-      name.df <- rbind(name.df, a$name[i])
+     # ro_req <- r_o(RR, eta, osp, x)
+    #  graph.df <- rbind(graph.df, ro_req)
+     # name.df <- rbind(name.df, a$name[i])
                      
-    } else {
+  #  } 
+  else {
       
       # run the equations for the rest of the processes
-      o_req <- a$req[i] * x / 24 * 365
+      o_req <- a$req[i] 
       graph.df <- rbind(graph.df, o_req)
       name.df <- rbind(name.df, a$name[i])
       

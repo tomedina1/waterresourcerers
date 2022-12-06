@@ -72,7 +72,7 @@ ui <- fluidPage(
     # --------------------------------------------------------------------------
     tabPanel(
       # tab title here
-      'ENERGY REQUIREMENTS',
+      'REQUIREMENTS',
       # tab layout here
       sidebarLayout(
         
@@ -340,10 +340,10 @@ server <- function(input, output, session) {
                  # this is where you edit the text when you hover over the plot
                  aes(text = paste(
                    "process:", process, "\nenergy requirement:", 
-                   energyreq, 'MW', sep = " "), fill = process)) +
+                   energyreq, 'kWh / m3', sep = " "), fill = process)) +
         
         labs(x = 'technology',
-             y = 'energy requirement (MW)') +
+             y = 'energy requirement (kWh / m3)') +
         theme_minimal(),
       
       # this lets you see the text on ggplotly
@@ -379,7 +379,7 @@ server <- function(input, output, session) {
              aes(x = technology,
                  y = omex)) +
         geom_bar(stat = 'identity', width = 0.5,
-                 aes(text = paste("process:", process, "\nOMEX ($M / MGD):", capex, sep = " "),
+                 aes(text = paste("process:", process, "\nOMEX ($M / MGD):", omex, sep = " "),
                      fill = process)) +
         labs(x = 'technology', y = 'O&M cost ($M / MGD)') +
         theme_minimal(),
