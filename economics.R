@@ -32,7 +32,7 @@ calculate_costs <- function(a, b, c, x, year){
         
         y <- a[i] * log10(x) ^ (b[i]) + c[i] # calculates log(y)
         unlog_y <- 10 ^ y 
-        final_y <- 1.25 * unlog_y # 2014 dollar to 2022 dollar (October)
+        final_y <- 1.25 * unlog_y * 1e-6 # 2014 dollar to 2022 dollar (October)
         costs <- rbind(costs, final_y) # binds the output for each iteration to the blank df
         
         x <- x / 3785.4 # convert back to MGD
@@ -43,7 +43,7 @@ calculate_costs <- function(a, b, c, x, year){
         # y: $M/MGD
         # multiply y by 1e6 and by x to get costs
         
-        y_value <- a[i] * x ^ (b[i]) * 1e6 * x 
+        y_value <- a[i] * x ^ (b[i]) 
         y_conversion <- 1.25 * y_value # converts from 2014 dollars to current dollar (2022 October)
         costs <- rbind(costs, y_conversion) # binds the output for each iteration to the blank df
       
@@ -75,12 +75,12 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name) {
       # CAPEX Calculation
       y <- a[i] * log10(x) ^ (b[i]) + c[i] # calculates log(y)
       unlog_y <- 10 ^ y 
-      final_y <- 1.25 * unlog_y # 2014 dollar to 2022 dollar (October)
+      final_y <- 1.25 * unlog_y * 1e-6 # 2014 dollar to 2022 dollar (October)
       
       # O&M Calculation
       omy <- oma[i] * log10(x) ^ (omb[i]) + omc[i] # calculates log(y)
       unlog_omy <- 10 ^ omy 
-      final_omy <- 1.25 * unlog_omy # 2014 dollar to 2022 dollar (October)
+      final_omy <- 1.25 * unlog_omy * 1e-6 # 2014 dollar to 2022 dollar (October)
       
       process.df <- rbind(process.df, name[i]) # binds process name to df
       capex.df <- rbind(capex.df, final_y) # binds capex cost to df
@@ -92,11 +92,11 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name) {
       
       # Using equation from Plumlee et. al. (2014)
       # CAPEX calculation
-      y_value <- a[i] * x ^ (b[i]) * 1e6 * x 
+      y_value <- a[i] * x ^ (b[i]) 
       y_conversion <- 1.25 * y_value # converts from 2014 dollars to current dollar (2022 October)
       
       # O&M calculation
-      omy_value <- oma[i] * x ^ (omb[i]) * 1e6 * x
+      omy_value <- oma[i] * x ^ (omb[i]) 
       omy_conversion <- 1.25 * omy_value # converts from 2014 dollars to current dollar (2022 October)
       
       process.df <- rbind(process.df, name[i]) # binds process name to df
@@ -127,25 +127,74 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name) {
   
 }
 
+economics_techplot <- function(a, b, c, x, oma, omb, omc, name, input1, 
+                               input2, input3, input4, tech, tech_input) {
+  
+  # outputs plot data
+  plot.data <- economics_plot(a, b, c, x, oma, omb, omc, name)
+  
+  # turns inputs into a vector
+  input.vector <- c(input1, input2, input3, input4)
+  
+  # generates a blank dataframe for the output
+  tech.df <- data.frame()
+  
+  for (i in 1:length(input.vector)) {
+    
+    if (i <= length(input1)) {
+      
+      data <- plot.data %>% 
+        filter(process == input.vector[i]) %>% 
+        mutate(technology = tech[1])
+      
+      tech.df <- rbind(tech.df, data)
+      
+    } else if (i > length(input1) & i <= length(input1) + length(input2)) {
+      
+      data <- plot.data %>% 
+        filter(process == input.vector[i]) %>% 
+        mutate(technology = tech[2])
+      
+      tech.df <- rbind(tech.df, data) # add to the blank data frame
+      
+    } else if (i > length(input1) + length(input2) & i <= length(input.vector) - length(input4)) {
+      
+      # data wrangling to filter the dataset
+      data <- plot.data %>% 
+        filter(process == input.vector[i]) %>% 
+        mutate(technology = tech[3])
+      
+      tech.df <- rbind(tech.df, data) # add to the blank data frame
+      
+    } else {
+      
+      # data wrangling to filter the dataset
+      data <- plot.data %>% 
+        filter(process == input.vector[i]) %>% 
+        mutate(technology = tech[4])
+      
+      tech.df <- rbind(tech.df, data) # add to the blank data frame
+      
+    }}
+  
+  tech.df <- tech.df %>% 
+    filter(technology %in% tech_input)
+  return(tech.df)
+        
+  }
+  
+  
+  
+
+
 # SECTION 2: DATA INPUT AND DATAFRAME GENERATION
 # ------------------------------------------------------------------------------------------------------------------------
 
-# Coagulation and Flocculation (Guo et al. 2014)
-coag <- data.frame('name' = 'coagulation & flocculation',
-                   'a' = 0.569,
-                   'b' = 1.135,
-                   'c' = 4.605,
-                   'oma' = 0.347,
-                   'omb' = 1.448,
-                   'omc' = 2.633,
-                   'year' = NA,
-                   'yearom' = NA)
-
 # Reverse Osmosis (Guo et. al. 2014)
 ro <- data.frame('name' = 'reverse osmosis',
-                 'a' = 0.222,
-                 'b' = 1.516,
-                 'c' = 3.071,
+                 'a' = 0.966,
+                 'b' = 0.929,
+                 'c' = 3.082,
                  'oma' = 0.534,
                  'omb' = 1.253,
                  'omc' = 2.786,
@@ -154,9 +203,9 @@ ro <- data.frame('name' = 'reverse osmosis',
 
 # Membrane Ultrafiltration (Guo et. al. 2014)
 uf <- data.frame('name' = 'ultrafiltration',
-                 'a' = 0.966,
-                 'b' = 0.929,
-                 'c' = 3.082,
+                 'a' = 1.003,
+                 'b' = 0.830,
+                 'c' = 3.832,
                  'oma' = 1.828,
                  'omb' = 0.598,
                  'omc' = 1.876,
@@ -185,23 +234,10 @@ o3 <- data.frame('name' = 'ozonation',
                  'year' = 2014,
                  'yearom' = 2014)
 
-# UV Disinfection + Ozonation
-# Capital Cost (Plumlee et. al. 2014)
-# O&M (Plumlee et. al. 2014)
-uv <- data.frame('name' = 'uv disinfection + ozone',
-                 'a' = 2.26,
-                 'b' = -0.54,
-                 'c' = 0,
-                 'oma' = 0.016,
-                 'omb' = -0.02,
-                 'omc' = 0,
-                 'year' = 2014,
-                 'yearom' = 2014)
-
 # UV Disinfection + Hydrogen Peroxide
 # Capital Cost (Plumlee et. al. 2014)
 # O&M (Plumlee et. al. 2014)
-uvh2o2 <- data.frame('name' = 'uv disinfection + h2o2',
+uvh2o2 <- data.frame('name' = 'uv oxidation',
                  'a' = 0.474,
                  'b' = -0.056,
                  'c' = 0,
@@ -224,13 +260,21 @@ mf <- data.frame('name' = 'microfiltration',
                  'year' = 2014,
                  'yearom' = 2014)
 
+gw <- data.frame('name' = 'groundwater pumping',
+                 'a' = 0, 'b' = 0, 'c' = 0,
+                 'oma' = 0, 'omb' = 0, 'omc' = 0,
+                 'year' = NA, 'yearom' = NA)
+
 
 # combines the dataframes together
-total <- rbind(coag, ro, uf, gac, o3, uv, uvh2o2, mf)
+total <- rbind(ro, uf, gac, o3, uvh2o2, mf, gw)
 
 # tests the functions using a flow rate of 10 MGD
 cctest <- calculate_costs(total$a, total$b, total$c, 10, total$year)
 omtest <- calculate_costs(total$oma, total$omb, total$omc, 10, total$yearom)
 graphtest <- economics_plot(total$a, total$b, total$c, 10, total$oma, total$omb, total$omc, total$name)
+
+plottestecon <- economics_techplot(total$a, total$b, total$c, 10, total$oma, total$omb, total$omc, total$name,
+                                   a, b, c, d, tech, c('Direct Potable Reuse', 'Indirect Potable Reuse', 'Groundwater Desalination'))
 
 

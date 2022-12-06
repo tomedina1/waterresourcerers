@@ -229,69 +229,14 @@ ui <- fluidPage(
         # ----------------------------------------------------------------------
         mainPanel(
           textOutput('gwptext'), # outputs the energy requirement
-          plotlyOutput('eplot')) # outputs the energy plot
+          plotlyOutput('eplot'),
+          plotlyOutput('capex_plot'),
+          plotlyOutput('omex_plot')),
+
              )),
     
     
-    # TAB 3:ECONOMICS
-    # --------------------------------------------------------------------------
-    tabPanel(
-      # Tab Title Here
-      'ECONOMICS',
-      # Tab Layout Here
-      sidebarLayout(
-        
-        # SIDE BAR SECTION
-        # ----------------------------------------------------------------------
-        sidebarPanel(
-          
-          width = 3, # side bar panel width
-          
-          # hides warning and error messages on the shiny app
-          tags$style(
-            type = "text/css",
-            ".shiny-output-error { visibility: hidden; }",
-            ".shiny-output-error: before { visibility: hidden; }"),
-          
-          # Side bar panel title
-          h3('Create a tertiary treatment process'),
-          hr(style = "border-top: 1px solid #000000;"), # horizontal line
-          
-          # code for the checkbox
-          prettyCheckboxGroup(
-            'unit_proc',
-            label = h4('Select unit processes'), # checkbox title
-            choices = unique(total$name),
-            
-            # checkbox aesthetics
-            plain = TRUE,
-            fill = TRUE,
-            icon = icon("fas fa-check"),
-            animation = 'smooth'),
-                              
-          # UI code for the Select/Deselect All Button
-          actionButton("selectall", label = "Select / Deselect all"),
-          
-          # Slider Input for the volumetric flow rate (MGD)
-          sliderInput(
-            'flow_rate',
-            label = h4('Select a flow rate (MGD)'),
-            min = 0,
-            max = 400,
-            value = 10,
-            ticks = FALSE)),
-        
-        
-        # MAIN PANEL SECTION
-        # ----------------------------------------------------------------------
-        mainPanel(
-          textOutput('capex'), # outputs the capital cost
-          textOutput('om'), # outputs the O&M costs
-          plotlyOutput('capexplot'), # outputs the CAPEX plot
-          plotlyOutput('omexplot')) # Outputs the OMEX plot
-        )),
-    
-    # TAB 4: INFORMATION
+    # TAB 3: INFORMATION
     # --------------------------------------------------------------------------
     tabPanel(
       'INFORMATION',
@@ -308,7 +253,7 @@ ui <- fluidPage(
         mainPanel()
              )),
     
-    # TAB 5: ABOUT
+    # TAB 4: ABOUT
     # --------------------------------------------------------------------------
     tabPanel(
       'ABOUT',
@@ -339,30 +284,22 @@ server <- function(input, output, session) {
   # This section of the code deactivates the unit processes boxes based on what is selected
   observeEvent(
     input$technology, {
-      
       if (any(input$technology == 'Direct Potable Reuse')) enable('dpr') else disable('dpr')
-      
       })
   
   observeEvent(
     input$technology, {
-      
       if (any(input$technology == 'Indirect Potable Reuse')) enable('ipr') else disable('ipr')  
-      
       })
   
   observeEvent(
     input$technology, {
-      
       if (any(input$technology == 'Groundwater Desalination')) enable('gwdesal') else disable('gwdesal')
-      
       })
   
   observeEvent(
     input$technology, {
-      
-      if(any(input$technology == 'Ocean Desalination')) enable('desal') else disable('desal')
-      
+      if (any(input$technology == 'Ocean Desalination')) enable('desal') else disable('desal')
     })
   
   # TEXT OUTPUT FOR ENERGY REQUIREMENT
@@ -402,7 +339,7 @@ server <- function(input, output, session) {
                  width = 0.5, 
                  # this is where you edit the text when you hover over the plot
                  aes(text = paste(
-                   "technology:", technology, "\nenergy requirement:", 
+                   "process:", process, "\nenergy requirement:", 
                    energyreq, 'MW', sep = " "), fill = process)) +
         
         labs(x = 'technology',
@@ -412,121 +349,44 @@ server <- function(input, output, session) {
       # this lets you see the text on ggplotly
       tooltip = 'text') 
   })
- 
-  # ECONOMICS TAB
-  # ---------------------------------------------------------------------------- 
-  # interaction between select all button and checkbox 
-  observeEvent(
-    input$selectall, {
-      
-      # only works if there is a selection
-      if (input$selectall > 0) {
-        
-        # this is the select all portion
-        if (input$selectall %% 2 == 0) {
-          
-          updatePrettyCheckboxGroup(
-            session = session, 
-            inputId = "unit_proc",
-            choices = unique(total$name),
-            selected = c(unique(total$name)),
-            
-            # Aesthetics
-            prettyOptions = list(
-              animation = 'smooth',
-              plain = TRUE,
-              fill = TRUE,
-              icon = icon('fas fa-check')))
-          
-        # this is the deselect all portion
-        } else {
-          
-          updatePrettyCheckboxGroup(
-            session = session, 
-            inputId = "unit_proc",
-            choices = unique(total$name),
-            selected = " ",
-            
-            # Aesthetics
-            prettyOptions = list(
-              animation = 'smooth',
-              plain = TRUE,
-              fill = TRUE,
-              icon = icon('fas fa-check')))
-          
-        }}
-      
-    })
-   
-  # Output for the capital cost 
-  output$capex <- renderText({
-    total <- total %>% 
-      filter(name %in% input$unit_proc) # filters df to selected values
-    
-    paste0('The total capital cost is: $', 
-           round(
-             calculate_costs(total$a, total$b, total$c, input$flow_rate, total$year),2))
-    })
   
-  # Output for the O&M cost
-  output$om <- renderText({  
-    total <- total %>% 
-      filter(name %in% input$unit_proc)
+  econplot_data <- reactive({
     
-    paste0('The total O&M cost is: $', 
-           round(
-             calculate_costs(total$oma, total$omb, total$omc, input$flow_rate, total$yearom), 2))
-    })
+    econplot_data <- economics_techplot(total$a, total$b, total$c, input$vol_rate, total$oma,
+                                    total$omb, total$omc, total$name, input$dpr, input$ipr, input$gwdesal,
+                                    input$desal, tech, input$technology)
+  })
   
-  # Generates the dataframe for the capex and omex plots
-  econ_plotdata <- reactive({
-    total <- total %>% 
-      filter(name %in% input$unit_proc)
-    
-    economics_plot(total$a, total$b, total$c, input$flow_rate, total$oma, total$omb, total$omc, total$name)
-    
-    })
-  
-  # capital cost plot
-  output$capexplot <- renderPlotly({
+  output$capex_plot <- renderPlotly({
     ggplotly(
-      ggplot(data = econ_plotdata(),
-             aes(reorder(x = process, -capex), 
-                 y = capex, fill = process)) +
-        
-        geom_bar(stat = 'identity', position = position_dodge2(preserve = 'single'),
-                 width = 0.5, 
-                 aes(text = paste('process:', process, "\nCAPEX ($):", round(capex, 2), sep = " "))) + 
-        
-        geom_errorbar(aes(ymin = capex - lower, ymax = capex + upper), width = 0.1) +
-        
-        labs(x = 'Process',
-             y = 'Capital Cost ($)') +
-        theme_minimal(),
       
-      tooltip = 'text')
-    
-    })
-  
-  # O&M plot
-  output$omexplot <- renderPlotly({
-    ggplotly(
-      ggplot(data = econ_plotdata(),
-             aes(reorder(x = process, -omex), 
-                 y = omex, fill = process)) +
-        
-        geom_bar(stat = 'identity', position = position_dodge2(preserve = 'single'),
-                 width = 0.5, 
-                 aes(text = paste('process:', process, "\nO&M ($):", round(omex, 2), sep = " "))) +
-        
-        geom_errorbar(aes(ymin = omex - lowerom, ymax = omex + upperom), width = 0.1) +
-         
-        labs(x = 'Process',
-             y = 'O&M Costs ($)') +
+      ggplot(data = econplot_data(),
+             aes(x = technology,
+                 y = capex)) +
+        geom_bar(stat = 'identity', width = 0.5,
+                 aes(text = paste("process:", process, "\nCAPEX ($M / MGD):", capex, sep = " "),
+                     fill = process)) +
+        labs(x = 'technology', y = 'capital cost ($M / MGD)') +
         theme_minimal(),
       
       tooltip = 'text')
   })
+  
+  output$omex_plot <- renderPlotly({
+    ggplotly(
+      
+      ggplot(data = econplot_data(),
+             aes(x = technology,
+                 y = omex)) +
+        geom_bar(stat = 'identity', width = 0.5,
+                 aes(text = paste("process:", process, "\nOMEX ($M / MGD):", capex, sep = " "),
+                     fill = process)) +
+        labs(x = 'technology', y = 'O&M cost ($M / MGD)') +
+        theme_minimal(),
+      
+      tooltip = 'text')
+  })
+  
   
 }
 
