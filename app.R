@@ -351,7 +351,7 @@ server <- function(input, output, session) {
                    "process:", process, "\nenergy requirement:", 
                    round(energyreq, 2), 'kWh / m3', sep = " "), fill = process)) +
         
-        labs(x = 'technology',
+        labs(x = NULL,
              y = 'energy requirement (kWh / m3)') +
         theme_minimal(),
       
@@ -381,7 +381,7 @@ server <- function(input, output, session) {
         
         geom_errorbar(data = econ_error(), aes(x = technology, ymin = capex_lower, ymax = capex_upper), width = .2) +
         
-        labs(x = 'technology', y = 'capital cost ($M / MGD)') +
+        labs(x = NULL, y = 'capital cost ($M / MGD)') +
         theme_minimal(),
       
       tooltip = 'text')
@@ -398,7 +398,7 @@ server <- function(input, output, session) {
         
         geom_errorbar(data = econ_error(), aes(x = technology, ymin = omex_lower, ymax = omex_upper), width = .2) +
         
-        labs(x = 'technology', y = 'O&M cost ($M / MGD)') +
+        labs(x = NULL, y = 'O&M cost ($M / MGD)') +
         theme_minimal(),
       
       tooltip = 'text')
