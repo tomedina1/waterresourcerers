@@ -127,6 +127,7 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name) {
   
 }
 
+# This function generates the dataframe for the economics plot
 economics_techplot <- function(a, b, c, x, oma, omb, omc, name, input1, 
                                input2, input3, input4, tech, tech_input) {
   
@@ -147,7 +148,7 @@ economics_techplot <- function(a, b, c, x, oma, omb, omc, name, input1,
         filter(process == input.vector[i]) %>% 
         mutate(technology = tech[1])
       
-      tech.df <- rbind(tech.df, data)
+      tech.df <- rbind(tech.df, data) # adds to the blank data frame
       
     } else if (i > length(input1) & i <= length(input1) + length(input2)) {
       
@@ -184,6 +185,7 @@ economics_techplot <- function(a, b, c, x, oma, omb, omc, name, input1,
 }
 
 
+# this function uses economics plot data and generates the error bars (-30% / + 50%)
 econ_errorbars <- function(econ_data) {
   
   error <- econ_data %>% 

@@ -88,7 +88,7 @@ ui <- fluidPage(
             ".shiny-output-error: before { visibility: hidden; }"),
           
           # Title of sidebar panel
-          h3('TITLE HERE'),
+          h3('TECHNOLOGY REQUIREMENTS'),
           hr(style = "border-top: 1px solid #000000;"), 
           
           # Code for checkbox that lets you select a technology
@@ -104,7 +104,7 @@ ui <- fluidPage(
             icon = icon("fas fa-check"),
             animation = 'smooth'),
           
-          # Title of side bar panel (h3 is the heading size)
+          # Title of side bar panel (h4 is the heading size)
           h4('Select unit processes'),
           hr(style = "border-top: 1px solid #000000;"), # solid line
           
@@ -164,17 +164,12 @@ ui <- fluidPage(
           # Groundwater Pumping Depth (m) *This is for the groundwater depth values
           # I will change the units to feet eventually as well 
           
-          sliderInput(
-            'hours',
-            label = h4('Select an operating time'),
-            min = 0,
-            max = 24,
-            value = 24,
-            ticks = FALSE),
+          h4('Groundwater Pumping Parameters'),
+          hr(style = "border-top: 1px solid #000000;"), # solid line
           
           sliderInput(
             'length',
-            label = h4('Select a pipe depth (m)'),
+            label = 'Select a pipe depth (m)',
             min = 0,
             max = 100,
             value = 20,
@@ -183,7 +178,7 @@ ui <- fluidPage(
           # Pipe Roughness Slider (unitless) -- a friction factor
           sliderInput(
             'rough',
-            label = h4('Pipe roughness factor'),
+            label = 'Pipe roughness factor',
             min = 0,
             max = 1,
             value = 0.2,
@@ -192,7 +187,7 @@ ui <- fluidPage(
           # Fittings Friction Factor (losses from pipe fittings) -- also a friction factor
           sliderInput(
             'fitting',
-            label  = h4('Losses from pipe fittings'),
+            label  = 'Losses from pipe fittings',
             min = 0,
             max = 1,
             value = 0.1,
@@ -201,16 +196,19 @@ ui <- fluidPage(
           # Pump Efficiency Slider
           sliderInput(
             'efficiency',
-            label = h4('Pump Efficiency'),
+            label = 'Pump Efficiency',
             min = 0, 
             max = 1,
             value = 0.6,
             ticks = FALSE),
           
+          h4('Reverse Osmosis Parameters'),
+          hr(style = "border-top: 1px solid #000000;"), # solid line
+          
           # Recovery Ratio -- this is for Reverse Osmosis 
           sliderInput(
             'rr',
-            label = h4('Recovery Ratio'),
+            label = 'Recovery Ratio',
             min = 0, 
             max = 1,
             value = 0.6,
@@ -219,7 +217,7 @@ ui <- fluidPage(
           # Reverse Osmosis System Efficiency 
           sliderInput(
             'eta',
-            label = h4('System efficiency'),
+            label = 'System efficiency',
             min = 0, 
             max = 1,
             value = 0.6,
@@ -228,7 +226,7 @@ ui <- fluidPage(
           # Osmotic Pressure (Pa) of RO
           sliderInput(
             'osp',
-            label = h4('Osmotic Pressure (Pa)'),
+            label = 'Osmotic Pressure (Pa)',
             min = 0, 
             max = 100000,
             value = 10000,
@@ -322,7 +320,7 @@ server <- function(input, output, session) {
              # this calls the function from 'energy.R'
              energy_req(energy_reqs, input$vol_rate, input$pump_rate, input$rr, 
                         input$eta, input$osp, input$fitting, input$rough, 
-                        input$length, input$efficiency, input$hours), 2),# rounds to 2 decimal places
+                        input$length, input$efficiency), 2),# rounds to 2 decimal places
              scientific = TRUE), ' MW') # puts the output in scientific notation
   })
   
@@ -332,7 +330,7 @@ server <- function(input, output, session) {
     plot_data <- technology_plot(input$dpr, input$ipr, input$gwdesal, input$desal,
                     energy_reqs, tech, input$vol_rate, input$rr, input$eta, 
                     input$osp, input$fitting, input$pump_rate, input$rough, 
-                    input$length, input$efficiency, input$technology, input$hours)
+                    input$length, input$efficiency, input$technology)
 
   })
   
@@ -359,6 +357,7 @@ server <- function(input, output, session) {
       tooltip = 'text') 
   })
   
+  # generates the plot data for the economics section
   econplot_data <- reactive({
     
     econplot_data <- economics_techplot(total$a, total$b, total$c, input$vol_rate, total$oma,
@@ -366,10 +365,11 @@ server <- function(input, output, session) {
                                     input$desal, tech, input$technology)
   })
   
+  # generates the data frame used for the economics error bars
   econ_error <- reactive({
-    econ_error <- econ_errorbars(econplot_data())
-  })
+    econ_error <- econ_errorbars(econplot_data())})
   
+  # capital cost plot
   output$capex_plot <- renderPlotly({
     ggplotly(
       
@@ -387,6 +387,7 @@ server <- function(input, output, session) {
       tooltip = 'text')
   })
   
+  # O&M cost plot
   output$omex_plot <- renderPlotly({
     ggplotly(
       
