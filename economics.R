@@ -112,12 +112,12 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name) {
   
   # add uncertainty values to CAPEX and O&M
   # the uncertainty is (Keller et. al. 2021, Plumlee et. al. 2021) -30/+50%
-  capex.df <- capex.df %>% 
-    mutate(lower = 0.3 * capex,
-           upper = 0.5 * capex)
-  om.df <- om.df %>% 
-    mutate(lowerom = 0.3 * omex,
-           upperom = 0.5 * omex)
+ # capex.df <- capex.df %>% 
+  #  mutate(lower = 0.3 * capex,
+         #  upper = 0.5 * capex)
+ # om.df <- om.df %>% 
+  #  mutate(lowerom = 0.3 * omex,
+      #     upperom = 0.5 * omex)
   
   # combine data frames together to make the plot data frame
   graph.df <- cbind(process.df, capex.df) %>% 
@@ -181,7 +181,23 @@ economics_techplot <- function(a, b, c, x, oma, omb, omc, name, input1,
     filter(technology %in% tech_input)
   return(tech.df)
         
-  }
+}
+
+
+econ_errorbars <- function(econ_data) {
+  
+  error <- econ_data %>% 
+    group_by(technology) %>% 
+    summarize(capex_sum = sum(capex),
+              omex_sum = sum(omex),
+              capex_lower = capex_sum - 0.3 * capex_sum,
+              capex_upper = capex_sum + 0.5 * capex_sum,
+              omex_lower = omex_sum - 0.3 * omex_sum,
+              omex_upper = omex_sum + 0.5 * omex_sum)
+
+  return(error)
+  
+}
   
   
   
@@ -277,4 +293,4 @@ graphtest <- economics_plot(total$a, total$b, total$c, 10, total$oma, total$omb,
 plottestecon <- economics_techplot(total$a, total$b, total$c, 10, total$oma, total$omb, total$omc, total$name,
                                    a, b, c, d, tech, c('Direct Potable Reuse', 'Indirect Potable Reuse', 'Groundwater Desalination'))
 
-
+econ_errorbars(plottestecon)

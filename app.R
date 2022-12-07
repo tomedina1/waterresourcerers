@@ -163,6 +163,15 @@ ui <- fluidPage(
 
           # Groundwater Pumping Depth (m) *This is for the groundwater depth values
           # I will change the units to feet eventually as well 
+          
+          sliderInput(
+            'hours',
+            label = h4('Select an operating time'),
+            min = 0,
+            max = 24,
+            value = 24,
+            ticks = FALSE),
+          
           sliderInput(
             'length',
             label = h4('Select a pipe depth (m)'),
@@ -313,7 +322,7 @@ server <- function(input, output, session) {
              # this calls the function from 'energy.R'
              energy_req(energy_reqs, input$vol_rate, input$pump_rate, input$rr, 
                         input$eta, input$osp, input$fitting, input$rough, 
-                        input$length, input$efficiency), 2),# rounds to 2 decimal places
+                        input$length, input$efficiency, input$hours), 2),# rounds to 2 decimal places
              scientific = TRUE), ' MW') # puts the output in scientific notation
   })
   
@@ -323,7 +332,7 @@ server <- function(input, output, session) {
     plot_data <- technology_plot(input$dpr, input$ipr, input$gwdesal, input$desal,
                     energy_reqs, tech, input$vol_rate, input$rr, input$eta, 
                     input$osp, input$fitting, input$pump_rate, input$rough, 
-                    input$length, input$efficiency, input$technology)
+                    input$length, input$efficiency, input$technology, input$hours)
 
   })
   
@@ -340,7 +349,7 @@ server <- function(input, output, session) {
                  # this is where you edit the text when you hover over the plot
                  aes(text = paste(
                    "process:", process, "\nenergy requirement:", 
-                   energyreq, 'kWh / m3', sep = " "), fill = process)) +
+                   round(energyreq, 2), 'kWh / m3', sep = " "), fill = process)) +
         
         labs(x = 'technology',
              y = 'energy requirement (kWh / m3)') +
@@ -357,15 +366,21 @@ server <- function(input, output, session) {
                                     input$desal, tech, input$technology)
   })
   
+  econ_error <- reactive({
+    econ_error <- econ_errorbars(econplot_data())
+  })
+  
   output$capex_plot <- renderPlotly({
     ggplotly(
       
-      ggplot(data = econplot_data(),
-             aes(x = technology,
-                 y = capex)) +
-        geom_bar(stat = 'identity', width = 0.5,
-                 aes(text = paste("process:", process, "\nCAPEX ($M / MGD):", capex, sep = " "),
-                     fill = process)) +
+      ggplot() +
+        
+        geom_bar(data = econplot_data(), stat = 'identity', width = 0.5,
+                 aes(x = technology, y = capex, fill = process,
+                     text = paste("process:", process, "\nCAPEX ($M / MGD):", round(capex, 2), sep = " "))) +
+        
+        geom_errorbar(data = econ_error(), aes(x = technology, ymin = capex_lower, ymax = capex_upper), width = .2) +
+        
         labs(x = 'technology', y = 'capital cost ($M / MGD)') +
         theme_minimal(),
       
@@ -375,12 +390,14 @@ server <- function(input, output, session) {
   output$omex_plot <- renderPlotly({
     ggplotly(
       
-      ggplot(data = econplot_data(),
-             aes(x = technology,
-                 y = omex)) +
-        geom_bar(stat = 'identity', width = 0.5,
-                 aes(text = paste("process:", process, "\nOMEX ($M / MGD):", omex, sep = " "),
-                     fill = process)) +
+      ggplot() +
+        
+        geom_bar(data = econplot_data(), stat = 'identity', width = 0.5,
+                 aes(x = technology, y = omex, fill = process,
+                     text = paste("process:", process, "\nOMEX ($M / MGD):", round(omex, 2), sep = " "))) +
+        
+        geom_errorbar(data = econ_error(), aes(x = technology, ymin = omex_lower, ymax = omex_upper), width = .2) +
+        
         labs(x = 'technology', y = 'O&M cost ($M / MGD)') +
         theme_minimal(),
       

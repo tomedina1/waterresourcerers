@@ -7,14 +7,14 @@ library(tidyverse)
 # SECTION 1: Energy Calculating Functions
 # ---------------------------------------------------------------------------------------------------------
 # Pumping Energy Requirement
-e_gwpump <- function(q, k, E) {
+e_gwpump <- function(q, k, E, hours) {
   
   # q is the volumetric flow rate (m3/s), k is the total system losses and E is the pump efficiency
   # 0.018238673 is the area of a 6" pipe
   # 9.81 is the gravitation constant
   h <- (k * (q / 0.018238673) ^ 2) / (2 * 9.81)
   P <- (q * h * 9.81 * 1000) / E
-  P <- P / 1e3
+  P <- (P * hours) / (1e3 * q * 3600 * hours)
   return(P)
 
 }
@@ -73,7 +73,7 @@ r_o <- function(RR, eta, osp, x) {
 
 # SECTION 2: Energy Calculation Functions
 # -------------------------------------------------------------------------------------
-energy_req <- function(a, x , pump, RR, eta, osp, k_f, k, L, E){
+energy_req <- function(a, x , pump, RR, eta, osp, k_f, k, L, E, hours){
   
   x <- x * 3785.4 # convert from MGD to m3/d
   
@@ -89,7 +89,7 @@ energy_req <- function(a, x , pump, RR, eta, osp, k_f, k, L, E){
     #} else
     if (a$name[i] == 'groundwater pumping') { # runs the pump requirement equation
       
-      pump_req <- e_gwpump(pump, system_losses(k_f, pump, k, L), E)
+      pump_req <- e_gwpump(pump, system_losses(k_f, pump, k, L), E, hours)
       e_req <- rbind(e_req, pump_req)
       
     } else { # runs the scaling energy requirement
@@ -124,7 +124,7 @@ energy_reqs <- rbind(gwpump, ro, coag, uv, o3, uf, mf, gac, recharge)
 
 # Generating the functions for the plot
 # ---------------------------------------------------------------------------------
-energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E) {
+energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E, hours) {
   
   x <- x * 3785.4 # MGD to m3/d
   
@@ -136,7 +136,7 @@ energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E) {
     if (a$name[i] == 'groundwater pumping') {
       
       # groundwater pumping functions
-      pump_req <- e_gwpump(pump, system_losses(k_f, pump, k, L), E)
+      pump_req <- e_gwpump(pump, system_losses(k_f, pump, k, L), E, hours)
       graph.df <- rbind(graph.df, pump_req)
       name.df <- rbind(name.df, a$name[i])
     
@@ -166,7 +166,7 @@ energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E) {
 }
 
 # a test for the energy_plot function
-test <- energy_plot(energy_reqs, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4)
+test <- energy_plot(energy_reqs, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4, 24)
 
 
 # load names for each technology into a character vector
@@ -175,10 +175,10 @@ tech <- c('Direct Potable Reuse', 'Indirect Potable Reuse', 'Groundwater Desalin
 
 # This is the function that generates the plot on the shiny app
 technology_plot <- function(a, b, c, d, process, tech, x, RR, 
-                            eta, osp, k_f, pump, k, L, E, tech_input) {
+                            eta, osp, k_f, pump, k, L, E, tech_input, hours) {
   
   # generates the energy requirement data frame based off of the selected inputs
-  plot.data <- energy_plot(process, x, RR, eta, osp, k_f, pump, k, L, E)
+  plot.data <- energy_plot(process, x, RR, eta, osp, k_f, pump, k, L, E, hours)
   
   # condenses the 4 technology drop down menu inputs into a vector
   input.vector <- c(a, b, c, d)
@@ -240,5 +240,5 @@ a <- c('microfiltration', 'reverse osmosis', 'uv oxidation')
 b <- c('microfiltration', 'reverse osmosis', 'uv oxidation')
 c <- c('groundwater pumping', 'reverse osmosis')
 d <- c('reverse osmosis')
-listtest <- technology_plot(a, b, c, d, energy_reqs, tech, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4, 'Indirect Potable Reuse')
+listtest <- technology_plot(a, b, c, d, energy_reqs, tech, 10, 0.5, 0.5, 100, 0.3, 0.5, 0.6, 100, 0.4, 'Indirect Potable Reuse', 24)
 
