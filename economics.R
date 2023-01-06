@@ -92,7 +92,7 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name) {
       
       if (name[i] == 'seawater desalination') {
           
-        y <- mean(600, 1200) * 3785.4 * 1e-6 * 365
+        y <- mean(600, 1200) * 3785.4 / 1e6
         y_conversion <- y * 1.28
         
         omy <- 1.124 * 3785.4 * 1e-6 * 365
@@ -104,7 +104,7 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name) {
         
       } else {
         
-        y <- mean(250, 400) * 3785.4 * 1e-6
+        y <- mean(250, 400) * 3785.4 / 1e6
         y_conversion <- y * 1.28
         
         omy <- 0.724 * 3785.4 * 365 * 1e-6
@@ -302,7 +302,7 @@ gw <- data.frame('name' = 'groundwater pumping',
                  'oma' = 0, 'omb' = 0, 'omc' = NA,
                  'year' = NA, 'yearom' = NA)
 
-swro <- data.frame('name' = 'saltwater desalination',
+swro <- data.frame('name' = 'seawater desalination',
                    'a' = NA, 'b' = NA, 'c' = NA, 
                    'oma' = NA, 'omb' = NA, 'omc' = NA,
                    'year' = NA, 'yearom' = NA)

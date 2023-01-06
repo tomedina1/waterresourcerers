@@ -151,7 +151,7 @@ ui <- fluidPage(
           # Groundwater Pumping Rate (m3/s)
           numericInput(
             'pump_rate',
-            label = 'Select a groundwater pumping rate (m^ 3/s)',
+            label = 'Select a groundwater pumping rate (m ^ 3/s)',
             value = 0.06),
           
           # SLIDERS SECTION
@@ -289,8 +289,7 @@ server <- function(input, output, session) {
     paste0('The total energy requirement is: ', 
            format(round(
              # this calls the function from 'energy.R'
-             energy_req(energy_reqs, input$vol_rate, input$pump_rate, input$rr, 
-                        input$eta, input$osp, input$fitting, input$rough, 
+             energy_req(energy_reqs, input$vol_rate, input$pump_rate, input$fitting, input$rough, 
                         input$length, input$efficiency), 2),# rounds to 2 decimal places
              scientific = TRUE), ' MW') # puts the output in scientific notation
   })
@@ -299,8 +298,7 @@ server <- function(input, output, session) {
   plot_data <- reactive({
     
     plot_data <- technology_plot(input$dpr, input$ipr, input$gwdesal, input$desal,
-                    energy_reqs, tech, input$vol_rate, input$rr, input$eta, 
-                    input$osp, input$fitting, input$pump_rate, input$rough, 
+                    energy_reqs, tech, input$vol_rate, input$fitting, input$pump_rate, input$rough, 
                     input$length, input$efficiency, input$technology)
 
   })
