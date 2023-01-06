@@ -16,8 +16,8 @@ library(shinyjs)
 library(plotly)
 
 # Load other R scripts
-source('economics.R')
 source('energy.R')
+source('economics.R')
 
 # Initialize the theme
 # Call the .css theme here when the script is written

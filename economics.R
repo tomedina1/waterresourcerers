@@ -90,15 +90,31 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name) {
       
     } else if (str_detect(name[i], 'desalination')) {
       
-      y <- ifelse(str_detect(name[i], 'brackish'), mean(250, 400) * 3785.4 * 1e-6, mean(600, 1200) * 3785.4 * 1e-6)
-      y_conversion <- y * 1.28
-      
-      omy <- ifelse(str_detect(name[i], 'brackish'), 0.724, 1.124)
-      omy_conversion <- omy * 1.28
-      
-      process.df <- rbind(process.df, name[i]) # binds process name to df
-      capex.df <- rbind(capex.df, y_conversion) # binds capex cost to df
-      om.df <- rbind(om.df, omy_conversion) # binds o&m cost to df 
+      if (name[i] == 'seawater desalination') {
+          
+        y <- mean(600, 1200) * 3785.4 * 1e-6 * 365
+        y_conversion <- y * 1.28
+        
+        omy <- 1.124 * 3785.4 * 1e-6 * 365
+        omy_conversion <- omy * 1.28
+        
+        process.df <- rbind(process.df, name[i]) # binds process name to df
+        capex.df <- rbind(capex.df, y_conversion) # binds capex cost to df
+        om.df <- rbind(om.df, omy_conversion) # binds o&m cost to df 
+        
+      } else {
+        
+        y <- mean(250, 400) * 3785.4 * 1e-6
+        y_conversion <- y * 1.28
+        
+        omy <- 0.724 * 3785.4 * 365 * 1e-6
+        omy_conversion <- omy * 1.28
+        
+        process.df <- rbind(process.df, name[i]) # binds process name to df
+        capex.df <- rbind(capex.df, y_conversion) # binds capex cost to df
+        om.df <- rbind(om.df, omy_conversion) # binds o&m cost to df 
+        
+      }
       
     } else {
       
