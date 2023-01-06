@@ -137,7 +137,7 @@ ui <- fluidPage(
             'desal',
             label = 'Ocean Desalination',
             choices = unique(energy_reqs$name),
-            selected = c('sewater desalination'),
+            selected = c('seawater desalination'),
             multiple = TRUE
           ),
           

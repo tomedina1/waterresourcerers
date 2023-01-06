@@ -91,7 +91,7 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name) {
     } else if (str_detect(name[i], 'desalination')) {
       
       y <- ifelse(str_detect(name[i], 'brackish'), mean(250, 400) * 3785.4 * 1e-6, mean(600, 1200) * 3785.4 * 1e-6)
-      y_conversion <- y / x * 1.28
+      y_conversion <- y * 1.28
       
       omy <- ifelse(str_detect(name[i], 'brackish'), 0.724, 1.124)
       omy_conversion <- omy * 1.28
