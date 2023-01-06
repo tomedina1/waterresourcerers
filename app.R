@@ -129,7 +129,7 @@ ui <- fluidPage(
             'gwdesal',
             label = 'Groundwater Desalination',
             choices = unique(energy_reqs$name),
-            selected = c('groundwater pumping', 'reverse osmosis'),
+            selected = c('groundwater pumping', 'brackish water desalination'),
             multiple = TRUE
           ),
           
@@ -137,7 +137,7 @@ ui <- fluidPage(
             'desal',
             label = 'Ocean Desalination',
             choices = unique(energy_reqs$name),
-            selected = c('reverse osmosis'),
+            selected = c('sewater desalination'),
             multiple = TRUE
           ),
           
@@ -200,36 +200,6 @@ ui <- fluidPage(
             min = 0, 
             max = 1,
             value = 0.6,
-            ticks = FALSE),
-          
-          h4('Reverse Osmosis Parameters'),
-          hr(style = "border-top: 1px solid #000000;"), # solid line
-          
-          # Recovery Ratio -- this is for Reverse Osmosis 
-          sliderInput(
-            'rr',
-            label = 'Recovery Ratio',
-            min = 0, 
-            max = 1,
-            value = 0.6,
-            ticks = FALSE),
-          
-          # Reverse Osmosis System Efficiency 
-          sliderInput(
-            'eta',
-            label = 'System efficiency',
-            min = 0, 
-            max = 1,
-            value = 0.6,
-            ticks = FALSE),
-          
-          # Osmotic Pressure (Pa) of RO
-          sliderInput(
-            'osp',
-            label = 'Osmotic Pressure (Pa)',
-            min = 0, 
-            max = 100000,
-            value = 10000,
             ticks = FALSE)),
         
         # MAIN PANEL SECTION
@@ -309,6 +279,7 @@ server <- function(input, output, session) {
       if (any(input$technology == 'Ocean Desalination')) enable('desal') else disable('desal')
     })
   
+
   # TEXT OUTPUT FOR ENERGY REQUIREMENT
   output$gwptext <- renderText({
     # data wrangling -- filters data for only selected processes

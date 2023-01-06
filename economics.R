@@ -21,7 +21,7 @@ calculate_costs <- function(a, b, c, x, year){
   
   for (i in 1:length(a)) { # iterates through every input in the vector (a, b, c, and year should be the same length***)
 
-      if (c[i] != 0) { # c is only a constant in the Williams Power Logarithmic Rule Equation (Guo et. al. 2014)
+      if (!is.na(c[i])) { # c is only a constant in the Williams Power Logarithmic Rule Equation (Guo et. al. 2014)
         
         x <- x * 3785.4 # convert MGD to m3/d (the equation only works in m3/d)
         
@@ -67,7 +67,7 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name) {
   
   for (i in 1:length(name)) {
     
-    if (c[i] != 0) {
+    if (!is.na(c[i])) {
       
       x <- x * 3785.4 # converts from MGD to m3/d
       
@@ -87,6 +87,18 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name) {
       om.df <- rbind(om.df, final_omy) # binds o&m cost to df
       
       x <- x / 3785.4 # convert back to MGD
+      
+    } else if (str_detect(name[i], 'desalination')) {
+      
+      y <- ifelse(str_detect(name[i], 'brackish'), mean(250, 400) * 3785.4 * 1e-6, mean(600, 1200) * 3785.4 * 1e-6)
+      y_conversion <- y / x * 1.28
+      
+      omy <- ifelse(str_detect(name[i], 'brackish'), 0.724, 1.124)
+      omy_conversion <- omy * 1.28
+      
+      process.df <- rbind(process.df, name[i]) # binds process name to df
+      capex.df <- rbind(capex.df, y_conversion) # binds capex cost to df
+      om.df <- rbind(om.df, omy_conversion) # binds o&m cost to df 
       
     } else {
       
@@ -109,15 +121,6 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name) {
   colnames(process.df) <- 'process'
   colnames(capex.df) <- 'capex'
   colnames(om.df) <- 'omex'
-  
-  # add uncertainty values to CAPEX and O&M
-  # the uncertainty is (Keller et. al. 2021, Plumlee et. al. 2021) -30/+50%
- # capex.df <- capex.df %>% 
-  #  mutate(lower = 0.3 * capex,
-         #  upper = 0.5 * capex)
- # om.df <- om.df %>% 
-  #  mutate(lowerom = 0.3 * omex,
-      #     upperom = 0.5 * omex)
   
   # combine data frames together to make the plot data frame
   graph.df <- cbind(process.df, capex.df) %>% 
@@ -245,10 +248,10 @@ gac <- data.frame('name'= 'granular activated carbon',
 o3 <- data.frame('name' = 'ozonation',
                  'a' = 2.26,
                  'b' = -0.54,
-                 'c' = 0,
+                 'c' = NA,
                  'oma' = 0.0068,
                  'omb' = -0.051,
-                 'omc' = 0,
+                 'omc' = NA,
                  'year' = 2014,
                  'yearom' = 2014)
 
@@ -258,10 +261,10 @@ o3 <- data.frame('name' = 'ozonation',
 uvh2o2 <- data.frame('name' = 'uv oxidation',
                  'a' = 0.474,
                  'b' = -0.056,
-                 'c' = 0,
+                 'c' = NA,
                  'oma' = 0.038,
                  'omb' = -0.052,
-                 'omc' = 0,
+                 'omc' = NA,
                  'year' = 2014,
                  'yearom' = 2014)
 
@@ -271,21 +274,30 @@ uvh2o2 <- data.frame('name' = 'uv oxidation',
 mf <- data.frame('name' = 'microfiltration',
                  'a' = 3.57,
                  'b' = -0.22,
-                 'c' = 0,
+                 'c' = NA,
                  'oma' = 0.3,
                  'omb' = -0.22,
-                 'omc' = 0,
+                 'omc' = NA,
                  'year' = 2014,
                  'yearom' = 2014)
 
 gw <- data.frame('name' = 'groundwater pumping',
-                 'a' = 0, 'b' = 0, 'c' = 0,
-                 'oma' = 0, 'omb' = 0, 'omc' = 0,
+                 'a' = 0, 'b' = 0, 'c' = NA,
+                 'oma' = 0, 'omb' = 0, 'omc' = NA,
                  'year' = NA, 'yearom' = NA)
 
+swro <- data.frame('name' = 'saltwater desalination',
+                   'a' = NA, 'b' = NA, 'c' = NA, 
+                   'oma' = NA, 'omb' = NA, 'omc' = NA,
+                   'year' = NA, 'yearom' = NA)
+
+bwro <- data.frame('name' = 'brackish water desalination',
+                   'a' = NA, 'b' = NA, 'c' = NA, 
+                   'oma' = NA, 'omb' = NA, 'omc' = NA,
+                   'year' = NA, 'yearom' = NA)
 
 # combines the dataframes together
-total <- rbind(ro, uf, gac, o3, uvh2o2, mf, gw)
+total <- rbind(ro, uf, gac, o3, uvh2o2, mf, gw, swro, bwro)
 
 # tests the functions using a flow rate of 10 MGD
 cctest <- calculate_costs(total$a, total$b, total$c, 10, total$year)

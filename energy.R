@@ -43,33 +43,6 @@ system_losses <- function(k_f, q, k, L) {
   
 }
 
-ro_calc <- function(x, RR, N, pi) {
-  
-  # calculate the velocity (m/s) (from the volumetric flow rate)
-  J <- x / 1 # area here (change from 1)
-  
-  # w is the output in kWh / m3
-  # w is the energy requirement equation for RO modeled as a continuous process
-  w <- 1 / (0.75 * RR) * (pi * (N / ((1 - RR) ^ (1 / N)) + 1 - N) + (J / 8.3e-12))
-  return(w)
-  
-}
-
-# RO Energy Requirement
-r_o <- function(RR, eta, osp, x) {
-  
-  # calculates the RO energy requirements modeled as a semibatch process
-  # This is noted in Gu et al. 2021 that Potable Reuse follows SB processes
-  
-  
-  
-  sb <- (1 / eta) * (x + osp * (1 + RR / (2 * (1 - RR))))
-  sb_out <- sb / 24 * x
-  return(sb_out)
-  
-}
-
-
 # SECTION 2: Energy Calculation Functions
 # -------------------------------------------------------------------------------------
 energy_req <- function(a, x , pump, RR, eta, osp, k_f, k, L, E){
@@ -79,13 +52,7 @@ energy_req <- function(a, x , pump, RR, eta, osp, k_f, k, L, E){
   e_req <- data.frame()
   
   for (i in 1:length(a$name)) {
-    
-    #if (a$name[i] == 'reverse osmosis') { # runs the semibatch reactor equation
-      
-     # ro_req <- r_o(RR, eta, osp, x)
-     # e_req <- rbind(e_req, ro_req)
-      
-    #} else
+
     if (a$name[i] == 'groundwater pumping') { # runs the pump requirement equation
       
       pump_req <- e_gwpump(pump, system_losses(k_f, pump, k, L), E)
@@ -108,7 +75,9 @@ energy_req <- function(a, x , pump, RR, eta, osp, k_f, k, L, E){
 # ---------------------------------------------------------------------------------
 # Individual energy requirements for each unit process
 gwpump <- data.frame('name' = 'groundwater pumping', 'req' = NA)
-ro <- data.frame('name' = 'reverse osmosis', 'req' = mean(3.3, 8.5))
+ro <- data.frame('name' = 'reverse osmosis', 'req' = 0.54)
+swro <- data.frame('name' = 'seawater desalination', 'req' = 3.8)
+bwro <- data.frame('name' = 'brackish water desalination', req = 1)
 coag <- data.frame('name' = 'coagulation', 'req' = mean(0.4, 0.7))
 uv <- data.frame('name' = 'uv oxidation', 'req' = mean(0.01, 0.05))
 o3 <- data.frame('name' = 'ozonation', 'req' = mean(0.05 * 3.79, 0.12 * 3.79) / 24)
@@ -118,7 +87,7 @@ gac <- data.frame('name' = 'granular activated carbon', 'req' = 0.37)
 recharge <- data.frame('name' = 'groundwater recharge', 'req' = 0.48)
 
 # combine each of the unit processes into a consolidated data frame
-energy_reqs <- rbind(gwpump, ro, coag, uv, o3, uf, mf, gac, recharge)
+energy_reqs <- rbind(gwpump, ro, swro, bwro, coag, uv, o3, uf, mf, gac, recharge)
 
 
 # Generating the functions for the plot
@@ -140,15 +109,7 @@ energy_plot <- function(a, x, RR, eta, osp, k_f, pump, k, L, E) {
       name.df <- rbind(name.df, a$name[i])
     
     } 
-    
-    #else if (a$name[i] == 'reverse osmosis') { 
-      
-      # run the semibatch equation 
-     # ro_req <- r_o(RR, eta, osp, x)
-    #  graph.df <- rbind(graph.df, ro_req)
-     # name.df <- rbind(name.df, a$name[i])
-                     
-  #  } 
+
   else {
       
       # run the equations for the rest of the processes
