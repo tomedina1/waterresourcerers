@@ -90,31 +90,21 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name) {
       
     } else if (str_detect(name[i], 'desalination')) {
       
-      if (name[i] == 'seawater desalination') {
-          
-        y <- mean(600, 1200) * 3785.4 / 1e6
-        y_conversion <- y * 1.28
-        
-        omy <- 1.124 * 3785.4 * 1e-6 * 365
-        omy_conversion <- omy * 1.28
-        
-        process.df <- rbind(process.df, name[i]) # binds process name to df
-        capex.df <- rbind(capex.df, y_conversion) # binds capex cost to df
-        om.df <- rbind(om.df, omy_conversion) # binds o&m cost to df 
-        
-      } else {
-        
-        y <- mean(250, 400) * 3785.4 / 1e6
-        y_conversion <- y * 1.28
-        
-        omy <- 0.724 * 3785.4 * 365 * 1e-6
-        omy_conversion <- omy * 1.28
-        
-        process.df <- rbind(process.df, name[i]) # binds process name to df
-        capex.df <- rbind(capex.df, y_conversion) # binds capex cost to df
-        om.df <- rbind(om.df, omy_conversion) # binds o&m cost to df 
-        
-      }
+      x <- x * 3785.4 # converts from MGD to m3/d
+      
+      y <- a[i] * log(x) + b[i]
+      unlog_y <- 10 ^ y
+      final_y <- 1.38 * unlog_y * 1e-6 # 2008 dollar to 2022 dollar
+      
+      omy <- oma[i] * log(x) + omb[i]
+      unlog_omy <- 10 ^ omy
+      final_omy <- 1.38 * unlog_omy * 1e-6
+      
+      process.df <- rbind(process.df, name[i]) # binds process name to df
+      capex.df <- rbind(capex.df, final_y) # binds capex cost to df
+      om.df <- rbind(om.df, final_omy) # binds o&m cost to df
+      
+      x <- x / 3785.4 # convert back to MGD
       
     } else {
       
@@ -302,14 +292,14 @@ gw <- data.frame('name' = 'groundwater pumping',
                  'oma' = 0, 'omb' = 0, 'omc' = NA,
                  'year' = NA, 'yearom' = NA)
 
-swro <- data.frame('name' = 'seawater desalination',
-                   'a' = NA, 'b' = NA, 'c' = NA, 
-                   'oma' = NA, 'omb' = NA, 'omc' = NA,
-                   'year' = NA, 'yearom' = NA)
-
 bwro <- data.frame('name' = 'brackish water desalination',
-                   'a' = NA, 'b' = NA, 'c' = NA, 
-                   'oma' = NA, 'omb' = NA, 'omc' = NA,
+                   'a' = 0.74, 'b' = 3.95, 'c' = NA, 
+                   'oma' = 0, 'omb' = 0, 'omc' = NA,
+                   'year' = NA, 'yearom' = NA)
+ 
+swro <- data.frame('name' = 'seawater desalination',
+                   'a' = 0.81, 'b' = 4.07, 'c' = NA, 
+                   'oma' = 0, 'omb' = 0, 'omc' = NA,
                    'year' = NA, 'yearom' = NA)
 
 # combines the dataframes together
