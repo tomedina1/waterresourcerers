@@ -151,7 +151,7 @@ ui <- fluidPage(
           # Groundwater Pumping Rate (m3/s)
           numericInput(
             'pump_rate',
-            label = 'Select a groundwater pumping rate (m ^ 3/s)',
+            label = 'Select a groundwater pumping rate (cubic meters/s)',
             value = 0.06),
           
           # SLIDERS SECTION
