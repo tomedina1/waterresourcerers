@@ -88,13 +88,13 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name) {
       
       x <- x / 3785.4 # convert back to MGD
       
-    } else if (str_detect(name[i], 'desalination')) {
+    } else if (str_detect(name[i], 'desalination') == TRUE) {
       
       x <- x * 3785.4 # converts from MGD to m3/d
       
       y <- a[i] * log(x) + b[i]
-      unlog_y <- 10 ^ y
-      final_y <- 1.38 * unlog_y * 1e-6 # 2008 dollar to 2022 dollar
+      unlog_y <- exp(y)
+      final_y <- 1.38 * unlog_y * 1e-6 * 3785.4# 2008 dollar to 2022 dollar
       
       omy <- oma[i] * log(x) + omb[i]
       unlog_omy <- 10 ^ omy
