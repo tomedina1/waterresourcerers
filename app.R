@@ -149,7 +149,7 @@ ui <- fluidPage(
           numericInput(
             'vol_rate',
             label = 'Select a flow rate (MGD)',
-            value = 10
+            value = 50
           ),
           
           # Groundwater Pumping Rate (m3/s)
@@ -335,7 +335,7 @@ server <- function(input, output, session) {
     
     econplot_data <- economics_techplot(data$a, data$b, data$c, input$vol_rate, data$oma,
                                     data$omb, data$omc, data$name, input$dpr, input$ipr, input$gwdesal,
-                                    input$desal, tech, input$technology)
+                                    input$desal, tech, input$technology, data$model)
   })
   
   # generates the data frame used for the economics error bars
