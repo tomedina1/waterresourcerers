@@ -10,10 +10,14 @@
 # PACKAGES
 library(shiny)
 library(tidyverse)
+library(readxl)
 library(bslib)
 library(shinyWidgets)
 library(shinyjs)
 library(plotly)
+
+# Load data
+data <- read_xlsx('data.xlsx')
 
 # Load other R scripts
 source('energy.R')
@@ -112,7 +116,7 @@ ui <- fluidPage(
           selectInput(
             'dpr',
             label = 'Direct Potable Reuse',
-            choices = unique(energy_reqs$name),
+            choices = unique(data$name),
             selected = c('microfiltration', 'reverse osmosis', 'uv oxidation'),
             multiple = TRUE
           ),
@@ -120,7 +124,7 @@ ui <- fluidPage(
           selectInput(
             'ipr',
             label = 'Indirect Potable Reuse',
-            choices = unique(energy_reqs$name),
+            choices = unique(data$name),
             selected = c('microfiltration', 'reverse osmosis', 'uv oxidation'),
             multiple = TRUE
           ),
@@ -128,7 +132,7 @@ ui <- fluidPage(
           selectInput(
             'gwdesal',
             label = 'Groundwater Desalination',
-            choices = unique(energy_reqs$name),
+            choices = unique(data$name),
             selected = c('groundwater pumping', 'brackish water desalination'),
             multiple = TRUE
           ),
@@ -136,7 +140,7 @@ ui <- fluidPage(
           selectInput(
             'desal',
             label = 'Ocean Desalination',
-            choices = unique(energy_reqs$name),
+            choices = unique(data$name),
             selected = c('seawater desalination'),
             multiple = TRUE
           ),
@@ -298,7 +302,7 @@ server <- function(input, output, session) {
   plot_data <- reactive({
     
     plot_data <- technology_plot(input$dpr, input$ipr, input$gwdesal, input$desal,
-                    energy_reqs, tech, input$vol_rate, input$fitting, input$pump_rate, input$rough, 
+                    data, tech, input$vol_rate, input$fitting, input$pump_rate, input$rough, 
                     input$length, input$efficiency, input$technology)
 
   })
@@ -329,8 +333,8 @@ server <- function(input, output, session) {
   # generates the plot data for the economics section
   econplot_data <- reactive({
     
-    econplot_data <- economics_techplot(total$a, total$b, total$c, input$vol_rate, total$oma,
-                                    total$omb, total$omc, total$name, input$dpr, input$ipr, input$gwdesal,
+    econplot_data <- economics_techplot(data$a, data$b, data$c, input$vol_rate, data$oma,
+                                    data$omb, data$omc, data$name, input$dpr, input$ipr, input$gwdesal,
                                     input$desal, tech, input$technology)
   })
   

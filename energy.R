@@ -71,27 +71,6 @@ energy_req <- function(a, x , pump, k_f, k, L, E){
 }
 
 
-# SECTION 3: Adding energy requirements from the literature into a df
-# ---------------------------------------------------------------------------------
-# Individual energy requirements for each unit process
-gwpump <- data.frame('name' = 'groundwater pumping', 'req' = NA)
-ro <- data.frame('name' = 'reverse osmosis', 'req' = 0.54)
-swro <- data.frame('name' = 'seawater desalination', 'req' = 3.8)
-bwro <- data.frame('name' = 'brackish water desalination', req = 1)
-coag <- data.frame('name' = 'coagulation', 'req' = mean(0.4, 0.7))
-uv <- data.frame('name' = 'uv oxidation', 'req' = mean(0.01, 0.05))
-o3 <- data.frame('name' = 'ozonation', 'req' = mean(0.05 * 3.79, 0.12 * 3.79) / 24)
-uf <- data.frame('name' = 'ultrafiltration', 'req' = mean(0.07, 0.1, 0.2))
-mf <- data.frame('name' = 'microfiltration', 'req' = 0.18 / 24)
-gac <- data.frame('name' = 'granular activated carbon', 'req' = 0.37)
-recharge <- data.frame('name' = 'groundwater recharge', 'req' = 0.48)
-
-# combine each of the unit processes into a consolidated data frame
-energy_reqs <- rbind(gwpump, ro, swro, bwro, coag, uv, o3, uf, mf, gac, recharge)
-
-
-# Generating the functions for the plot
-# ---------------------------------------------------------------------------------
 energy_plot <- function(a, x, k_f, pump, k, L, E) {
   
   x <- x * 3785.4 # MGD to m3/d
@@ -124,10 +103,6 @@ energy_plot <- function(a, x, k_f, pump, k, L, E) {
   return(graph.df)
   
 }
-
-# a test for the energy_plot function
-test <- energy_plot(energy_reqs, 10, 0.3, 0.5, 0.6, 100, 0.4)
-
 
 # load names for each technology into a character vector
 tech <- c('Direct Potable Reuse', 'Indirect Potable Reuse', 'Groundwater Desalination',
@@ -193,11 +168,4 @@ technology_plot <- function(a, b, c, d, process, tech, x, k_f, pump, k, L, E, te
   return(tech.df)
   
 }
-
-# test
-a <- c('microfiltration', 'reverse osmosis', 'uv oxidation')
-b <- c('microfiltration', 'reverse osmosis', 'uv oxidation')
-c <- c('groundwater pumping', 'reverse osmosis')
-d <- c('reverse osmosis')
-listtest <- technology_plot(a, b, c, d, energy_reqs, tech, 100, 0.3, 0.5, 0.6, 100, 0.4, 'Indirect Potable Reuse')
 

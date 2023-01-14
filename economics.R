@@ -94,11 +94,14 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name) {
       
       y <- a[i] * log(x) + b[i]
       unlog_y <- exp(y)
-      final_y <- 1.38 * unlog_y * 1e-6 * 3785.4# 2008 dollar to 2022 dollar
+      final_y <- 1.38 * unlog_y * 1e-6 * 3785.4 # 2008 dollar to 2022 dollar
       
-      omy <- oma[i] * log(x) + omb[i]
-      unlog_omy <- 10 ^ omy
-      final_omy <- 1.38 * unlog_omy * 1e-6
+      x <- x * 1000 # m3/d to ML/d
+      
+      omy <- oma[i] * log(x) - omb[i]
+      final_omy <- 1.17 * 3785.4 * omy / (x  * 1000) # 2019 to 2022 dollar 
+      
+      x <- x / 1000 # ML/d to m3/d
       
       process.df <- rbind(process.df, name[i]) # binds process name to df
       capex.df <- rbind(capex.df, final_y) # binds capex cost to df
@@ -209,108 +212,4 @@ econ_errorbars <- function(econ_data) {
   return(error)
   
 }
-  
-  
-  
 
-
-# SECTION 2: DATA INPUT AND DATAFRAME GENERATION
-# ------------------------------------------------------------------------------------------------------------------------
-
-# Reverse Osmosis (Guo et. al. 2014)
-ro <- data.frame('name' = 'reverse osmosis',
-                 'a' = 0.966,
-                 'b' = 0.929,
-                 'c' = 3.082,
-                 'oma' = 0.534,
-                 'omb' = 1.253,
-                 'omc' = 2.786,
-                 'year' = NA,
-                 'yearom' = NA)
-
-# Membrane Ultrafiltration (Guo et. al. 2014)
-uf <- data.frame('name' = 'ultrafiltration',
-                 'a' = 1.003,
-                 'b' = 0.830,
-                 'c' = 3.832,
-                 'oma' = 1.828,
-                 'omb' = 0.598,
-                 'omc' = 1.876,
-                 'year' = NA,
-                 'yearom' = NA)
-
-# Granular Activated Carbon (Guo et. al. 2014)
-gac <- data.frame('name'= 'granular activated carbon',
-                  'a' = 0.722,
-                  'b' = 1.023,
-                  'c' = 3.443,
-                  'oma' = 1.669,
-                  'omb' = 0.559,
-                  'omc' = 2.371,
-                  'year' = NA,
-                  'yearom' = NA)
-
-# ozonation (Plumlee et. al. 2014)
-o3 <- data.frame('name' = 'ozonation',
-                 'a' = 2.26,
-                 'b' = -0.54,
-                 'c' = NA,
-                 'oma' = 0.0068,
-                 'omb' = -0.051,
-                 'omc' = NA,
-                 'year' = 2014,
-                 'yearom' = 2014)
-
-# UV Disinfection + Hydrogen Peroxide
-# Capital Cost (Plumlee et. al. 2014)
-# O&M (Plumlee et. al. 2014)
-uvh2o2 <- data.frame('name' = 'uv oxidation',
-                 'a' = 0.474,
-                 'b' = -0.056,
-                 'c' = NA,
-                 'oma' = 0.038,
-                 'omb' = -0.052,
-                 'omc' = NA,
-                 'year' = 2014,
-                 'yearom' = 2014)
-
-# Membrane Microfiltration
-# Capital Cost (Plumlee et. al. 2014)
-# O&M (Plumlee et. al. 2014)
-mf <- data.frame('name' = 'microfiltration',
-                 'a' = 3.57,
-                 'b' = -0.22,
-                 'c' = NA,
-                 'oma' = 0.3,
-                 'omb' = -0.22,
-                 'omc' = NA,
-                 'year' = 2014,
-                 'yearom' = 2014)
-
-gw <- data.frame('name' = 'groundwater pumping',
-                 'a' = 0, 'b' = 0, 'c' = NA,
-                 'oma' = 0, 'omb' = 0, 'omc' = NA,
-                 'year' = NA, 'yearom' = NA)
-
-bwro <- data.frame('name' = 'brackish water desalination',
-                   'a' = 0.74, 'b' = 3.95, 'c' = NA, 
-                   'oma' = 0, 'omb' = 0, 'omc' = NA,
-                   'year' = NA, 'yearom' = NA)
- 
-swro <- data.frame('name' = 'seawater desalination',
-                   'a' = 0.81, 'b' = 4.07, 'c' = NA, 
-                   'oma' = 0, 'omb' = 0, 'omc' = NA,
-                   'year' = NA, 'yearom' = NA)
-
-# combines the dataframes together
-total <- rbind(ro, uf, gac, o3, uvh2o2, mf, gw, swro, bwro)
-
-# tests the functions using a flow rate of 10 MGD
-cctest <- calculate_costs(total$a, total$b, total$c, 10, total$year)
-omtest <- calculate_costs(total$oma, total$omb, total$omc, 10, total$yearom)
-graphtest <- economics_plot(total$a, total$b, total$c, 10, total$oma, total$omb, total$omc, total$name)
-
-plottestecon <- economics_techplot(total$a, total$b, total$c, 10, total$oma, total$omb, total$omc, total$name,
-                                   a, b, c, d, tech, c('Direct Potable Reuse', 'Indirect Potable Reuse', 'Groundwater Desalination'))
-
-econ_errorbars(plottestecon)
