@@ -152,6 +152,9 @@ ui <- fluidPage(
             value = 50
           ),
           
+          h4('Groundwater Pumping Parameters'),
+          hr(style = "border-top: 1px solid #000000;"), # solid line
+          
           # Groundwater Pumping Rate (m3/s)
           numericInput(
             'pump_rate',
@@ -167,9 +170,6 @@ ui <- fluidPage(
 
           # Groundwater Pumping Depth (m) *This is for the groundwater depth values
           # I will change the units to feet eventually as well 
-          
-          h4('Groundwater Pumping Parameters'),
-          hr(style = "border-top: 1px solid #000000;"), # solid line
           
           sliderInput(
             'length',

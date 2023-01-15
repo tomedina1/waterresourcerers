@@ -127,7 +127,22 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name, model) {
       final_y <- 1.38 * y / x
       
       omy <- oma[i] * x ^ (omb[i])
-      final_omy <- 1.38 * y / x
+      final_omy <- 1.38 * omy / x
+      
+      process.df <- rbind(process.df, name[i]) # binds process name to df
+      capex.df <- rbind(capex.df, final_y) # binds capex cost to df
+      om.df <- rbind(om.df, final_omy) # binds o&m cost to df
+      
+    } else if (model[i] == 4) {
+      
+      x <- x * 3785.4 
+      y <- exp(a[i] * log(x) + b[i]) 
+      
+      omy <- oma[i] * x + omb[i]
+
+      x <- x / 3785.4 
+      final_y <- y / x
+      final_omy <- omy / x
       
       process.df <- rbind(process.df, name[i]) # binds process name to df
       capex.df <- rbind(capex.df, final_y) # binds capex cost to df
