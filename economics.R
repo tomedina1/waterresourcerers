@@ -3,6 +3,7 @@
 # Taylor Medina
 
 library(tidyverse)
+source('fits.R')
 
 # SECTION 1: ECONOMIC EQUATIONS AND FUNCTIONS
 # ------------------------------------------------------------------------------------------------------------------------
@@ -134,15 +135,13 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name, model) {
       om.df <- rbind(om.df, final_omy) # binds o&m cost to df
       
     } else if (model[i] == 4) {
+    
+      y <- exp(bwrocapex$estimate[2] * log(x) + bwrocapex$estimate[1]) / 1e6
       
-      x <- x * 3785.4 
-      y <- exp(a[i] * log(x) + b[i]) 
+      omy <- oma[i] * x + omb[i] 
       
-      omy <- oma[i] * x + omb[i]
-
-      x <- x / 3785.4 
       final_y <- y / x
-      final_omy <- omy / x
+      final_omy <- omy / (x * 1e6)
       
       process.df <- rbind(process.df, name[i]) # binds process name to df
       capex.df <- rbind(capex.df, final_y) # binds capex cost to df

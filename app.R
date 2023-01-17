@@ -22,6 +22,7 @@ data <- read_xlsx('data.xlsx')
 # Load other R scripts
 source('energy.R')
 source('economics.R')
+source('fits.R')
 
 # Initialize the theme
 # Call the .css theme here when the script is written
