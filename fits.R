@@ -1,14 +1,16 @@
 
-# Data Fitting for functions
+# DATA FITS
+# Taylor Medina
 
+# load packages
 library(tidyverse)
 library(readxl)
 
-#############################################################
-# BWRO CAPEX Linear Model
-
 # load data
 fits <- read_xlsx('linearmodels.xlsx')
+
+#############################################################
+# BWRO CAPEX Linear Model
 
 # visualize log fit data to make sure there is a linear fit
 plot(log(fits$capacity), log(fits$capex))
@@ -24,3 +26,4 @@ bwrocapex <- broom::tidy(bwrocapex.lm)
 
 #############################################################
 # BWRO OMEX MODEL
+

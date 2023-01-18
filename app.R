@@ -3,8 +3,6 @@
 # WATER RESOURCERERS 
 # Authors: Taylor Medina,
 
-# I WILL ADD SHORT DESCRIPTION HERE
-
 # SHINY APP SETUP
 # ------------------------------------------------------------------------------------------------------------------------
 # PACKAGES
@@ -118,7 +116,7 @@ ui <- fluidPage(
             'dpr',
             label = 'Direct Potable Reuse',
             choices = unique(data$name),
-            selected = c('microfiltration', 'reverse osmosis', 'uv oxidation'),
+            selected = c('ultrafiltration', 'reverse osmosis', 'uv oxidation'),
             multiple = TRUE
           ),
           
@@ -126,7 +124,7 @@ ui <- fluidPage(
             'ipr',
             label = 'Indirect Potable Reuse',
             choices = unique(data$name),
-            selected = c('microfiltration', 'reverse osmosis', 'uv oxidation'),
+            selected = c('microfiltration', 'reverse osmosis', 'uv oxidation', 'groundwater recharge'),
             multiple = TRUE
           ),
           
@@ -156,10 +154,10 @@ ui <- fluidPage(
           h4('Groundwater Pumping Parameters'),
           hr(style = "border-top: 1px solid #000000;"), # solid line
           
-          # Groundwater Pumping Rate (m3/s)
+          # Groundwater Pumping Rate (cubic meters per second)
           numericInput(
             'pump_rate',
-            label = 'Select a groundwater pumping rate (cubic meters/s)',
+            label = 'Select a groundwater pumping rate (cms)',
             value = 0.06),
           
           # SLIDERS SECTION
@@ -266,22 +264,26 @@ server <- function(input, output, session) {
   # This section of the code deactivates the unit processes boxes based on what is selected
   observeEvent(
     input$technology, {
-      if (any(input$technology == 'Direct Potable Reuse')) enable('dpr') else disable('dpr')
+      if (any(input$technology == 'Direct Potable Reuse')) 
+        enable('dpr') else disable('dpr')
       })
   
   observeEvent(
     input$technology, {
-      if (any(input$technology == 'Indirect Potable Reuse')) enable('ipr') else disable('ipr')  
+      if (any(input$technology == 'Indirect Potable Reuse')) 
+        enable('ipr') else disable('ipr')  
       })
   
   observeEvent(
     input$technology, {
-      if (any(input$technology == 'Groundwater Desalination')) enable('gwdesal') else disable('gwdesal')
+      if (any(input$technology == 'Groundwater Desalination')) 
+        enable('gwdesal') else disable('gwdesal')
       })
   
   observeEvent(
     input$technology, {
-      if (any(input$technology == 'Ocean Desalination')) enable('desal') else disable('desal')
+      if (any(input$technology == 'Ocean Desalination')) 
+        enable('desal') else disable('desal')
     })
   
 
@@ -295,7 +297,7 @@ server <- function(input, output, session) {
            format(round(
              # this calls the function from 'energy.R'
              energy_req(energy_reqs, input$vol_rate, input$pump_rate, input$fitting, input$rough, 
-                        input$length, input$efficiency), 2),# rounds to 2 decimal places
+                        input$length, input$efficiency), 2), # rounds to 2 decimal places
              scientific = TRUE), ' MW') # puts the output in scientific notation
   })
   

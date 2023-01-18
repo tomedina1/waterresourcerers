@@ -2,7 +2,10 @@
 # ECONOMICS 
 # Taylor Medina
 
+# load packages
 library(tidyverse)
+
+# source the fits script - used in the equation
 source('fits.R')
 
 ######################################################################################
