@@ -343,6 +343,9 @@ server <- function(input, output, session) {
   econ_error <- reactive({
     econ_error <- econ_errorbars(econplot_data())})
   
+
+  
+  
   # capital cost plot
   output$capex_plot <- renderPlotly({
     ggplotly(

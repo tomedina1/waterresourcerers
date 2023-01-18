@@ -4,8 +4,7 @@
 
 library(tidyverse)
 
-# SECTION 1: Energy Calculating Functions
-# ---------------------------------------------------------------------------------------------------------
+#######################################################################################
 # Pumping Energy Requirement
 e_gwpump <- function(q, k, E) {
   
@@ -42,9 +41,8 @@ system_losses <- function(k_f, q, k, L) {
   return(k_t)
   
 }
+#######################################################################################
 
-# SECTION 2: Energy Calculation Functions
-# -------------------------------------------------------------------------------------
 energy_req <- function(a, x , pump, k_f, k, L, E){
   
   x <- x * 3785.4 # convert from MGD to m3/d
@@ -70,6 +68,7 @@ energy_req <- function(a, x , pump, k_f, k, L, E){
   
 }
 
+#######################################################################################
 
 energy_plot <- function(a, x, k_f, pump, k, L, E) {
   
@@ -104,10 +103,11 @@ energy_plot <- function(a, x, k_f, pump, k, L, E) {
   
 }
 
+#######################################################################################
 # load names for each technology into a character vector
 tech <- c('Direct Potable Reuse', 'Indirect Potable Reuse', 'Groundwater Desalination',
           'Ocean Desalination')
-
+#######################################################################################
 # This is the function that generates the plot on the shiny app
 technology_plot <- function(a, b, c, d, process, tech, x, k_f, pump, k, L, E, tech_input) {
   

@@ -5,71 +5,13 @@
 library(tidyverse)
 source('fits.R')
 
-# SECTION 1: ECONOMIC EQUATIONS AND FUNCTIONS
-# ------------------------------------------------------------------------------------------------------------------------
-
+######################################################################################
 # FUNCTION 1: CAPEX AND O&M COST CALCULATIONS
 # this function calculates the capital costs and the o&m costs depending on the inputs
 # Do not be intimidated by the for loops - I hope the code is commented clearly enough
 # This function requires vector inputs for a, b, c, and year. 
 # a, b, and c are fitted constants unique to each unit process
-# year is needed to account for inflation 
-
-calculate_costs <- function(a, b, c, x, year, model){
-  
-  # generate a blank data frame
-  costs <- data.frame()
-  
-  for (i in 1:length(a)) { # iterates through every input in the vector (a, b, c, and year should be the same length***)
-
-      if (model == 1) { # c is only a constant in the Williams Power Logarithmic Rule Equation (Guo et. al. 2014)
-        
-        x <- x * 3785.4 # convert MGD to m3/d (the equation only works in m3/d)
-        
-        # William's Power Logarithmic Rule
-        # log(y) = a * log(x) ^ b + c
-        # y: $
-        # x: volumetric flow rate (m3/d)
-        
-        y <- a[i] * log10(x) ^ (b[i]) + c[i] # calculates log(y)
-        unlog_y <- 10 ^ y 
-        final_y <- 1.25 * unlog_y * 1e-6 # 2014 dollar to 2022 dollar (October)
-        costs <- rbind(costs, final_y) # binds the output for each iteration to the blank df
-        
-        x <- x / 3785.4 # convert back to MGD
-        
-      } else if (model == 2) { # the rest of the equations do not have a value for c
-        
-        # based off of the equation y = a * x ^ b (Plumlee et. al. 2014, Hilbig et. al. 2020)
-        # y: $M/MGD
-        # multiply y by 1e6 and by x to get costs
-        
-        y_value <- a[i] * x ^ (b[i]) 
-        y_conversion <- 1.25 * y_value # converts from 2014 dollars to current dollar (2022 October)
-        costs <- rbind(costs, y_conversion) # binds the output for each iteration to the blank df
-      
-      } else {
-      
-        y <- a[i] * x ^ (b[i])
-        final_y <- 1.38 * y / x
-        
-        omy <- oma[i] * x ^ (omb[i])
-        final_omy <- 1.38 * y / x
-        
-        process.df <- rbind(process.df, name[i]) # binds process name to df
-        capex.df <- rbind(capex.df, final_y) # binds capex cost to df
-        om.df <- rbind(om.df, final_omy) # binds o&m cost to df
-    }}
-  
-  costs_sum <- sum(costs) # sums the dataframe to get the total cost of the system
-  return(costs_sum)
-  
-}
-
-
-# FUNCTION 2: PLOT FOR CAPEX AND O&M
-# this function calculates the CAPEX and O&M and puts them in a df to be plotted
-# The equations are the same as in FUNCTION 1
+#######################################################################################
 
 economics_plot <- function(a, b, c, x, oma, omb, omc, name, model) {
   
@@ -79,8 +21,11 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name, model) {
   
   for (i in 1:length(name)) {
     
+    # if there is no model in the data frame do not run this function
     if (is.na(model[i])) {
       next
+      
+      # if there is a model then run the function 
     } else {
     
     if (model[i] == 1) {
@@ -124,6 +69,7 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name, model) {
       
     } else if (model[i] == 3) {
       
+      # Models purely swro 
       y <- a[i] * x ^ (b[i])
       final_y <- 1.38 * y / x
       
@@ -135,7 +81,9 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name, model) {
       om.df <- rbind(om.df, final_omy) # binds o&m cost to df
       
     } else if (model[i] == 4) {
-    
+      
+      # bwro model 
+      # based off of the fits.R file - log-log fit of Texas BWRO data
       y <- exp(bwrocapex$estimate[2] * log(x) + bwrocapex$estimate[1]) / 1e6
       
       omy <- oma[i] * x + omb[i] 
@@ -162,7 +110,11 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name, model) {
   
 }
 
-# This function generates the dataframe for the economics plot
+#######################################################################################
+# FUNCTION 2: CAPEX AND O&M BASED ON TECHNOLOGY
+# This function takes the inputs from the shiny app and makes the df for the plots
+#######################################################################################
+
 economics_techplot <- function(a, b, c, x, oma, omb, omc, name, input1, 
                                input2, input3, input4, tech, tech_input, model) {
   
@@ -215,12 +167,16 @@ economics_techplot <- function(a, b, c, x, oma, omb, omc, name, input1,
   
   tech.df <- tech.df %>% 
     filter(technology %in% tech_input)
+  
   return(tech.df)
         
 }
 
-
+#######################################################################################
+# FUNCTION 3: This function makes the economics error bars for the plot
 # this function uses economics plot data and generates the error bars (-30% / + 50%)
+#######################################################################################
+
 econ_errorbars <- function(econ_data) {
   
   error <- econ_data %>% 
@@ -235,4 +191,8 @@ econ_errorbars <- function(econ_data) {
   return(error)
   
 }
+
+
+
+
 
