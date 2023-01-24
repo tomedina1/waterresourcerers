@@ -89,10 +89,11 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name, model) {
       # based off of the fits.R file - log-log fit of Texas BWRO data
       y <- exp(bwrocapex$estimate[2] * log(x) + bwrocapex$estimate[1]) / 1e6
       
-      omy <- oma[i] * x + omb[i] 
+      x_m3d <- x * 3785.4
+      omy <- oma[i] * x_m3d + omb[i] 
       
       final_y <- y / x
-      final_omy <- omy / (x * 1e6)
+      final_omy <- omy / 1e6
       
       process.df <- rbind(process.df, name[i]) # binds process name to df
       capex.df <- rbind(capex.df, final_y) # binds capex cost to df

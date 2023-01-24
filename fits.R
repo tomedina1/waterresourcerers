@@ -8,6 +8,7 @@ library(readxl)
 
 # load data
 fits <- read_xlsx('linearmodels.xlsx')
+bwro <- read_xlsx('bwro.xlsx')
 
 #############################################################
 # BWRO CAPEX Linear Model
@@ -23,7 +24,4 @@ fits_modified <- fits %>%
 # perform OLS (log-log) to get the model
 bwrocapex.lm <- lm(logy ~ logx, data = fits_modified) 
 bwrocapex <- broom::tidy(bwrocapex.lm)
-
-#############################################################
-# BWRO OMEX MODEL
 
