@@ -24,4 +24,5 @@ fits_modified <- fits %>%
 # perform OLS (log-log) to get the model
 bwrocapex.lm <- lm(logy ~ logx, data = fits_modified) 
 bwrocapex <- broom::tidy(bwrocapex.lm)
+summary(bwrocapex.lm)
 
