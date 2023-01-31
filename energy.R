@@ -87,9 +87,7 @@ energy_plot <- function(a, x, k_f, pump, k, L, E) {
       graph.df <- rbind(graph.df, pump_req)
       name.df <- rbind(name.df, a$name[i])
     
-    } 
-
-  else {
+    } else {
       
       # run the equations for the rest of the processes
       o_req <- a$req[i] 
@@ -109,6 +107,7 @@ energy_plot <- function(a, x, k_f, pump, k, L, E) {
 tech <- c('Direct Potable Reuse', 'Indirect Potable Reuse', 'Groundwater Desalination',
           'Ocean Desalination')
 #######################################################################################
+
 # This is the function that generates the plot on the shiny app
 technology_plot <- function(a, b, c, d, process, tech, x, k_f, pump, k, L, E, tech_input) {
   

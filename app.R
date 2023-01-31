@@ -21,6 +21,7 @@ data <- read_xlsx('data.xlsx')
 source('energy.R')
 source('economics.R')
 source('fits.R')
+source('combinedoutput.R')
 
 # Initialize the theme
 # Call the .css theme here when the script is written
@@ -75,7 +76,7 @@ ui <- fluidPage(
     # --------------------------------------------------------------------------
     tabPanel(
       # tab title here
-      'REQUIREMENTS',
+      'CALCULATIONS',
       # tab layout here
       sidebarLayout(
         
@@ -208,32 +209,16 @@ ui <- fluidPage(
         # MAIN PANEL SECTION
         # ----------------------------------------------------------------------
         mainPanel(
-          textOutput('gwptext'), # outputs the energy requirement
+          
+          dataTableOutput('finaldt'),
           plotlyOutput('eplot'),
           plotlyOutput('capex_plot'),
           plotlyOutput('omex_plot')),
 
              )),
+  
     
-    
-    # TAB 3: INFORMATION
-    # --------------------------------------------------------------------------
-    tabPanel(
-      'INFORMATION',
-      sidebarLayout(
-        
-        # SIDE BAR SECTION
-        # ----------------------------------------------------------------------
-        sidebarPanel(
-          width = 3
-          ),
-        
-        # MAIN PANEL SECTION
-        # ----------------------------------------------------------------------
-        mainPanel()
-             )),
-    
-    # TAB 4: ABOUT
+    # TAB 3: ABOUT
     # --------------------------------------------------------------------------
     tabPanel(
       'ABOUT',
@@ -287,28 +272,43 @@ server <- function(input, output, session) {
     })
   
 
-  # TEXT OUTPUT FOR ENERGY REQUIREMENT
-  output$gwptext <- renderText({
-    # data wrangling -- filters data for only selected processes
-    energy_reqs <- energy_reqs %>% 
-      filter(name %in% input$energyreqs)
-    
-    paste0('The total energy requirement is: ', 
-           format(round(
-             # this calls the function from 'energy.R'
-             energy_req(energy_reqs, input$vol_rate, input$pump_rate, input$fitting, input$rough, 
-                        input$length, input$efficiency), 2), # rounds to 2 decimal places
-             scientific = TRUE), ' MW') # puts the output in scientific notation
-  })
   
   # This calls the plot function from 'energy.R' to create the df for the plot
   plot_data <- reactive({
-    
     plot_data <- technology_plot(input$dpr, input$ipr, input$gwdesal, input$desal,
                     data, tech, input$vol_rate, input$fitting, input$pump_rate, input$rough, 
                     input$length, input$efficiency, input$technology)
-
   })
+  
+  # generates the plot data for the economics section
+  econplot_data <- reactive({
+    econplot_data <- economics_techplot(data$a, data$b, data$c, input$vol_rate, data$oma,
+                                        data$omb, data$omc, data$name, input$dpr, input$ipr, input$gwdesal,
+                                        input$desal, tech, input$technology, data$model)
+  })
+  
+  # generates the data frame used for the economics error bars
+  econ_error <- reactive({
+    econ_error <- econ_errorbars(econplot_data())
+    })
+  
+  datatable_data <- reactive({
+    df <- table_output(econplot_data(), plot_data())
+  })
+  
+  output$finaldt <- renderDataTable({
+    dt <- datatable_data()},
+    options = list(
+      autowidth = TRUE,
+      info = FALSE,
+      dom = 'ft',
+      columns = list(
+        list(title = 'Technology'),
+        list(title = 'Energy Requirement (kWh/m3)'),
+        list(title = 'Capital Cost (M$USD/MGD)'),
+        list(title = 'O&M Cost (M$USD/MGD)')
+      )
+    ))
   
   # This the plot output that compares the energy requirements for each process
   output$eplot <- renderPlotly({
@@ -333,19 +333,6 @@ server <- function(input, output, session) {
       tooltip = 'text') 
   })
   
-  # generates the plot data for the economics section
-  econplot_data <- reactive({
-    
-    econplot_data <- economics_techplot(data$a, data$b, data$c, input$vol_rate, data$oma,
-                                    data$omb, data$omc, data$name, input$dpr, input$ipr, input$gwdesal,
-                                    input$desal, tech, input$technology, data$model)
-  })
-  
-  # generates the data frame used for the economics error bars
-  econ_error <- reactive({
-    econ_error <- econ_errorbars(econplot_data())})
-  
-
   
   
   # capital cost plot

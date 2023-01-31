@@ -26,6 +26,7 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name, model) {
     
     # if there is no model in the data frame do not run this function
     if (is.na(model[i])) {
+      
       next
       
       # if there is a model then run the function 
