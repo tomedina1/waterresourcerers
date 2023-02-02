@@ -295,6 +295,17 @@ server <- function(input, output, session) {
   datatable_data <- reactive({
     df <- table_output(econplot_data(), plot_data())
   })
+
+  
+  energy_errordata <- reactive({
+    
+    error <- data %>% 
+      mutate(process = name) %>% 
+      select(process, var)
+    
+    energy_errordata <- energy_sd(energy_error(plot_data(), error))
+  })
+
   
   output$finaldt <- renderDataTable({
     dt <- datatable_data()},
@@ -324,6 +335,9 @@ server <- function(input, output, session) {
                  aes(text = paste(
                    "process:", process, "\nenergy requirement:", 
                    round(energyreq, 2), 'kWh / m3', sep = " "), fill = process)) +
+        
+        geom_errorbar(data = energy_errordata(), aes(x = technology, ymin = lower, ymax = upper), width = .2) +
+
         
         labs(x = NULL,
              y = 'energy requirement (kWh / m3)') +
