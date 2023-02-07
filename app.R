@@ -210,7 +210,7 @@ ui <- fluidPage(
         # ----------------------------------------------------------------------
         mainPanel(
           
-          dataTableOutput('finaldt'),
+          DT::dataTableOutput('finaldt_1'),
           plotlyOutput('eplot'),
           plotlyOutput('capex_plot'),
           plotlyOutput('omex_plot')),
@@ -292,34 +292,31 @@ server <- function(input, output, session) {
     econ_error <- econ_errorbars(econplot_data())
     })
   
+  # generates the dataframe that is the data table
   datatable_data <- reactive({
     df <- table_output(econplot_data(), plot_data())
   })
 
-  
+  # generates the error bars for the energy plot
   energy_errordata <- reactive({
     
+    # filters and renames data for the variance data in the data.xlsx file
     error <- data %>% 
       mutate(process = name) %>% 
       select(process, var)
-    
     energy_errordata <- energy_sd(energy_error(plot_data(), error))
+    
   })
 
   
-  output$finaldt <- renderDataTable({
-    dt <- datatable_data()},
-    options = list(
-      autowidth = TRUE,
-      info = FALSE,
-      dom = 'ft',
-      columns = list(
-        list(title = 'Technology'),
-        list(title = 'Energy Requirement (kWh/m3)'),
-        list(title = 'Capital Cost (M$USD/MGD)'),
-        list(title = 'O&M Cost (M$USD/MGD)')
-      )
-    ))
+  # code that renders the data table output
+  output$finaldt_1 <- DT::renderDataTable(
+    datatable_data(),
+    colnames = c('Technology', 'Energy Requirement (kWh/m3)', 'Capital Cost (M$USD/MGD)', 'O&M Cost (M$USD/MGD)'),
+    rownames = FALSE,
+    options = list(dom = 'ft')
+  )
+  
   
   # This the plot output that compares the energy requirements for each process
   output$eplot <- renderPlotly({

@@ -100,7 +100,7 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name, model) {
       capex.df <- rbind(capex.df, final_y) # binds capex cost to df
       om.df <- rbind(om.df, final_omy) # binds o&m cost to df
       
-    } else {next}}}
+      } else {next}}}
   
   # create column names for the dataframe
   colnames(process.df) <- 'process'
