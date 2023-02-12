@@ -175,7 +175,7 @@ ui <- fluidPage(
             'length',
             label = 'Select a pipe depth (m)',
             min = 0,
-            max = 100,
+            max = 1000,
             value = 20,
             ticks = FALSE),
           

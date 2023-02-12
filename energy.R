@@ -172,19 +172,22 @@ technology_plot <- function(a, b, c, d, process, tech, x, k_f, pump, k, L, E, te
 # Combines the variance of the energy requirements to the final dataframe
 energy_error <- function(energy_data, error_df) {
   final <- full_join(energy_data, error_df, by = 'process') %>% 
-    na.omit(energyreq)
+    drop_na(energyreq)
   return(final)
 }
 
 # Calculates the standard deviation
 energy_sd <- function(error_data) {
-  error_data[is.na(error_data$var)] = 0
+  
+  
   final <- error_data %>% 
     group_by(technology) %>% 
-    summarize(energyreq = sum(energyreq, na.rm = TRUE),
-              sd = sqrt(sum(var^2))) %>% 
+    summarize(energyreq = sum(energyreq),
+              sd = sqrt(sum(var ^ 2, na.rm = TRUE))) %>% 
     mutate(upper = energyreq + sd,
-           lower = energyreq - sd)
+           lower = energyreq - sd,
+           total = paste(energyreq, "%+-%", sd))
   
   return(final)
 }
+

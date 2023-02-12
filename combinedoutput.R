@@ -6,20 +6,29 @@ source('energy.R')
 
 
 
-table_output <- function(econ_data, energy_data) {
+table_output <- function(econ_data, energy_data, error_data) {
   
   econ_sum <- econ_data %>% 
     group_by(technology) %>% 
     summarize(capex_sum = round(sum(capex),2),
-              opex_sum = round(sum(omex),2))
+              opex_sum = round(sum(omex),2),
+              capex_error = 0.5 * capex_sum,
+              opex_error = 0.5 * opex_sum) %>% 
+    mutate(capex_final = paste(capex_sum, '±', capex_error),
+           opex_final = paste(opex_sum, '±', opex_error)) %>% 
+    select(technology, capex_final, opex_final)
   
-  energy_sum <- energy_data %>% 
+  final <- full_join(energy_data, error, by = 'process') %>% 
+    drop_na(energyreq)
+  
+  energy_sum <- final %>% 
     group_by(technology) %>% 
-    summarize(energy_sum = round(sum(energyreq),2))
+    summarize(energy_sum = round(sum(energyreq),2),
+              sd = round(sqrt(sum(var ^ 2, na.rm = TRUE)),3)) %>% 
+    mutate(total = paste(energy_sum, '±', sd)) %>% 
+    select(technology, total)
   
   combined <- merge(energy_sum, econ_sum)
   
   return(combined)
 }
-
-
