@@ -88,9 +88,10 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name, model) {
       
       # bwro model 
       # based off of the fits.R file - log-log fit of Texas BWRO data
-      y <- exp(bwrocapex$estimate[2] * log(x) + bwrocapex$estimate[1]) / 1e6
+     # y <- exp(bwrocapex$estimate[2] * log(x) + bwrocapex$estimate[1]) / 1e6
       
       xm3d <- x * 3785.4
+      y <- a[i] * xm3d ^ (b[i])
       omy <- oma[i] * xm3d + omb[i]
       
       final_y <- y / x

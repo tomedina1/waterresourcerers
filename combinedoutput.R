@@ -26,7 +26,7 @@ table_output <- function(econ_data, energy_data, error_data) {
   energy_sum <- final %>% 
     group_by(technology) %>% 
     summarize(energy_sum = round(sum(energyreq),2),
-              sd = round(sqrt(sum(var ^ 2, na.rm = TRUE)),3)) %>% 
+              sd = round(sqrt(sum(var ^ 2, na.rm = TRUE)),2)) %>% 
     mutate(total = paste(energy_sum, '±', sd)) %>% 
     select(technology, total)
   
