@@ -13,12 +13,14 @@ table_output <- function(econ_data, energy_data, error_data) {
     summarize(capex_sum = round(sum(capex),2),
               opex_sum = round(sum(omex),2),
               capex_error = 0.5 * capex_sum,
-              opex_error = 0.5 * opex_sum) %>% 
-    mutate(capex_final = paste(capex_sum, '±', capex_error),
-           opex_final = paste(opex_sum, '±', opex_error)) %>% 
+              c_lower = 0.3 * capex_sum,
+              opex_error = 0.5 * opex_sum,
+              o_lower = 0.3 * opex_sum) %>% 
+    mutate(capex_final = paste0(capex_sum, ' +', capex_error , '/', '-', c_lower),
+           opex_final = paste0(opex_sum, ' +', opex_error, '/', '-', o_lower)) %>% 
     select(technology, capex_final, opex_final)
   
-  final <- full_join(energy_data, error, by = 'process') %>% 
+  final <- full_join(energy_data, error_data, by = 'process') %>% 
     drop_na(energyreq)
   
   energy_sum <- final %>% 

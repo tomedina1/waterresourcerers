@@ -292,10 +292,6 @@ server <- function(input, output, session) {
     econ_error <- econ_errorbars(econplot_data())
     })
   
-  # generates the dataframe that is the data table
-  datatable_data <- reactive({
-    df <- table_output(econplot_data(), plot_data())
-  })
 
   # generates the error bars for the energy plot
   energy_errordata <- reactive({
@@ -308,6 +304,15 @@ server <- function(input, output, session) {
     
   })
 
+  # generates the dataframe that is the data table
+  datatable_data <- reactive({
+    
+    error_dfd <- data %>% 
+      mutate(process = name) %>% 
+      select(process, var)
+      
+    df <- table_output(econplot_data(), plot_data(), error_dfd)
+  })
   
   # code that renders the data table output
   output$finaldt_1 <- DT::renderDataTable(
