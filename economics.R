@@ -5,8 +5,6 @@
 # load packages
 library(tidyverse)
 
-# source the fits script - used in the equation
-source('fits.R')
 
 ######################################################################################
 # FUNCTION 1: CAPEX AND O&M COST CALCULATIONS

@@ -183,7 +183,7 @@ energy_sd <- function(error_data) {
   final <- error_data %>% 
     group_by(technology) %>% 
     summarize(energyreq = sum(energyreq),
-              sd = sqrt(sum(var ^ 2, na.rm = TRUE))) %>% 
+              sd = sqrt(sum(var ^ 2, na.rm = TRUE))) %>% # sd is the sum of the variances ^ 2
     mutate(upper = energyreq + sd,
            lower = energyreq - sd,
            total = paste(energyreq, "%+-%", sd))

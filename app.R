@@ -20,7 +20,6 @@ data <- read_xlsx('data.xlsx')
 # Load other R scripts
 source('energy.R')
 source('economics.R')
-source('fits.R')
 source('combinedoutput.R')
 
 # Initialize the theme
