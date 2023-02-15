@@ -71,12 +71,12 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name, model) {
       
     } else if (model[i] == 3) {
       
-      # Models purely swro 
+      # Models  seawater reverse osmosis 
       y <- a[i] * x ^ (b[i])
-      final_y <- 1.38 * y / x
+      final_y <- 1.38 * y / x # converts to 2022 dollars
       
       omy <- oma[i] * x ^ (omb[i])
-      final_omy <- 1.38 * omy / x
+      final_omy <- 1.38 * omy / x # converts to 2022 dollars
       
       process.df <- rbind(process.df, name[i]) # binds process name to df
       capex.df <- rbind(capex.df, final_y) # binds capex cost to df
@@ -84,16 +84,14 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name, model) {
       
     } else if (model[i] == 4) {
       
-      # bwro model 
-      # based off of the fits.R file - log-log fit of Texas BWRO data
-     # y <- exp(bwrocapex$estimate[2] * log(x) + bwrocapex$estimate[1]) / 1e6
-      
-      xm3d <- x * 3785.4
+      # models brackish water (groundwater) desalination
+      xm3d <- x * 3785.4 # convert MGD to m3/d
       y <- a[i] * xm3d ^ (b[i])
       omy <- oma[i] * xm3d + omb[i]
       
+      # calculates final values 
       final_y <- y / x
-      final_omy <- omy * 365 * 1e-6 / x
+      final_omy <- omy * 365 * 1e-6 / x 
       
       process.df <- rbind(process.df, name[i]) # binds process name to df
       capex.df <- rbind(capex.df, final_y) # binds capex cost to df

@@ -316,7 +316,7 @@ server <- function(input, output, session) {
   # code that renders the data table output
   output$finaldt_1 <- DT::renderDataTable(
     datatable_data(),
-    colnames = c('Technology', 'Energy Requirement (kWh/m3)', 'Capital Cost (M$USD/MGD)', 'O&M Cost (M$USD/MGD)'),
+    colnames = c('Technology', 'Energy Requirement (kWh/m3)', 'Capital Cost ($MM/MGD)', 'O&M Cost ($MM/MGD)'),
     rownames = FALSE,
     options = list(dom = 'ft')
   )
@@ -358,11 +358,11 @@ server <- function(input, output, session) {
         
         geom_bar(data = econplot_data(), stat = 'identity', width = 0.5,
                  aes(x = technology, y = capex, fill = process,
-                     text = paste("process:", process, "\nCAPEX ($M / MGD):", round(capex, 2), sep = " "))) +
+                     text = paste("process:", process, "\nCAPEX ($MM / MGD):", round(capex, 2), sep = " "))) +
         
         geom_errorbar(data = econ_error(), aes(x = technology, ymin = capex_lower, ymax = capex_upper), width = .2) +
         
-        labs(x = NULL, y = 'capital cost ($M / MGD)') +
+        labs(x = NULL, y = 'capital cost ($MM / MGD)') +
         theme_minimal(),
       
       tooltip = 'text')
@@ -376,11 +376,11 @@ server <- function(input, output, session) {
         
         geom_bar(data = econplot_data(), stat = 'identity', width = 0.5,
                  aes(x = technology, y = omex, fill = process,
-                     text = paste("process:", process, "\nOMEX ($M / MGD):", round(omex, 2), sep = " "))) +
+                     text = paste("process:", process, "\nOMEX ($MM / MGD):", round(omex, 2), sep = " "))) +
         
         geom_errorbar(data = econ_error(), aes(x = technology, ymin = omex_lower, ymax = omex_upper), width = .2) +
         
-        labs(x = NULL, y = 'O&M cost ($M / MGD)') +
+        labs(x = NULL, y = 'O&M cost ($MM / MGD)') +
         theme_minimal(),
       
       tooltip = 'text')
