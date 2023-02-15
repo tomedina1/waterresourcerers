@@ -171,8 +171,10 @@ technology_plot <- function(a, b, c, d, process, tech, x, k_f, pump, k, L, E, te
 
 # Combines the variance of the energy requirements to the final dataframe
 energy_error <- function(energy_data, error_df) {
+  
   final <- full_join(energy_data, error_df, by = 'process') %>% 
     drop_na(energyreq)
+  
   return(final)
 }
 
