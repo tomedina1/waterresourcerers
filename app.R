@@ -210,7 +210,8 @@ ui <- fluidPage(
           
           radioButtons('bac',
                        label = 'Select an empty bed contact time (EBCT) (min)',
-                       choices = c(10, 20)),
+                       choices = c(10, 20),
+                       selected = 20),
           ),
         
         # MAIN PANEL SECTION
@@ -303,11 +304,15 @@ server <- function(input, output, session) {
                     input$length, input$efficiency, input$technology)
   })
   
+  data_bac <- reactive({
+    bac_data <- bac_econ(input$vol_rate, input$bac, data)
+  })
+  
   # generates the plot data for the economics section
   econplot_data <- reactive({
-    econplot_data <- economics_techplot(data$a, data$b, data$c, input$vol_rate, data$oma,
-                                        data$omb, data$omc, data$name, input$dpr, input$ipr, input$gwdesal,
-                                        input$desal, tech, input$technology, data$model)
+    econplot_data <- economics_techplot(data_bac()$a, data_bac()$b, data_bac()$c, input$vol_rate, data_bac()$oma,
+                                        data_bac()$omb, data_bac()$omc, data_bac()$name, input$dpr, input$ipr, input$gwdesal,
+                                        input$desal, tech, input$technology, data_bac()$model)
   })
   
   # generates the data frame used for the economics error bars

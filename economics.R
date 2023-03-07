@@ -234,4 +234,4 @@ bac_econ <- function(flowrate, ebct, data) {
 
 
 
-
+bac_econ(20, 20, data)
