@@ -116,7 +116,7 @@ ui <- fluidPage(
             'dpr',
             label = 'Direct Potable Reuse',
             choices = unique(data$name),
-            selected = c('ultrafiltration', 'reverse osmosis', 'uv oxidation'),
+            selected = c('ultrafiltration', 'reverse osmosis', 'ozonation', 'biological activated carbon'),
             multiple = TRUE
           ),
           
@@ -124,7 +124,7 @@ ui <- fluidPage(
             'ipr',
             label = 'Indirect Potable Reuse',
             choices = unique(data$name),
-            selected = c('microfiltration', 'reverse osmosis', 'uv oxidation', 'groundwater recharge'),
+            selected = c('microfiltration', 'reverse osmosis', 'uv oxidation'),
             multiple = TRUE
           ),
           
@@ -278,6 +278,22 @@ server <- function(input, output, session) {
         enable('desal') else disable('desal')
     })
   
+  # puts all of the technology unit process inputs as a list
+  BAClisten <- reactive({
+    list(input$dpr, input$ipr, input$gwdesal, input$desal)
+  })
+  
+  # enables BAC radio button if there is BAC selected
+  observeEvent(
+    BAClisten(), {
+      if(any(input$dpr == 'biological activated carbon' |
+             input$ipr == 'biological activated carbon' |
+             input$gwdesal == 'biological activated carbon' |
+             input$desal == 'biological activated carbon'))
+        enable('bac') else disable('bac')
+  })
+  
+
 
   
   # This calls the plot function from 'energy.R' to create the df for the plot
