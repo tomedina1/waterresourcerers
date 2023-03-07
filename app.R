@@ -172,10 +172,10 @@ ui <- fluidPage(
           
           sliderInput(
             'length',
-            label = 'Select a pipe depth (m)',
+            label = 'Select a pipe depth (ft)',
             min = 0,
             max = 1000,
-            value = 20,
+            value = 100,
             ticks = FALSE),
           
           # Pipe Roughness Slider (unitless) -- a friction factor

@@ -33,6 +33,8 @@ friction_factor <- function(q, k) {
 
 # Calculating system losses
 system_losses <- function(k_f, q, k, L) {
+  
+  L <- L * 0.3048 # feet to meters
 
   # calculates the system losses given L (length of a pipe in m)
   # also needs k_f (fittings losses), volumetric flow rate (m3/s), and pipe roughness
