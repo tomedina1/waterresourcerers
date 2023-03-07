@@ -203,7 +203,15 @@ ui <- fluidPage(
             min = 0, 
             max = 1,
             value = 0.6,
-            ticks = FALSE)),
+            ticks = FALSE),
+          
+          h4('BAC Parameters'),
+          hr(style = "border-top: 1px solid #000000;"), # solid line
+          
+          radioButtons('bac',
+                       label = 'Select an empty bed contact time (EBCT) (min)',
+                       choices = c(10, 20)),
+          ),
         
         # MAIN PANEL SECTION
         # ----------------------------------------------------------------------
@@ -366,6 +374,7 @@ server <- function(input, output, session) {
         theme_minimal(),
       
       tooltip = 'text')
+    
   })
   
   # O&M cost plot

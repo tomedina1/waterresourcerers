@@ -178,6 +178,7 @@ energy_error <- function(energy_data, error_df) {
   return(final)
 }
 
+##################################################################################################
 # Calculates the standard deviation
 energy_sd <- function(error_data) {
   

@@ -10,7 +10,7 @@ library(tidyverse)
 # FUNCTION 1: CAPEX AND O&M COST CALCULATIONS
 # this function calculates the capital costs and the o&m costs depending on the inputs
 # Do not be intimidated by the for loops - I hope the code is commented clearly enough
-# This function requires vector inputs for a, b, c, and year. 
+# This function requires vector inputs for a, b, and c. 
 # a, b, and c are fitted constants unique to each unit process
 #######################################################################################
 
@@ -194,6 +194,43 @@ econ_errorbars <- function(econ_data) {
   
 }
 
+#######################################################################################
+# FUNCTION 4: This function is used for biological activated carbon and modifies the 
+# frame depending on what the selected flow rate is and the empty bed contact time 
+#######################################################################################
+
+# BIOLOGICAL ACTIVATED CARBON ECONOMIC DATA
+bac_econ <- function(flowrate, ebct, data) {
+  
+  if (flowrate <= 10) {
+    
+    bac_data <- data %>% 
+      mutate(a = replace(a, name == 'biological activated carbon', 
+                         ifelse(ebct == 20, 3.03, 2.92)),
+             b = replace(b, name == 'biological activated carbon',
+                         ifelse(ebct == 20, -0.48, -0.52)),
+             oma = replace(oma, name == 'biological activated carbon',
+                         ifelse(ebct == 20, 0.085, 0.074)),
+             omb = replace(omb, name == 'biological activated carbon',
+                         ifelse(ebct == 20, -0.16, -0.19)))
+  }
+  
+  else {
+    
+    bac_data <- data %>% 
+      mutate(a = replace(a, name == 'biological activated carbon', 
+                         ifelse(ebct == 20, 1.52, 1.43)),
+             b = replace(b, name == 'biological activated carbon',
+                         ifelse(ebct == 20, -0.15, -0.17)),
+             oma = replace(oma, name == 'biological activated carbon',
+                           ifelse(ebct == 20, 0.070, 0.059)),
+             omb = replace(omb, name == 'biological activated carbon',
+                           ifelse(ebct == 20, -0.036, -0.044)))
+  }
+  
+  return(bac_data)
+  
+}
 
 
 
