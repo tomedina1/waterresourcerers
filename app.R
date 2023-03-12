@@ -250,9 +250,7 @@ ui <- fluidPage(
 # SERVER
 # ------------------------------------------------------------------------------------------------------------------------
 server <- function(input, output, session) {
-  
-  # ENERGY REQS TAB
-  # ----------------------------------------------------------------------------------------
+
   
   # This section of the code deactivates the unit processes boxes based on what is selected
   observeEvent(
@@ -287,15 +285,23 @@ server <- function(input, output, session) {
   # enables BAC radio button if there is BAC selected
   observeEvent(
     BAClisten(), {
-      if(any(input$dpr == 'biological activated carbon' |
+      
+      if (any(input$dpr == 'biological activated carbon' |
              input$ipr == 'biological activated carbon' |
              input$gwdesal == 'biological activated carbon' |
              input$desal == 'biological activated carbon'))
-        enable('bac') else disable('bac')
+        enable('bac') 
+      
+      else disable('bac')
+      
   })
   
-
-
+  om_pump <- reactive({
+    
+    om_pump <- gw_om(input$pump_rate, input$rough, input$efficiency, input$fitting, input$length)
+    
+  })
+  
   
   # This calls the plot function from 'energy.R' to create the df for the plot
   plot_data <- reactive({
@@ -312,7 +318,7 @@ server <- function(input, output, session) {
   econplot_data <- reactive({
     econplot_data <- economics_techplot(data_bac()$a, data_bac()$b, data_bac()$c, input$vol_rate, data_bac()$oma,
                                         data_bac()$omb, data_bac()$omc, data_bac()$name, input$dpr, input$ipr, input$gwdesal,
-                                        input$desal, tech, input$technology, data_bac()$model)
+                                        input$desal, tech, input$technology, data_bac()$model, om_pump())
   })
   
   # generates the data frame used for the economics error bars

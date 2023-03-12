@@ -4,17 +4,31 @@
 
 # load packages
 library(tidyverse)
+# source energy
+source('energy.R')
+
+# FUNCTION 1: GROUNDWATER PUMPING O&M
+
+gw_om <- function(q, k, E, k_f, L) {
+  
+  energy <- e_gwpump(q, system_losses(k_f, q, k, L), E)
+  om <- (0.1974 * energy)  # $ / m3
+  om <- om * 3785.41178 # $/MG
+  om <- om * 1e-6 # $MM/MGD
+  
+}
+
 
 
 ######################################################################################
-# FUNCTION 1: CAPEX AND O&M COST CALCULATIONS
+# FUNCTION 2: CAPEX AND O&M COST CALCULATIONS
 # this function calculates the capital costs and the o&m costs depending on the inputs
 # Do not be intimidated by the for loops - I hope the code is commented clearly enough
 # This function requires vector inputs for a, b, and c. 
 # a, b, and c are fitted constants unique to each unit process
 #######################################################################################
 
-economics_plot <- function(a, b, c, x, oma, omb, omc, name, model) {
+economics_plot <- function(a, b, c, x, oma, omb, omc, name, model, pump_om) {
   
   process.df <- data.frame() # generate a blank df for the names of the processes
   capex.df <- data.frame() # generate a blank df for the capex values
@@ -97,6 +111,15 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name, model) {
       capex.df <- rbind(capex.df, final_y) # binds capex cost to df
       om.df <- rbind(om.df, final_omy) # binds o&m cost to df
 
+    } else if (model[i] == 5) {
+      
+      omy <- pump_om  
+      
+      process.df <- rbind(process.df, name[i])
+      capex.df <- rbind(capex.df, 0)
+      om.df <- rbind(om.df, omy)
+      
+      
     } else {next}}}
   
   # create column names for the dataframe
@@ -118,10 +141,10 @@ economics_plot <- function(a, b, c, x, oma, omb, omc, name, model) {
 #######################################################################################
 
 economics_techplot <- function(a, b, c, x, oma, omb, omc, name, input1, 
-                               input2, input3, input4, tech, tech_input, model) {
+                               input2, input3, input4, tech, tech_input, model, pump_om) {
   
   # outputs plot data
-  plot.data <- economics_plot(a, b, c, x, oma, omb, omc, name, model)
+  plot.data <- economics_plot(a, b, c, x, oma, omb, omc, name, model, pump_om)
   
   # turns inputs into a vector
   input.vector <- c(input1, input2, input3, input4)
@@ -233,5 +256,3 @@ bac_econ <- function(flowrate, ebct, data) {
 }
 
 
-
-bac_econ(20, 20, data)
