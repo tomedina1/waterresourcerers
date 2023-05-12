@@ -45,37 +45,11 @@ ui <- fluidPage(
   navbarPage(
     
     # put the shiny app title here
-    'TITLE HERE',
+    'AWTM - Water Resourcerers',
     
-    
-    # TAB 1: BACKGROUND (this section will be filled in when the rest of the app is finished)
-    # --------------------------------------------------------------------------
-    tabPanel(
-      # Tab title here
-      'BACKGROUND',
-      # Tab Layout
-      sidebarLayout( 
-        
-        # SIDE BAR SECTION
-        # ----------------------------------------------------------------------
-        sidebarPanel(
-          
-          width = 3 # sets the width of the sidebar panel (1-12)
-          
-          ), 
-        
-        # MAIN PANEL SECTION
-        # ----------------------------------------------------------------------
-        mainPanel()
-        
-             )),
-    
-    
-    # TAB 2: ENERGY REQUIREMENTS
-    # --------------------------------------------------------------------------
     tabPanel(
       # tab title here
-      'CALCULATIONS',
+      '',
       # tab layout here
       sidebarLayout(
         
@@ -224,25 +198,6 @@ ui <- fluidPage(
           plotlyOutput('omex_plot')),
 
              )),
-  
-    
-    # TAB 3: ABOUT
-    # --------------------------------------------------------------------------
-    tabPanel(
-      'ABOUT',
-      sidebarLayout(
-        
-        # SIDE BAR SECTION
-        # ----------------------------------------------------------------------
-        sidebarPanel(
-          width = 3
-          ),
-        
-        # MAIN PANEL SECTION
-        # ----------------------------------------------------------------------
-        mainPanel()
-        
-        ))
     
   ))
 
