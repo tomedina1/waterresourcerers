@@ -1,7 +1,10 @@
-# Water Resourcerers Shiny Application 
+# Water Resourcerer
 
-Authors: Taylor Medina,
+## Description
+Water Resourcer is an interactive application made in the R SHINY platform that calcualates energy requirements, capital cost requirements, and operations and maintenance cost requirements for a custom advanced water treatment plant. 
 
+
+## About
+Authors: Taylor Medina, Trevor Maggart
 Advisor: Arturo Keller, PhD
 
-**NAME** was developed for the Water Resourerers master's group project. This application is currently being developed.
