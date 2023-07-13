@@ -45,7 +45,7 @@ ui <- fluidPage(
   navbarPage(
     
     # put the shiny app title here
-    'AWTM - Water Resourcerers',
+    'Water Resourcerer',
     
     tabPanel(
       # tab title here
