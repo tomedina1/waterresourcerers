@@ -1,6 +1,5 @@
 
-# --- TO BE NAMED ---
-# WATER RESOURCERERS 
+# --- WATER RESOURCERER ---
 # Authors: Taylor Medina,
 
 # SHINY APP SETUP
