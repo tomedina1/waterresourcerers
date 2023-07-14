@@ -1,6 +1,6 @@
 
 # --- WATER RESOURCERER ---
-# Authors: Taylor Medina,
+# Authors: Taylor Medina, Trevor Maggart
 
 # SHINY APP SETUP
 # ------------------------------------------------------------------------------------------------------------------------
